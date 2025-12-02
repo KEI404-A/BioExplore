@@ -224,64 +224,13 @@
         font-size: 16px;
       }
 
-      /* VR Button Repositioning - Kanan Tengah Layar */
+      /* VR Button - Hidden */
       .a-enter-vr-button {
-        right: 20px !important;
-        bottom: auto !important;
-        top: 50% !important;
-        transform: translateY(-50%) !important;
-        width: 70px !important;
-        height: 70px !important;
-        border-radius: 50% !important;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        border: 3px solid rgba(255,255,255,0.3) !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
-        transition: all 0.3s ease !important;
-        z-index: 9999 !important;
+        display: none !important;
       }
 
-      .a-enter-vr-button:hover {
-        transform: translateY(-50%) scale(1.1) !important;
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
-      }
-
-      /* Custom VR Button for better accessibility */
       #custom-vr-btn {
-        position: fixed;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 9998;
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        transition: all 0.3s ease;
-        border: 3px solid rgba(255,255,255,0.3);
-      }
-
-      #custom-vr-btn:hover {
-        transform: translateY(-50%) scale(1.1);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-      }
-
-      #custom-vr-btn:active {
-        transform: translateY(-50%) scale(0.95);
-      }
-
-      #custom-vr-btn span {
-        font-size: 36px;
-        user-select: none;
-      }
-
-      /* Hide custom button when in VR mode */
-      body.vr-mode #custom-vr-btn {
-        display: none;
+        display: none !important;
       }
     </style>
     <script>
@@ -490,7 +439,7 @@
       }
 
       window.uiSettings = {
-        showRandomAvatarButton: true,
+        showRandomAvatarButton: false,
         showDieButton: true,
       };
 
@@ -507,7 +456,7 @@
             switch (currentMode) {
               case 'mobile':
                 icon = '📱';
-                text = 'Switch to VR';
+                text = 'Switch to Desktop';
                 // Show mobile controls when in mobile mode
                 if (mobileControls) {
                   mobileControls.style.display = 'block';
@@ -516,12 +465,6 @@
                     window.initJoystick();
                   }
                 }
-                break;
-              case 'vr':
-                icon = '🎮';
-                text = 'Switch to desktop';
-                // Hide mobile controls in VR mode
-                if (mobileControls) mobileControls.style.display = 'none';
                 break;
               default: // desktop
                 icon = '🖥️';
@@ -538,15 +481,12 @@
           const currentMode = localStorage.getItem('deviceType') || 'desktop';
           let newMode;
 
-          // Cycle through modes: desktop -> mobile -> vr -> desktop
+          // Cycle through modes: desktop <-> mobile
           switch (currentMode) {
             case 'desktop':
               newMode = 'mobile';
               break;
             case 'mobile':
-              newMode = 'vr';
-              break;
-            case 'vr':
             default:
               newMode = 'desktop';
           }
@@ -606,10 +546,6 @@
   </head>
 
   <body class="fade-in">
-    <!-- Custom VR Button - Kanan Tengah -->
-    <div id="custom-vr-btn" title="Enter VR Mode">
-      <span>🥽</span>
-    </div>
 
     <!-- Particle Background -->
     <div id="particles-js"></div>
@@ -632,15 +568,10 @@
             <h3>Desktop</h3>
             <p>Gunakan keyboard dan mouse</p>
           </div>
-          <div class="selection-card" id="btn-mobile">
+          <div class="selection-card highlight" id="btn-mobile">
             <div class="card-icon">📱</div>
             <h3>Mobile</h3>
             <p>Kontrol dengan layar sentuh</p>
-          </div>
-          <div class="selection-card highlight" id="btn-vr">
-            <div class="card-icon">🥽</div>
-            <h3>VR Mode</h3>
-            <p>Pengalaman imersif</p>
             <span class="badge">Rekomendasi</span>
           </div>
         </div>
@@ -774,153 +705,15 @@
           font-size: 2rem;
         }
       }
-    </style>
 
-    <!-- Avatar Selection Modal -->
-    <div id="avatar-selection" class="modal">
-      <div class="modal-content">
-        <h2>Pilih Avatar Anda</h2>
-        <div class="avatar-grid">
-          <div class="avatar-option" data-avatar="male">
-            <div class="avatar-preview">
-              <img
-                src="https://cdn.jsdelivr.net/gh/c-frame/valid-avatars-glb@c539a28/avatars/Asian/Asian_M_1_Busi.glb/thumbnail.png"
-                alt="Male Avatar"
-              />
-            </div>
-            <span>Pria</span>
-          </div>
-          <div class="avatar-option" data-avatar="female">
-            <div class="avatar-preview">
-              <img
-                src="https://cdn.jsdelivr.net/gh/c-frame/valid-avatars-glb@c539a28/avatars/Asian/Asian_F_1_Busi.glb/thumbnail.png"
-                alt="Female Avatar"
-              />
-            </div>
-            <span>Wanita</span>
-          </div>
-        </div>
-        <button id="confirm-avatar" class="confirm-btn">Konfirmasi Pilihan</button>
-      </div>
-    </div>
-
-    <style>
-      /* Avatar Selection Modal Styles */
-      .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 10000;
-        justify-content: center;
-        align-items: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-
-      .modal.show {
-        display: flex;
-        opacity: 1;
-      }
-
-      .modal-content {
-        background: #1a1a2e;
-        padding: 2rem;
-        border-radius: 15px;
-        width: 90%;
-        max-width: 600px;
-        text-align: center;
-        transform: translateY(20px);
-        transition: transform 0.3s ease;
-      }
-
-      .modal.show .modal-content {
-        transform: translateY(0);
-      }
-
-      .modal h2 {
-        color: #fff;
-        margin-bottom: 2rem;
-        font-size: 1.8rem;
-      }
-
-      .avatar-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
-
-      .avatar-option {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-      }
-
-      .avatar-option:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.15);
-      }
-
-      .avatar-option.selected {
-        border-color: #4cc9f0;
-        box-shadow: 0 0 20px rgba(76, 201, 240, 0.5);
-      }
-
-      .avatar-preview {
-        width: 100%;
-        height: 150px;
-        background: rgba(0, 0, 0, 0.3);
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .avatar-preview img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .avatar-option span {
-        color: #fff;
-        font-size: 1.1rem;
-        display: block;
-        margin-top: 0.5rem;
-      }
-
-      .confirm-btn {
-        background: #4cc9f0;
-        color: #1a1a2e;
-        border: none;
-        padding: 0.8rem 2rem;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 1rem;
-        width: 100%;
-        max-width: 200px;
-      }
-
-      .confirm-btn:hover {
-        background: #3db8dd;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
-
-      .confirm-btn:active {
-        transform: translateY(0);
+      /* Hide avatar selection modal */
+      div[class*="naf-centered-fullscreen"],
+      div[class*="avatar-selection"],
+      div[id*="avatar"],
+      .avatar-modal,
+      .avatar-selection-modal {
+        display: none !important;
+        visibility: hidden !important;
       }
     </style>
 
@@ -972,7 +765,7 @@
       style="display: none"
       light="defaultLightsEnabled:false"
       renderer="stencil:true; antialias: true;"
-      vr-mode-ui="enabled: true"
+      vr-mode-ui="enabled: false"
       webxr="requiredFeatures: local-floor; referenceSpaceType: local-floor;"
       networked-scene="
         connectOnLoad: false;
@@ -984,8 +777,8 @@
         video: false;"
       shadow="type: pcfsoft"
       gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
-      raycaster="far: 100; objects: .clickable, [link], [data-raycastable];"
-      cursor="rayOrigin: mouse"
+      raycaster="far: 100; objects: .clickable, .portal, .portal-click;"
+      cursor="rayOrigin: mouse; fuse: false"
     >
       <a-assets>
         <img id="thumbScene1" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
@@ -1019,31 +812,95 @@
         style="font-weight: bold"
       ></a-text>
 
-      <a-link
-        change-room="on:obbcollisionstarted;room:scene1;url:scene1.html"
-        link="on:click"
-        href="scene1.html"
-        title="Go To World 1"
-        image="#thumbScene1"
+      <!-- Portal 1: World 1 -->
+      <a-entity
+        id="portal-1"
         position="3 1.6 -10"
-        class="clickable collidable"
-        event-set__mouseenter="material.opacity: 0.8"
-        event-set__mouseleave="material.opacity: 0.6"
+        class="clickable portal"
+        data-scene="scene1.html"
+        data-room="scene1"
       >
-      </a-link>
+        <a-circle
+          geometry="radius: 1.2"
+          material="src: #thumbScene1; shader: flat; side: double"
+          class="clickable portal-click"
+          data-scene="scene1.html"
+          data-room="scene1"
+          event-set__mouseenter="material.opacity: 0.8"
+          event-set__mouseleave="material.opacity: 1"
+        ></a-circle>
+        <a-ring
+          geometry="radiusInner: 1.15; radiusOuter: 1.3"
+          material="color: #4CC3D9; shader: flat; side: double; transparent: true; opacity: 0.6"
+        ></a-ring>
+        <a-text
+          value="Go To World 1"
+          position="0 1.5 0"
+          align="center"
+          color="#fff"
+          scale="2 2 2"
+        ></a-text>
+      </a-entity>
 
-      <a-link
-        change-room="on:obbcollisionstarted;room:scene2;url:scene2.html"
-        link="on:click"
-        href="scene2.html"
-        title="Go To World 2"
-        image="#thumbScene1"
+      <!-- Portal 2: World 2 -->
+      <a-entity
+        id="portal-2"
         position="-3 1.6 -10"
-        class="clickable collidable"
-        event-set__mouseenter="material.opacity: 0.8"
-        event-set__mouseleave="material.opacity: 0.6"
+        class="clickable portal"
+        data-scene="scene2.html"
+        data-room="scene2"
       >
-      </a-link>
+        <a-circle
+          geometry="radius: 1.2"
+          material="src: #thumbScene1; shader: flat; side: double"
+          class="clickable portal-click"
+          data-scene="scene2.html"
+          data-room="scene2"
+          event-set__mouseenter="material.opacity: 0.8"
+          event-set__mouseleave="material.opacity: 1"
+        ></a-circle>
+        <a-ring
+          geometry="radiusInner: 1.15; radiusOuter: 1.3"
+          material="color: #4CC3D9; shader: flat; side: double; transparent: true; opacity: 0.6"
+        ></a-ring>
+        <a-text
+          value="Go To World 2"
+          position="0 1.5 0"
+          align="center"
+          color="#fff"
+          scale="2 2 2"
+        ></a-text>
+      </a-entity>
+
+      <!-- Portal 3: World 3 -->
+      <a-entity
+        id="portal-3"
+        position="0 1.6 -12"
+        class="clickable portal"
+        data-scene="scane3.html"
+        data-room="scene3"
+      >
+        <a-circle
+          geometry="radius: 1.2"
+          material="src: #thumbScene1; shader: flat; side: double"
+          class="clickable portal-click"
+          data-scene="scane3.html"
+          data-room="scene3"
+          event-set__mouseenter="material.opacity: 0.8"
+          event-set__mouseleave="material.opacity: 1"
+        ></a-circle>
+        <a-ring
+          geometry="radiusInner: 1.15; radiusOuter: 1.3"
+          material="color: #4CC3D9; shader: flat; side: double; transparent: true; opacity: 0.6"
+        ></a-ring>
+        <a-text
+          value="Go To World 3"
+          position="0 1.5 0"
+          align="center"
+          color="#fff"
+          scale="2 2 2"
+        ></a-text>
+      </a-entity>
 
       <a-entity id="scene">
         <!-- World GLB model -->
@@ -1088,9 +945,8 @@
             position="0 0 -1"
             geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
             material="shader: flat; opacity: 0.9"
-            cursor="fuse: true; fuseTimeout: 1200"
-            raycaster="objects: .clickable, [link], [data-raycastable]; far: 20;"
-            animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
+            cursor="fuse: false; rayOrigin: mouse"
+            raycaster="objects: .clickable, .portal, .portal-click; far: 20;"
             animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120"
           >
           </a-entity>
@@ -1269,7 +1125,27 @@
         // No device type selected, show selection screen
         if (deviceSelection) deviceSelection.style.display = 'flex';
         if (mainContainer) mainContainer.style.display = 'none';
-        if (aScene) aScene.style.display = 'none';
+        if (aScene) {
+          aScene.style.display = 'none';
+          // Completely disable scene to prevent any events
+          aScene.pause();
+        }
+        
+        // Prevent any auto-navigation while on device selection screen
+        // Disable all change-room components
+        setTimeout(() => {
+          const sceneLinks = document.querySelectorAll('a-link');
+          sceneLinks.forEach(link => {
+            // Remove change-room attribute temporarily
+            const changeRoomAttr = link.getAttribute('change-room');
+            if (changeRoomAttr) {
+              link.setAttribute('data-original-change-room', changeRoomAttr);
+              link.removeAttribute('change-room');
+            }
+            // Disable click events
+            link.setAttribute('data-disabled', 'true');
+          });
+        }, 100);
       } else {
         // Device type exists, show the scene
         if (mainContainer) mainContainer.style.display = 'none';
@@ -1284,7 +1160,23 @@
         // Hide the main menu and show the A-Frame scene
         if (mainContainer) mainContainer.style.display = 'none';
         if (deviceSelection) deviceSelection.style.display = 'none';
-        aScene.style.display = 'block';
+        if (aScene) {
+          aScene.style.display = 'block';
+          aScene.play();
+          
+          // Re-enable change-room components after device is selected
+          setTimeout(() => {
+            const sceneLinks = document.querySelectorAll('a-link');
+            sceneLinks.forEach(link => {
+              const originalChangeRoom = link.getAttribute('data-original-change-room');
+              if (originalChangeRoom) {
+                link.setAttribute('change-room', originalChangeRoom);
+                link.removeAttribute('data-original-change-room');
+              }
+              link.removeAttribute('data-disabled');
+            });
+          }, 500);
+        }
 
         // Save the device type to local storage
         localStorage.setItem('deviceType', deviceType);
@@ -1295,48 +1187,14 @@
 
       // Function to initialize the experience based on device type
       function initializeExperience(deviceType) {
-        // Handle VR mode
-        if (deviceType === 'vr') {
-          if (aScene.hasLoaded) {
-            if (scene.hasLoaded) {
-              enterVR();
-            } else {
-              scene.addEventListener('loaded', enterVR);
-            }
-          } else {
-            // Handle desktop/mobile modes
-            if (mobileControls) {
-              mobileControls.style.display = deviceType === 'mobile' ? 'block' : 'none';
-              if (deviceType === 'mobile') {
-                setupMobileControls();
-              }
-            }
+        // Handle desktop/mobile modes
+        if (mobileControls) {
+          mobileControls.style.display = deviceType === 'mobile' ? 'block' : 'none';
+          if (deviceType === 'mobile') {
+            setupMobileControls();
           }
         }
-
-        // Function to enter VR mode
-        function enterVR() {
-          const sceneEl = document.querySelector('a-scene');
-          if (sceneEl) {
-            // Add VR mode class
-            document.body.classList.add('vr-mode');
-            // Enter VR if available
-            if (sceneEl.hasAttribute('vr-mode-ui')) {
-              sceneEl.setAttribute('vr-mode-ui', 'enabled: true');
-            }
-            // Hide mobile controls in VR
-            if (mobileControls) mobileControls.style.display = 'none';
-          }
-        }
-
-        // Exit VR mode
-        function exitVR() {
-          const sceneEl = document.querySelector('a-scene');
-          if (sceneEl && sceneEl.is('vr-mode')) {
-            sceneEl.exitVR();
-          }
-          document.body.classList.remove('vr-mode');
-        }
+      }
 
         // Enhanced device button handlers with animations
         function setupDeviceButton(buttonId, deviceType) {
@@ -1416,59 +1274,72 @@
         // Initialize device buttons
         setupDeviceButton('btn-desktop', 'desktop');
         setupDeviceButton('btn-mobile', 'mobile');
-        setupDeviceButton('btn-vr', 'vr');
 
-        // Avatar Selection Logic
-        document.addEventListener('DOMContentLoaded', () => {
-          const avatarModal = document.getElementById('avatar-selection');
-          const avatarOptions = document.querySelectorAll('.avatar-option');
-          const confirmBtn = document.getElementById('confirm-avatar');
-          let selectedAvatar = null;
-
-          // Show avatar selection after device is selected
-          function showAvatarSelection() {
-            avatarModal.classList.add('show');
-          }
-
-          // Handle avatar selection
-          avatarOptions.forEach((option) => {
-            option.addEventListener('click', () => {
-              // Remove selected class from all options
-              avatarOptions.forEach((opt) => opt.classList.remove('selected'));
-              // Add selected class to clicked option
-              option.classList.add('selected');
-              selectedAvatar = option.getAttribute('data-avatar');
-            });
-          });
-
-          // Handle confirm button click
-          confirmBtn.addEventListener('click', () => {
-            if (!selectedAvatar) {
-              alert('Silakan pilih avatar terlebih dahulu');
-              return;
+        // Setup portal click handlers - only allow explicit clicks
+        function setupPortalHandlers() {
+          // Handle both parent portal entities and child circles
+          const portals = document.querySelectorAll('.portal, .portal-click');
+          portals.forEach(portal => {
+            // Remove any existing change-room component
+            portal.removeAttribute('change-room');
+            
+            // Get scene and room from this element or parent
+            let scene = portal.getAttribute('data-scene');
+            let room = portal.getAttribute('data-room');
+            
+            // If not found, try parent
+            if (!scene || !room) {
+              const parent = portal.parentElement;
+              if (parent) {
+                scene = scene || parent.getAttribute('data-scene');
+                room = room || parent.getAttribute('data-room');
+              }
             }
-
-            // Save selected avatar to local storage
-            localStorage.setItem('selectedAvatar', selectedAvatar);
-
-            // Hide modal
-            avatarModal.classList.remove('show');
-
-            // Start the experience with selected avatar
-            startExperience(selectedAvatar);
-          });
-
-          // Show avatar selection when device is selected
-          document.querySelectorAll('.selection-card').forEach((card) => {
-            card.addEventListener('click', () => {
-              // Show avatar selection after a short delay
-              setTimeout(showAvatarSelection, 500);
+            
+            // Add explicit click handler using A-Frame event system
+            portal.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              if (scene && room) {
+                console.log('Portal clicked:', scene, room);
+                // Use NAF to change room if available
+                if (typeof NAF !== 'undefined' && NAF.connection && NAF.connection.adapter) {
+                  NAF.connection.adapter.setRoom(room);
+                }
+                // Navigate to scene
+                window.location.href = scene;
+              }
+            });
+            
+            // Also handle mousedown for better compatibility
+            portal.addEventListener('mousedown', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              if (scene && room) {
+                console.log('Portal mousedown:', scene, room);
+                if (typeof NAF !== 'undefined' && NAF.connection && NAF.connection.adapter) {
+                  NAF.connection.adapter.setRoom(room);
+                }
+                window.location.href = scene;
+              }
             });
           });
-        });
+        }
 
-        // Function to start the experience with selected avatar
-        function startExperience(avatarType) {
+        // Setup portals after scene loads
+        const sceneEl = document.querySelector('a-scene');
+        if (sceneEl) {
+          if (sceneEl.hasLoaded) {
+            setupPortalHandlers();
+          } else {
+            sceneEl.addEventListener('loaded', setupPortalHandlers);
+          }
+        }
+
+        // Function to start the experience (no avatar selection needed)
+        function startExperience() {
           const scene = document.querySelector('a-scene');
           const deviceSelection = document.getElementById('device-selection');
 
@@ -1478,27 +1349,43 @@
           // Show the scene
           scene.style.display = 'block';
 
-          // Set the avatar based on selection
+          // Use default avatar (male)
           const rig = document.getElementById('rig');
           if (rig) {
-            const modelUrl =
-              avatarType === 'male'
-                ? 'https://cdn.glitch.global/c2231c1a-2935-4332-8715-032588334f99/Asian_M_1_Busi.glb?v=16813662'
-                : 'https://cdn.jsdelivr.net/gh/c-frame/valid-avatars-glb@c539a28/avatars/Asian/Asian_F_1_Busi.glb';
-
+            const modelUrl = 'https://cdn.glitch.global/c2231c1a-2935-4332-8715-032588334f99/Asian_M_1_Busi.glb?v=16813662';
             rig.setAttribute('player-info', 'avatarSrc', modelUrl);
           }
+
+          // Hide any avatar selection modals that might appear
+          setTimeout(() => {
+            const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
+            avatarModals.forEach(modal => {
+              modal.style.display = 'none';
+              modal.style.visibility = 'hidden';
+            });
+          }, 100);
         }
 
-        // Handle VR display activate events
-        window.addEventListener('vrdisplaypresentchange', function () {
-          const sceneEl = document.querySelector('a-scene');
-          if (sceneEl && sceneEl.is('vr-mode')) {
-            document.body.classList.add('vr-mode-active');
-          } else {
-            document.body.classList.remove('vr-mode-active');
-          }
+        // Prevent avatar selection modal from appearing
+        document.addEventListener('DOMContentLoaded', () => {
+          // Hide avatar selection modals immediately
+          const observer = new MutationObserver(() => {
+            const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
+            avatarModals.forEach(modal => {
+              if (modal.textContent.includes('Pilih Avatar') || modal.textContent.includes('Avatar')) {
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.remove();
+              }
+            });
+          });
+
+          observer.observe(document.body, {
+            childList: true,
+            subtree: true
+          });
         });
+
 
         // Initialize device based on stored preference
         if (deviceType) {
@@ -1512,11 +1399,6 @@
                 setTimeout(setupMobileControls, 1000);
               });
             }
-          } else if (deviceType === 'vr') {
-            scene.addEventListener('loaded', function () {
-              enterVR();
-            });
-          }
         }
 
         // Initialize mobile controls
@@ -1624,106 +1506,6 @@
         }
       }
 
-      // Custom VR Button Setup
-      function setupVRButton() {
-        const vrButton = document.getElementById('custom-vr-btn');
-        const scene = document.querySelector('a-scene');
-
-        if (!vrButton || !scene) return;
-
-        vrButton.addEventListener('click', function() {
-          if (scene.is('vr-mode')) {
-            // Exit VR and clear localStorage flag
-            scene.exitVR();
-            localStorage.removeItem('vrModeActive');
-            document.body.classList.remove('vr-mode');
-            vrButton.style.display = 'flex';
-            console.log('Exited VR mode - cleared localStorage flag');
-          } else {
-            // Enter VR and set localStorage flag
-            scene.enterVR();
-            localStorage.setItem('vrModeActive', 'true');
-            document.body.classList.add('vr-mode');
-            vrButton.style.display = 'none';
-            console.log('Entered VR mode - set localStorage flag');
-          }
-        });
-
-        // Listen to VR mode events
-        scene.addEventListener('enter-vr', function() {
-          document.body.classList.add('vr-mode');
-          vrButton.style.display = 'none';
-          localStorage.setItem('vrModeActive', 'true');
-          console.log('Entered VR mode');
-        });
-
-        scene.addEventListener('exit-vr', function() {
-          document.body.classList.remove('vr-mode');
-          vrButton.style.display = 'flex';
-          localStorage.removeItem('vrModeActive');
-          console.log('Exited VR mode');
-        });
-
-        // Auto-enter VR if flag is set in localStorage
-        const vrModeActive = localStorage.getItem('vrModeActive');
-        if (vrModeActive === 'true') {
-          console.log('VR mode was active, re-entering VR mode...');
-          // Wait longer for scene to fully load before entering VR (2 seconds for safety)
-          setTimeout(() => {
-            scene.enterVR();
-          }, 2000);
-        }
-      }
-
-      // Setup VR-Safe Navigation - Exit VR Before Navigation
-      function setupVRSafeNavigation() {
-        const scene = document.querySelector('a-scene');
-
-        if (!scene) return;
-
-        // Get all link elements
-        const links = document.querySelectorAll('a-link, [link]');
-
-        links.forEach(link => {
-          link.addEventListener('click', function(evt) {
-            // Extract href from link component
-            const linkAttr = this.getAttribute('link');
-            const href = this.getAttribute('href') ||
-                        (linkAttr ? linkAttr.split(';').find(s => s.includes('href')).split(':')[1].trim() : null);
-
-            if (href && scene.is('vr-mode')) {
-              // Exit VR first to prevent stuck state
-              evt.preventDefault();
-              evt.stopPropagation();
-
-              console.log('Exiting VR before navigation to:', href);
-              scene.exitVR();
-
-              // Wait for VR exit to complete, then navigate
-              setTimeout(() => {
-                window.location.href = href;
-              }, 500);
-            }
-          });
-        });
-
-        console.log('VR-safe navigation setup complete for', links.length, 'links');
-      }
-
-      // Initialize VR button and navigation safety on load
-      document.addEventListener('DOMContentLoaded', function() {
-        const scene = document.querySelector('a-scene');
-
-        if (scene.hasLoaded) {
-          setupVRButton();
-          setupVRSafeNavigation();
-        } else {
-          scene.addEventListener('loaded', function() {
-            setupVRButton();
-            setupVRSafeNavigation();
-          });
-        }
-      });
     </script>
   </body>
 </html>

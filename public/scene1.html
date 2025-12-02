@@ -36,7 +36,6 @@
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
   <script
     src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fern-solutions/aframe-mirror@1.1.1/dist/mirror.umd.min.js"></script>
   <script
     src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
@@ -87,112 +86,389 @@
       font-size: 16px;
     }
 
-    /* VR mode styles */
-    .vr-mode .ui-button {
-      z-index: 10001;
-    }
-
-    /* Hide UI elements in VR mode */
-    .vr-mode .ui-buttons:not(.vr-visible) {
-      display: none;
-    }
     
-    /* Ensure scroll works for avatar selection overlays */
-    div[class*="naf-centered-fullscreen"] {
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      -webkit-overflow-scrolling: touch;
-      height: 100vh !important;
-      max-height: 100vh !important;
-      padding-bottom: 4rem !important;
+    /* Hide avatar selection modals */
+    div[class*="naf-centered-fullscreen"], 
+    div[class*="avatar-selection"], 
+    div[id*="avatar"], 
+    .avatar-modal, 
+    .avatar-selection-modal {
+      display: none !important;
+      visibility: hidden !important;
     }
 
-    /* Custom scrollbar for scene1 */
-    div[class*="naf-centered-fullscreen"]::-webkit-scrollbar {
-      width: 12px;
-    }
-
-    div[class*="naf-centered-fullscreen"]::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 6px;
-    }
-
-    div[class*="naf-centered-fullscreen"]::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 6px;
-      border: 2px solid #f1f5f9;
-    }
-
-    div[class*="naf-centered-fullscreen"]::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-
-    /* VR Button Repositioning - Kanan Tengah Layar */
+    /* VR Button - Hidden */
     .a-enter-vr-button {
-      right: 20px !important;
-      bottom: auto !important;
-      top: 50% !important;
-      transform: translateY(-50%) !important;
-      width: 70px !important;
-      height: 70px !important;
-      border-radius: 50% !important;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-      border: 3px solid rgba(255,255,255,0.3) !important;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
-      transition: all 0.3s ease !important;
-      z-index: 9999 !important;
+      display: none !important;
     }
 
-    .a-enter-vr-button:hover {
-      transform: translateY(-50%) scale(1.1) !important;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6) !important;
-    }
-
-    /* Custom VR Button for better accessibility */
     #custom-vr-btn {
+      display: none !important;
+    }
+
+    /* Popup Pertanyaan */
+    .question-popup {
       position: fixed;
-      right: 20px;
       top: 50%;
-      transform: translateY(-50%);
-      z-index: 9998;
-      width: 70px;
-      height: 70px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 900px;
+      width: 90%;
+      z-index: 20000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+    }
+
+    .question-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .question-popup.hide {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.9);
+      pointer-events: none;
+    }
+
+    .question-popup h2 {
+      color: #1e40af;
+      font-size: 28px;
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .question-popup .question-item {
+      color: #1f2937;
+      font-size: 20px;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #3b82f6;
+      line-height: 1.6;
+    }
+
+    .question-popup .question-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Kalimat Penjelas */
+    .explanation-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(59, 130, 246, 0.95);
+      color: white;
+      padding: 30px 50px;
+      border-radius: 15px;
+      font-size: 22px;
+      z-index: 20001;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out;
+      text-align: center;
+      max-width: 700px;
+      width: 90%;
+      font-weight: 500;
+    }
+
+    .explanation-text.show {
+      opacity: 1;
+    }
+
+    .explanation-text.hide {
+      opacity: 0;
+    }
+
+    /* Tombol Mulai Observasi */
+    .start-observation-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20002;
+      box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.3s ease;
+    }
+
+    .start-observation-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .start-observation-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .start-observation-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Video Controls */
+    .video-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px 20px;
+      border-radius: 10px;
+      z-index: 20003;
+      display: none;
+      align-items: center;
+      gap: 15px;
+      min-width: 400px;
+      max-width: 90%;
+    }
+
+    .video-controls.show {
+      display: flex;
+    }
+
+    .video-control-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 18px;
+      transition: background 0.3s ease;
+    }
+
+    .video-control-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .video-seek-container {
+      flex: 1;
+      position: relative;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-      transition: all 0.3s ease;
-      border: 3px solid rgba(255,255,255,0.3);
     }
 
-    #custom-vr-btn:hover {
-      transform: translateY(-50%) scale(1.1);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    .video-seek-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #3b82f6;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s linear;
     }
 
-    #custom-vr-btn:active {
-      transform: translateY(-50%) scale(0.95);
+    .video-seek-handle {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      cursor: grab;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
-    #custom-vr-btn span {
-      font-size: 36px;
-      user-select: none;
+    .video-seek-handle:active {
+      cursor: grabbing;
     }
 
-    /* Hide custom button when in VR mode */
-    body.vr-mode #custom-vr-btn {
-      display: none;
+    .video-time {
+      color: white;
+      font-size: 14px;
+      min-width: 100px;
+      text-align: center;
+      font-family: monospace;
+    }
+
+    /* Next Button */
+    .next-video-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20004;
+      box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.3s ease;
+    }
+
+    .next-video-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .next-video-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    }
+
+    .next-video-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Finish Button */
+    .finish-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20005;
+      box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.3s ease;
+    }
+
+    .finish-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .finish-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    }
+
+    .finish-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Final Question Popup */
+    .final-question-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 900px;
+      width: 90%;
+      z-index: 20006;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out;
+    }
+
+    .final-question-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .final-question-popup.hide {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.9);
+      pointer-events: none;
+    }
+
+    .final-question-popup .question-item {
+      color: #1f2937;
+      font-size: 20px;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #3b82f6;
+      line-height: 1.6;
+    }
+
+    .final-question-popup .question-item:last-child {
+      margin-bottom: 0;
     }
   </style>
 </head>
 
 <body>
-  <!-- Custom VR Button - Kanan Tengah -->
-  <div id="custom-vr-btn" title="Enter VR Mode">
-    <span>🥽</span>
+
+  <!-- Popup Pertanyaan -->
+  <div id="questionPopup" class="question-popup">
+    <h2>Sub Driving Question:</h2>
+    <div class="question-item">Apakah semua zat yang kita konsumsi diperlukan oleh tubuh?</div>
+    <div class="question-item">Mengapa keringat bisa bau padahal warnanya bening?</div>
+  </div>
+
+  <!-- Kalimat Penjelas -->
+  <div id="explanationText" class="explanation-text">
+    Berikut Video dan beberapa Gambar yang akan menjelaskan pertanyaan tersebut
+  </div>
+
+  <!-- Tombol Mulai Observasi -->
+  <button id="startObservationBtn" class="start-observation-btn">
+    Mulai Observasi
+  </button>
+
+  <!-- Video Controls -->
+  <div id="videoControls" class="video-controls">
+    <button id="playPauseBtn" class="video-control-btn">⏸</button>
+    <div class="video-seek-container" id="seekContainer">
+      <div class="video-seek-bar" id="seekBar"></div>
+      <div class="video-seek-handle" id="seekHandle"></div>
+    </div>
+    <div class="video-time" id="videoTime">0:00 / 0:00</div>
+  </div>
+
+  <!-- Next Video Button -->
+  <button id="nextVideoBtn" class="next-video-btn">
+    Next
+  </button>
+
+  <!-- Finish Button -->
+  <button id="finishBtn" class="finish-btn">
+    Finish
+  </button>
+
+  <!-- Final Question Popup -->
+  <div id="finalQuestionPopup" class="final-question-popup">
+    <div class="question-item">Menurutmu, apakah keringat mengandung zat berbahaya?</div>
+    <div class="question-item">Mengapa keringat sebagian orang berbau?</div>
   </div>
 
   <!-- Virtual Gamepad for Mobile -->
@@ -207,7 +483,7 @@
     </div>
   </div>
 
-  <a-scene light="defaultLightsEnabled:false" renderer="stencil:true; antialias: true;" vr-mode-ui="enabled: true"
+  <a-scene light="defaultLightsEnabled:false" renderer="stencil:true; antialias: true;" vr-mode-ui="enabled: false"
     webxr="requiredFeatures: local-floor; referenceSpaceType: local-floor;" networked-scene="
         connectOnLoad: false;
         room: forest;
@@ -229,27 +505,122 @@
       </template>
       <img id="thumbJapan" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/japan.png" />
       <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
+      <!-- Images for Virtual Lab -->
+      <img id="keringatImage" crossorigin="anonymous" src="assets/gambar/keringat.jpg" 
+           onload="console.log('Keringat image loaded successfully')" 
+           onerror="console.error('Failed to load keringat image')" />
+      <img id="kulitImage" crossorigin="anonymous" src="assets/gambar/kulit.webp" 
+           onload="console.log('Kulit image loaded successfully')" 
+           onerror="console.error('Failed to load kulit image')" />
+      <img id="kulit2Image" crossorigin="anonymous" src="assets/gambar/kulit2.webp" 
+           onload="console.log('Kulit2 image loaded successfully')" 
+           onerror="console.error('Failed to load kulit2 image')" />
+      <!-- Video for white screen -->
+      <video id="excretoryVideo" playsinline preload="none" crossorigin="anonymous">
+        <source src="assets/video/EXCRETORY SYSTEM 🧍🏻_♂️ Urinary System and Sweat Glands 🧬 Science for Kids.mp4" type="video/mp4">
+      </video>
+      <!-- Video 2 for white screen -->
+      <video id="bodyOdorVideo" playsinline preload="none" crossorigin="anonymous">
+        <source src="assets/video/What causes body odor_ - Mel Rosenberg.mp4" type="video/mp4">
+      </video>
     </a-assets>
 
     <a-entity id="scene">
       <!-- School building with collision -->
       <a-entity id="school-group" position="0 -11 0">
         <a-gltf-model src="assets/scene1/sekolah.glb" scale="2 2 2" rotation="0 0 0" class="collidable"></a-gltf-model>
-        <!-- Smaller collision box closer to actual building -->
-        <a-box class="collidable" position="0 8 0" width="6" height="12" depth="6" visible="false"></a-box>
+        <!-- Collision box for school building -->
+        <a-box class="collidable" position="0 8 0" width="12" height="24" depth="12" visible="false"></a-box>
       </a-entity>
       <a-plane class="ground" position="0 0 0" rotation="-90 0 0" width="100" height="100" visible="true"></a-plane>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
 
-      <a-mirror id="mirror" class="collidable" position="0 1.8 -3" scale="5 3 1" layers="0,3">
-        <a-box color="black" position="0 0 -0.02" scale="1.02 1.02 0.01"></a-box>
-      </a-mirror>
+      <!-- Virtual Lab 3D Model -->
+      <a-entity id="virtual-lab" position="16 0 7" rotation="0 90 0">
+        <a-gltf-model src="assets/map/Virtual Lab.glb" scale="1 1 1" class="collidable"></a-gltf-model>
+        <!-- Collision boxes for Virtual Lab (walls, furniture, doors, etc.) -->
+        <!-- Main room collision - adjust based on actual model size -->
+        <a-box class="collidable" position="0 2.5 0" width="20" height="5" depth="20" visible="false"></a-box>
+        <!-- Left wall -->
+        <a-box class="collidable" position="-10 2.5 0" width="0.2" height="5" depth="20" visible="false"></a-box>
+        <!-- Right wall -->
+        <a-box class="collidable" position="10 2.5 0" width="0.2" height="5" depth="20" visible="false"></a-box>
+        <!-- Back wall -->
+        <a-box class="collidable" position="0 2.5 -10" width="20" height="5" depth="0.2" visible="false"></a-box>
+        <!-- Front wall (with door opening) -->
+        <a-box class="collidable" position="-5 2.5 10" width="5" height="5" depth="0.2" visible="false"></a-box>
+        <a-box class="collidable" position="5 2.5 10" width="5" height="5" depth="0.2" visible="false"></a-box>
+        <!-- Table collision -->
+        <a-box class="collidable" position="0 0.4 0" width="4" height="0.8" depth="2" visible="false"></a-box>
+        <!-- Chairs collision (4 chairs around table) -->
+        <a-box class="collidable" position="-2.5 0.4 0" width="0.5" height="1" depth="0.5" visible="false"></a-box>
+        <a-box class="collidable" position="2.5 0.4 0" width="0.5" height="1" depth="0.5" visible="false"></a-box>
+        <a-box class="collidable" position="0 0.4 -1.5" width="0.5" height="1" depth="0.5" visible="false"></a-box>
+        <a-box class="collidable" position="0 0.4 1.5" width="0.5" height="1" depth="0.5" visible="false"></a-box>
+        
+        <!-- Video on white screen (back wall) -->
+        <!-- Position relative to virtual-lab entity -->
+        <!-- Initially hidden, will show after "Mulai Observasi" button is clicked -->
+        <a-video 
+          id="whiteScreenVideo"
+          class="observation-content"
+          src="#excretoryVideo" 
+          width="3.3" 
+          height="2.2" 
+          position="3 1.5 -5" 
+          rotation="0 180 0"
+          material="side: double; shader: flat; opacity: 0"
+          visible="false">
+        </a-video>
+        
+        <!-- Images for Virtual Lab -->
+        <!-- Image 1: Keringat -->
+        <a-image
+          id="keringatImageEntity"
+          class="observation-content"
+          src="#keringatImage"
+          width="3"
+          height="2"
+          position="0.5 1.5 -12"
+          rotation="0 90 0"
+          material="side: double; shader: flat; opacity: 0"
+          visible="false">
+        </a-image>
+        
+        <!-- Image 2: Kulit -->
+        <a-image
+          id="kulitImageEntity"
+          class="observation-content"
+          src="#kulitImage"
+          width="2"
+          height="2"
+          position="0.5 1.5 -9"
+          rotation="0 90 0"
+          material="side: double; shader: flat; opacity: 0"
+          visible="false">
+        </a-image>
+
+        <a-image
+          id="kulit2ImageEntity"
+          class="observation-content"
+          src="#kulit2Image"
+          width="2"
+          height="2"
+          position="3.4 1.5 -12.4"
+          rotation="0 360 0"
+          material="side: double; shader: flat; opacity: 0"
+          visible="false">
+        </a-image>
+        
+        
+        <!-- Images for observation (will be added here) -->
+        <!-- <a-image id="observationImage1" ... visible="false"></a-image> -->
+      </a-entity>
+
 
       <!-- Car collision system -->
       <a-entity id="car-group" position="0 0 2" rotation="0 180 0">
         <!-- Main collision body for the car -->
-        <a-box id="ferrari-body" class="collidable" pushable physics-object="mass: 1200" position="0 0.6 0" width="1.8"
-          height="1.2" depth="4.0" visible="false"></a-box>
         <!-- Visual model for the car -->
         <a-entity id="ferrari" gltf-model="url(assets/scene1/ferrari.glb)" position="0 0 0"
           scale="1.3 1.3 1.3"></a-entity>
@@ -274,9 +645,6 @@
 
       <!-- Cart model with collision -->
       <a-entity id="cart-group" position="3 0 3" rotation="0 180 0">
-        <!-- Main collision body for the cart -->
-        <a-box id="cart-body" class="collidable" pushable physics-object="mass: 50" position="0 0.3 0" width="1.0"
-          height="0.6" depth="2.0" visible="false"></a-box>
         <!-- Visual model for the cart -->
         <a-entity id="cart" gltf-model="url(assets/scene1/cart.glb)" scale="0.01 0.01 0.01" rotation="0 180 0"
           animation-mixer="clip: Static Pose; loop: infinite">
@@ -300,149 +668,12 @@
           scale="0.01 0.01 0.01" animation-mixer="clip: mixamo.com; loop: repeat" visible="false"></a-entity>
       </a-entity>
 
-      <!-- Compact 3D Physics Control Panel -->
-      <a-entity id="physics-panel-3d" position="-2 3.5 6" rotation="0 90 0">
-        <!-- Main Panel Frame with Depth -->
-        <a-box id="panel-frame" width="3.5" height="5.0" depth="0.15" color="#2a2a2a" opacity="0.95"
-          shadow="cast: true; receive: true" class="clickable">
-        </a-box>
-
-        <!-- Panel Border for 3D Effect -->
-        <a-box width="3.7" height="5.2" depth="0.1" color="#1a1a1a" opacity="0.8" position="0 0 -0.05">
-        </a-box>
-
-        <!-- Panel Title -->
-        <a-text value="PHYSICS CONTROL" position="0 2.2 0.08" align="center" color="#00E676" font="kelsonsans"
-          width="6">
-        </a-text>
-
-        <!-- Input Controls Section -->
-        <a-box width="3.2" height="1.3" depth="0.05" color="#333333" opacity="0.9" position="0 1.4 0.08">
-        </a-box>
-
-        <!-- Force Controls -->
-        <a-text value="Force (N)" position="0 1.8 0.12" align="center" color="#FFC107" font="kelsonsans" width="5">
-        </a-text>
-
-        <!-- Force Control Row -->
-        <a-box id="force-minus" width="0.25" height="0.25" depth="0.08" color="#FF5722" position="-1.0 1.5 0.12"
-          class="clickable" cursor-listener event-set__mouseenter="color: #FF7043"
-          event-set__mouseleave="color: #FF5722" shadow="cast: true">
-          <a-text value="-" position="0 0 0.05" align="center" color="white" font="kelsonsans" width="10">
-          </a-text>
-        </a-box>
-
-        <a-box width="1.0" height="0.25" depth="0.05" color="#1e1e1e" position="0 1.5 0.1">
-          <a-text id="force-display" value="100" position="0 0 0.03" align="center" color="#4CAF50" font="kelsonsans"
-            width="6">
-          </a-text>
-        </a-box>
-
-        <a-box id="force-plus" width="0.25" height="0.25" depth="0.08" color="#4CAF50" position="1.0 1.5 0.12"
-          class="clickable" cursor-listener event-set__mouseenter="color: #66BB6A"
-          event-set__mouseleave="color: #4CAF50" shadow="cast: true">
-          <a-text value="+" position="0 0 0.05" align="center" color="white" font="kelsonsans" width="10">
-          </a-text>
-        </a-box>
-
-        <!-- Distance Controls -->
-        <a-text value="Distance (m)" position="0 1.2 0.12" align="center" color="#FFC107" font="kelsonsans" width="5">
-        </a-text>
-
-        <!-- Distance Control Row -->
-        <a-box id="distance-minus" width="0.25" height="0.25" depth="0.08" color="#FF5722" position="-1.0 0.9 0.12"
-          class="clickable" cursor-listener event-set__mouseenter="color: #FF7043"
-          event-set__mouseleave="color: #FF5722" shadow="cast: true">
-          <a-text value="-" position="0 0 0.05" align="center" color="white" font="kelsonsans" width="10">
-          </a-text>
-        </a-box>
-
-        <a-box width="1.0" height="0.25" depth="0.05" color="#1e1e1e" position="0 0.9 0.1">
-          <a-text id="distance-display" value="5" position="0 0 0.03" align="center" color="#4CAF50" font="kelsonsans"
-            width="6">
-          </a-text>
-        </a-box>
-
-        <a-box id="distance-plus" width="0.25" height="0.25" depth="0.08" color="#4CAF50" position="1.0 0.9 0.12"
-          class="clickable" cursor-listener event-set__mouseenter="color: #66BB6A"
-          event-set__mouseleave="color: #4CAF50" shadow="cast: true">
-          <a-text value="+" position="0 0 0.05" align="center" color="white" font="kelsonsans" width="10">
-          </a-text>
-        </a-box>
-
-        <!-- Action Buttons -->
-        <a-box id="apply-force-btn" width="1.3" height="0.3" depth="0.1" color="#4CAF50" position="-0.8 0.4 0.12"
-          class="clickable" cursor-listener event-set__mouseenter="color: #66BB6A"
-          event-set__mouseleave="color: #4CAF50" shadow="cast: true">
-          <a-text value="APPLY" position="0 0 0.06" align="center" color="white" font="kelsonsans" width="5">
-          </a-text>
-        </a-box>
-
-        <a-box id="reset-btn" width="1.3" height="0.3" depth="0.1" color="#f44336" position="0.8 0.4 0.12"
-          class="clickable" cursor-listener event-set__mouseenter="color: #EF5350"
-          event-set__mouseleave="color: #f44336" shadow="cast: true">
-          <a-text value="RESET" position="0 0 0.06" align="center" color="white" font="kelsonsans" width="5">
-          </a-text>
-        </a-box>
-
-        <!-- Separator -->
-        <a-box width="3.0" height="0.02" depth="0.05" color="#00E676" position="0 0.1 0.08">
-        </a-box>
-
-        <!-- Data Display Section -->
-        <a-box width="3.2" height="2.0" depth="0.05" color="#1e1e1e" opacity="0.9" position="0 -0.9 0.08">
-        </a-box>
-
-        <!-- Car Data -->
-        <a-text value="CAR (1200kg)" position="0 -0.3 0.12" align="center" color="#FFC107" font="kelsonsans" width="5">
-        </a-text>
-
-        <a-text value="a:" position="-1.4 -0.6 0.12" align="left" color="#E0E0E0" font="kelsonsans" width="4">
-        </a-text>
-        <a-text id="car-acceleration-3d" value="0 m/s^2" position="-0.8 -0.6 0.12" align="left" color="#4CAF50"
-          font="kelsonsans" width="4">
-        </a-text>
-
-        <a-text value="V:" position="0.2 -0.6 0.12" align="left" color="#E0E0E0" font="kelsonsans" width="4">
-        </a-text>
-        <a-text id="car-velocity-3d" value="0 m/s" position="0.6 -0.6 0.12" align="left" color="#4CAF50"
-          font="kelsonsans" width="4">
-        </a-text>
-
-        <a-text value="D:" position="-1.4 -0.8 0.12" align="left" color="#E0E0E0" font="kelsonsans" width="4">
-        </a-text>
-        <a-text id="car-distance-3d" value="0 m" position="-0.8 -0.8 0.12" align="left" color="#4CAF50"
-          font="kelsonsans" width="4">
-        </a-text>
-
-        <!-- Cart Data -->
-        <a-text value="CART (50kg)" position="0 -1.2 0.12" align="center" color="#FF9800" font="kelsonsans" width="5">
-        </a-text>
-
-        <a-text value="a:" position="-1.4 -1.5 0.12" align="left" color="#E0E0E0" font="kelsonsans" width="4">
-        </a-text>
-        <a-text id="cart-acceleration-3d" value="0 m/s^2" position="-0.8 -1.5 0.12" align="left" color="#4CAF50"
-          font="kelsonsans" width="4">
-        </a-text>
-
-        <a-text value="V:" position="0.2 -1.5 0.12" align="left" color="#E0E0E0" font="kelsonsans" width="4">
-        </a-text>
-        <a-text id="cart-velocity-3d" value="0 m/s" position="0.6 -1.5 0.12" align="left" color="#4CAF50"
-          font="kelsonsans" width="4">
-        </a-text>
-
-        <a-text value="D:" position="-1.4 -1.7 0.12" align="left" color="#E0E0E0" font="kelsonsans" width="4">
-        </a-text>
-        <a-text id="cart-distance-3d" value="0 m" position="-0.8 -1.7 0.12" align="left" color="#4CAF50"
-          font="kelsonsans" width="4">
-        </a-text>
-      </a-entity>
 
       <!-- Portal back to vr.html -->
-      <a-text value="Kembali ke Beranda" position="-8 2.0 2" align="center" color="#FFFFFF" font="kelsonsans" width="5"
+      <a-text value="Kembali ke Beranda" position="0 1.5 -8" align="center" color="#FFFFFF" font="kelsonsans" width="5"
         look-at="#player"></a-text>
-      <a-link link="on:click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="8 1.6 2"
-        rotation="0 90 0" class="clickable" event-set__mouseenter="material.opacity: 0.8"
+      <a-link link="on:click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="4 1 -1"
+        rotation="0 0 0" class="clickable" event-set__mouseenter="material.opacity: 0.8"
         event-set__mouseleave="material.opacity: 0.6">
       </a-link>
     </a-entity>
@@ -516,7 +747,7 @@
       });
     </script>
 
-    <a-entity id="rig" position="6 0 3" rotation="0 90 0" collider="distance: 0.3" movement-controls="fly:false;"
+    <a-entity id="rig" position="6 0 3" rotation="0 -90 0" collider="distance: 0.3" movement-controls="fly:false;"
       networked="template:#avatar-template;attachTemplateToLocal:false" player-info jump-controls>
       <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls pointer-lock>
         <a-box obb-collider visible="false" height="0.4" depth="0.4" width="0.4"></a-box>
@@ -550,45 +781,7 @@
         console.log('physicsSimulation3D available:', !!physicsSimulation3D);
         console.log('physicsSimulation3D:', physicsSimulation3D);
 
-        // Handle button clicks based on element ID
-        if (this.el.id === 'force-minus') {
-          console.log('Processing force-minus click...');
-          if (physicsSimulation3D) {
-            physicsSimulation3D.adjustForce(-1);
-          } else {
-            console.error('physicsSimulation3D not initialized');
-          }
-        } else if (this.el.id === 'force-plus') {
-          if (physicsSimulation3D) {
-            physicsSimulation3D.adjustForce(1);
-          } else {
-            console.error('physicsSimulation3D not initialized');
-          }
-        } else if (this.el.id === 'distance-minus') {
-          if (physicsSimulation3D) {
-            physicsSimulation3D.adjustDistance(-1);
-          } else {
-            console.error('physicsSimulation3D not initialized');
-          }
-        } else if (this.el.id === 'distance-plus') {
-          if (physicsSimulation3D) {
-            physicsSimulation3D.adjustDistance(1);
-          } else {
-            console.error('physicsSimulation3D not initialized');
-          }
-        } else if (this.el.id === 'apply-force-btn') {
-          if (physicsSimulation3D) {
-            physicsSimulation3D.applyForce();
-          } else {
-            console.error('physicsSimulation3D not initialized');
-          }
-        } else if (this.el.id === 'reset-btn') {
-          if (physicsSimulation3D) {
-            physicsSimulation3D.reset();
-          } else {
-            console.error('physicsSimulation3D not initialized');
-          }
-        }
+        // Physics panel buttons removed - no action needed
       },
       onMouseEnter: function (evt) {
         console.log('Mouse enter:', this.el.id);
@@ -917,17 +1110,7 @@
           targetDistance: targetDistance
         });
 
-        if (this.el.id === 'ferrari-body') {
-          const npc = document.getElementById('npc-pusher');
-          if (npc) {
-            npc.setAttribute('visible', true);
-          }
-        } else if (this.el.id === 'cart-body') {
-          const npc = document.getElementById('npc-pusher-cart');
-          if (npc) {
-            npc.setAttribute('visible', true);
-          }
-        }
+        // Collider bodies removed - no action needed
 
         // Show force and acceleration indicators immediately
         this.updateIndicators();
@@ -983,44 +1166,7 @@
           this.isMoving = false;
           this.velocity.set(0, 0, 0);
 
-          // --- HIDE NPC WHEN CAR STOPS ---
-          if (this.el.id === 'ferrari-body') {
-            const npc = document.getElementById('npc-puncher');
-            if (npc) {
-              console.log('Car stopped. Hiding NPC.');
-              npc.setAttribute('visible', false);
-              const mixer = npc.components['animation-mixer'];
-              if (mixer && mixer.activeAction) {
-                mixer.stopAction();
-              }
-            }
-          }
-          // --- END HIDE NPC ---
-
-          // --- RESET BICYCLE ANIMATION WHEN IT STOPS ---
-          if (this.el.id === 'cart-body') {
-            const cart = document.getElementById('cart');
-            if (cart) {
-              cart.setAttribute('animation-mixer', 'clip', 'Static Pose');
-            }
-          }
-          // --- END RESET BICYCLE ANIMATION ---
-
-          // Keep acceleration and distance data for display until manual reset
-          console.log(`${this.el.id} stopped. Distance traveled: ${this.distanceTraveled}`);
-          console.log(`Final acceleration was: ${this.acceleration.length()}`);
-
-          if (this.el.id === 'ferrari-body') {
-            const npc = document.getElementById('npc-pusher');
-            if (npc) {
-              npc.setAttribute('visible', false);
-            }
-          } else if (this.el.id === 'cart-body') {
-            const npc = document.getElementById('npc-pusher-cart');
-            if (npc) {
-              npc.setAttribute('visible', false);
-            }
-          }
+          // Collider bodies removed - no action needed
         }
 
         // Update maximum values achieved during movement
@@ -1209,33 +1355,7 @@
         }
         // --- END NPC ANIMATION ---
 
-        // Apply force to car (backward direction)
-        const carBody = document.getElementById('ferrari-body');
-        if (carBody && carBody.components && carBody.components['physics-object']) {
-          const carForce = new THREE.Vector3(0, 0, this.forceValue * 50);
-          carBody.components['physics-object'].applyForce(carForce, this.distanceValue);
-          console.log('3D Force applied to car');
-        } else {
-          console.error('Car physics object not found');
-        }
-
-        // Apply force to cart (backward direction)
-        const cartBody = document.getElementById('cart-body');
-        if (cartBody && cartBody.components && cartBody.components['physics-object']) {
-          const cartForce = new THREE.Vector3(0, 0, this.forceValue * 50);
-          cartBody.components['physics-object'].applyForce(cartForce, this.distanceValue);
-          console.log('3D Force applied to cart');
-
-          // --- CHANGE CART ANIMATION ---
-          const cart = document.getElementById('cart');
-          if (cart) {
-            cart.setAttribute('animation-mixer', 'clip', 'M_rig_Action_S');
-          }
-          // --- END CHANGE CART ANIMATION ---
-
-        } else {
-          console.error('Cart physics object not found');
-        }
+        // Physics objects removed - no action needed
       }
 
       reset() {
@@ -1262,36 +1382,8 @@
           cartGroup.setAttribute('position', '3 0 3');
         }
 
-        // Reset physics components
+        // Physics objects removed - no action needed
         setTimeout(() => {
-          const carBody = document.getElementById('ferrari-body');
-          if (carBody && carBody.components && carBody.components['physics-object']) {
-            const physics = carBody.components['physics-object'];
-            physics.velocity.set(0, 0, 0);
-            physics.acceleration.set(0, 0, 0);
-            physics.isMoving = false;
-            physics.distanceTraveled = 0;
-            physics.shouldKeepDisplayData = false; // Allow data to be reset
-            physics.maxValues = { acceleration: 0, velocity: 0, distance: 0 }; // Reset max values
-            physics.inputForce = 0; // Reset input force
-            physics.captureStartPosition();
-            physics.updateIndicators(); // Hide indicators
-          }
-
-          const cartBody = document.getElementById('cart-body');
-          if (cartBody && cartBody.components && cartBody.components['physics-object']) {
-            const physics = cartBody.components['physics-object'];
-            physics.velocity.set(0, 0, 0);
-            physics.acceleration.set(0, 0, 0);
-            physics.isMoving = false;
-            physics.distanceTraveled = 0;
-            physics.shouldKeepDisplayData = false; // Allow data to be reset
-            physics.maxValues = { acceleration: 0, velocity: 0, distance: 0 }; // Reset max values
-            physics.inputForce = 0; // Reset input force
-            physics.captureStartPosition();
-            physics.updateIndicators(); // Hide indicators
-          }
-
           // Hide arrows
           const carArrow = document.getElementById('car-arrow');
           const cartArrow = document.getElementById('cart-arrow');
@@ -1378,17 +1470,7 @@
           console.log('physicsSimulation3D methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(physicsSimulation3D)));
         }
 
-        // Add additional click event to test
-        const forceMinusButton = document.getElementById('force-minus');
-        if (forceMinusButton) {
-          console.log('Found force-minus button, adding test click listener');
-          forceMinusButton.addEventListener('click', function (evt) {
-            console.log('DIRECT click on force-minus detected!');
-            evt.stopPropagation();
-          });
-        } else {
-          console.error('force-minus button not found!');
-        }
+        // Physics panel buttons removed - no action needed
 
         // Debug cursor events
         const cursor = document.getElementById('main-cursor');
@@ -1411,17 +1493,12 @@
     document.addEventListener('DOMContentLoaded', function () {
       setupMobileControls();
 
-      // Inisialisasi karakter yang dipilih
-      const selectedCharacter = localStorage.getItem('selectedCharacter');
-      if (selectedCharacter) {
-        const rig = document.getElementById('rig');
-        if (rig) {
-          const modelUrl = selectedCharacter === 'male'
-            ? 'https://cdn.glitch.global/c2231c1a-2935-4332-8715-032588334f99/Asian_M_1_Busi.glb?v=16813662'
-            : 'https://cdn.jsdelivr.net/gh/c-frame/valid-avatars-glb@c539a28/avatars/Asian/Asian_F_1_Busi.glb';
-
-          rig.setAttribute('player-info', 'avatarSrc', modelUrl);
-        }
+      // Set default avatar (no selection needed)
+      const rig = document.getElementById('rig');
+      if (rig) {
+        // Use default male avatar
+        const modelUrl = 'https://cdn.glitch.global/c2231c1a-2935-4332-8715-032588334f99/Asian_M_1_Busi.glb?v=16813662';
+        rig.setAttribute('player-info', 'avatarSrc', modelUrl);
       }
     });
 
@@ -1532,98 +1609,478 @@
       requestAnimationFrame(animate);
     }
 
-    // Start the application
-    document.addEventListener('DOMContentLoaded', function () {
-      setupMobileControls();
-      animate();
-      setupVRButton();
-      setupVRSafeNavigation();
-    });
+    // Setup video element (but don't play it yet)
+    function setupVideo() {
+      const videoEl = document.querySelector('#excretoryVideo');
+      const videoEntity = document.querySelector('#whiteScreenVideo');
+      
+      if (!videoEl) {
+        console.error('Video element #excretoryVideo not found');
+        return;
+      }
+      
+      if (!videoEntity) {
+        console.error('Video entity #whiteScreenVideo not found');
+        return;
+      }
 
-    // Custom VR Button Setup
-    function setupVRButton() {
-      const vrButton = document.getElementById('custom-vr-btn');
-      const scene = document.querySelector('a-scene');
+      // Set video source explicitly to handle special characters
+      const videoPath = 'assets/video/EXCRETORY SYSTEM 🧍🏻_♂️ Urinary System and Sweat Glands 🧬 Science for Kids.mp4';
+      const sourceEl = videoEl.querySelector('source');
+      if (sourceEl) {
+        sourceEl.src = videoPath;
+      } else {
+        videoEl.src = videoPath;
+      }
 
-      if (!vrButton || !scene) return;
+      // Don't load or play video yet - wait for button click
+      // Video will be loaded and played when "Mulai Observasi" button is clicked
+      
+      console.log('Video element initialized (not loaded yet)');
+      
+      // Only handle errors
+      videoEl.addEventListener('error', function(e) {
+        console.error('Video load error:', e);
+        console.error('Video error code:', videoEl.error ? videoEl.error.code : 'unknown');
+        console.error('Video src:', videoEl.src);
+        console.error('Video currentSrc:', videoEl.currentSrc);
+      });
+    }
 
-      vrButton.addEventListener('click', function() {
-        if (scene.is('vr-mode')) {
-          // Exit VR and clear localStorage flag
-          scene.exitVR();
-          localStorage.removeItem('vrModeActive');
-          document.body.classList.remove('vr-mode');
-          vrButton.style.display = 'flex';
-          console.log('Exited VR mode - cleared localStorage flag');
+    // Setup video controls (play/pause, seekbar)
+    function setupVideoControls() {
+      let currentVideoEl = document.querySelector('#excretoryVideo'); // Start with video 1
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const seekContainer = document.getElementById('seekContainer');
+      const seekBar = document.getElementById('seekBar');
+      const seekHandle = document.getElementById('seekHandle');
+      const videoTime = document.getElementById('videoTime');
+      const videoControls = document.getElementById('videoControls');
+      const nextVideoBtn = document.getElementById('nextVideoBtn');
+      const videoEntity = document.querySelector('#whiteScreenVideo');
+
+      if (!currentVideoEl || !playPauseBtn || !seekContainer || !seekBar || !seekHandle || !videoTime || !videoControls || !nextVideoBtn || !videoEntity) {
+        console.error('Video controls elements not found');
+        return;
+      }
+
+      let isDragging = false;
+      let currentVideoIndex = 1; // 1 = excretoryVideo, 2 = bodyOdorVideo
+
+      // Format time (seconds to MM:SS)
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      // Update video controls UI
+      function updateControls() {
+        if (!currentVideoEl || !currentVideoEl.duration) return;
+
+        const currentTime = currentVideoEl.currentTime;
+        const duration = currentVideoEl.duration;
+        const percent = (currentTime / duration) * 100;
+
+        // Update seekbar
+        seekBar.style.width = percent + '%';
+        seekHandle.style.left = percent + '%';
+
+        // Update time display
+        videoTime.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+
+        // Update play/pause button
+        if (currentVideoEl.paused) {
+          playPauseBtn.textContent = '▶';
         } else {
-          // Enter VR and set localStorage flag
-          scene.enterVR();
-          localStorage.setItem('vrModeActive', 'true');
-          document.body.classList.add('vr-mode');
-          vrButton.style.display = 'none';
-          console.log('Entered VR mode - set localStorage flag');
+          playPauseBtn.textContent = '⏸';
+        }
+      }
+
+      // Play/Pause button
+      playPauseBtn.addEventListener('click', function() {
+        if (currentVideoEl.paused) {
+          currentVideoEl.play().catch(err => console.log('Play error:', err));
+        } else {
+          currentVideoEl.pause();
         }
       });
 
-      // Listen to VR mode changes
-      scene.addEventListener('enter-vr', function() {
-        document.body.classList.add('vr-mode');
-        vrButton.style.display = 'none';
-        localStorage.setItem('vrModeActive', 'true');
-        console.log('Entered VR mode');
+      // Seekbar click
+      seekContainer.addEventListener('click', function(e) {
+        if (isDragging || !currentVideoEl.duration) return;
+        const rect = seekContainer.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        const newTime = percent * currentVideoEl.duration;
+        currentVideoEl.currentTime = newTime;
       });
 
-      scene.addEventListener('exit-vr', function() {
-        document.body.classList.remove('vr-mode');
-        vrButton.style.display = 'flex';
-        localStorage.removeItem('vrModeActive');
-        console.log('Exited VR mode');
+      // Seekbar drag
+      seekHandle.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        e.preventDefault();
       });
 
-      // Auto-enter VR if flag is set in localStorage
-      const vrModeActive = localStorage.getItem('vrModeActive');
-      if (vrModeActive === 'true') {
-        console.log('VR mode was active, re-entering VR mode...');
-        // Wait longer for scene to fully load before entering VR (2 seconds for safety)
-        setTimeout(() => {
-          scene.enterVR();
-        }, 2000);
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging || !currentVideoEl.duration) return;
+        const rect = seekContainer.getBoundingClientRect();
+        let percent = (e.clientX - rect.left) / rect.width;
+        percent = Math.max(0, Math.min(1, percent)); // Clamp between 0 and 1
+        const newTime = percent * currentVideoEl.duration;
+        currentVideoEl.currentTime = newTime;
+      });
+
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+      });
+
+      // Touch support for mobile
+      seekHandle.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        e.preventDefault();
+      });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!isDragging || !currentVideoEl.duration) return;
+        const rect = seekContainer.getBoundingClientRect();
+        const touch = e.touches[0];
+        let percent = (touch.clientX - rect.left) / rect.width;
+        percent = Math.max(0, Math.min(1, percent));
+        const newTime = percent * currentVideoEl.duration;
+        currentVideoEl.currentTime = newTime;
+      });
+
+      document.addEventListener('touchend', function() {
+        isDragging = false;
+      });
+
+      // Update controls on video events
+      function attachVideoEvents(videoElement) {
+        videoElement.addEventListener('timeupdate', updateControls);
+        videoElement.addEventListener('loadedmetadata', updateControls);
+        videoElement.addEventListener('play', updateControls);
+        videoElement.addEventListener('pause', updateControls);
+        videoElement.addEventListener('ended', function() {
+          // Show Next button when video 1 ends
+          if (currentVideoIndex === 1) {
+            nextVideoBtn.classList.add('show');
+          }
+          // Show Finish button when video 2 ends
+          if (currentVideoIndex === 2) {
+            const finishBtn = document.getElementById('finishBtn');
+            if (finishBtn) {
+              finishBtn.classList.add('show');
+            }
+          }
+        });
+      }
+
+      // Attach events to initial video
+      attachVideoEvents(currentVideoEl);
+
+      // Next Video Button Handler
+      nextVideoBtn.addEventListener('click', function() {
+        if (currentVideoIndex === 1) {
+          // Switch to video 2
+          const bodyOdorVideo = document.querySelector('#bodyOdorVideo');
+          if (!bodyOdorVideo) {
+            console.error('Video 2 (bodyOdorVideo) not found');
+            return;
+          }
+
+          // Hide Next button
+          nextVideoBtn.classList.remove('show');
+
+          // Remove old video events
+          currentVideoEl.removeEventListener('timeupdate', updateControls);
+          currentVideoEl.removeEventListener('loadedmetadata', updateControls);
+          currentVideoEl.removeEventListener('play', updateControls);
+          currentVideoEl.removeEventListener('pause', updateControls);
+
+          // Pause and reset old video
+          currentVideoEl.pause();
+          currentVideoEl.currentTime = 0;
+
+          // Switch to new video
+          currentVideoEl = bodyOdorVideo;
+          currentVideoIndex = 2;
+
+          // Update video entity source
+          videoEntity.setAttribute('src', '#bodyOdorVideo');
+
+          // Load and play new video
+          if (bodyOdorVideo.readyState === 0) {
+            bodyOdorVideo.load();
+          }
+
+          // Attach events to new video
+          attachVideoEvents(bodyOdorVideo);
+
+          // Play new video
+          bodyOdorVideo.play().catch(err => {
+            console.log('Video 2 play error:', err);
+            document.addEventListener('click', () => {
+              bodyOdorVideo.play().catch(e => console.log('Video 2 play retry error:', e));
+            }, { once: true });
+          });
+
+          console.log('Switched to Video 2');
+        }
+      });
+
+      // Finish Button Handler
+      const finishBtn = document.getElementById('finishBtn');
+      const finalQuestionPopup = document.getElementById('finalQuestionPopup');
+      
+      if (finishBtn && finalQuestionPopup) {
+        finishBtn.addEventListener('click', function() {
+          // Hide finish button
+          finishBtn.classList.remove('show');
+          
+          // Show final question popup
+          setTimeout(() => {
+            finalQuestionPopup.classList.add('show');
+            
+            // Hide popup after 10 seconds
+            setTimeout(() => {
+              finalQuestionPopup.classList.remove('show');
+              finalQuestionPopup.classList.add('hide');
+            }, 10000);
+          }, 500);
+        });
       }
     }
 
-    // Setup VR-Safe Navigation - Exit VR Before Navigation
-    function setupVRSafeNavigation() {
+    // Setup interactive flow for Virtual Lab
+    function setupInteractiveFlow() {
+      const questionPopup = document.getElementById('questionPopup');
+      const explanationText = document.getElementById('explanationText');
+      const startBtn = document.getElementById('startObservationBtn');
+      const videoEntity = document.querySelector('#whiteScreenVideo');
+
+      // Step 1: Show question popup when scene loads
       const scene = document.querySelector('a-scene');
-      if (!scene) return;
+      if (scene) {
+        if (scene.hasLoaded) {
+          startFlow();
+        } else {
+          scene.addEventListener('loaded', startFlow);
+        }
+      }
 
-      // Intercept all a-link clicks
-      const links = document.querySelectorAll('a-link, [link]');
+      function startFlow() {
+        // Show question popup
+        setTimeout(() => {
+          questionPopup.classList.add('show');
+        }, 500); // Small delay for smooth appearance
 
-      links.forEach(link => {
-        link.addEventListener('click', function(evt) {
-          // Get href from link attribute
-          const linkAttr = this.getAttribute('link');
-          const href = this.getAttribute('href') ||
-                      (linkAttr ? linkAttr.split(';').find(s => s.includes('href')).split(':')[1].trim() : null);
-
-          if (href && scene.is('vr-mode')) {
-            // Exit VR first to prevent stuck state
-            evt.preventDefault();
-            evt.stopPropagation();
-
-            console.log('Exiting VR before navigation to:', href);
-            scene.exitVR();
-
-            // Wait for VR exit to complete, then navigate
+        // Step 2: Hide question popup after 10 seconds with smooth animation
+        setTimeout(() => {
+          questionPopup.classList.remove('show');
+          questionPopup.classList.add('hide');
+          
+          // Step 3: Show explanation text after popup fades out
+          setTimeout(() => {
+            explanationText.classList.add('show');
+            
+            // Step 4: Hide explanation text after 7 seconds
             setTimeout(() => {
-              window.location.href = href;
-            }, 500);
+              explanationText.classList.remove('show');
+              explanationText.classList.add('hide');
+              
+              // Step 5: Show "Mulai Observasi" button
+              setTimeout(() => {
+                startBtn.classList.add('show');
+              }, 800); // Wait for fade out animation
+            }, 7000);
+          }, 800); // Wait for fade out animation
+        }, 10000); // 10 seconds for question popup
+      }
+
+      // Step 6: Handle button click to show video and images
+      startBtn.addEventListener('click', function() {
+        // Hide button with fade out
+        startBtn.classList.remove('show');
+        
+        // Show video and images after button fades out
+        setTimeout(() => {
+          const videoEl = document.querySelector('#excretoryVideo');
+          const videoControls = document.getElementById('videoControls');
+          const keringatImage = document.querySelector('#keringatImageEntity');
+          const kulitImage = document.querySelector('#kulitImageEntity');
+          const kulit2Image = document.querySelector('#kulit2ImageEntity');
+          
+          if (videoEntity && videoEl) {
+            // Load video first (if not already loaded)
+            if (videoEl.readyState === 0) {
+              videoEl.load();
+            }
+            
+            // Make video visible
+            videoEntity.setAttribute('visible', 'true');
+            
+            // Make images visible
+            if (keringatImage) {
+              console.log('Keringat image found, making visible:', keringatImage);
+              keringatImage.setAttribute('visible', 'true');
+              console.log('Keringat image position:', keringatImage.getAttribute('position'));
+            } else {
+              console.error('Keringat image element not found!');
+            }
+            if (kulitImage) {
+              console.log('Kulit image found, making visible:', kulitImage);
+              kulitImage.setAttribute('visible', 'true');
+              console.log('Kulit image position:', kulitImage.getAttribute('position'));
+            } else {
+              console.error('Kulit image element not found!');
+            }
+            if (kulit2Image) {
+              console.log('Kulit2 image found, making visible:', kulit2Image);
+              kulit2Image.setAttribute('visible', 'true');
+              console.log('Kulit2 image position:', kulit2Image.getAttribute('position'));
+            } else {
+              console.error('Kulit2 image element not found!');
+            }
+            
+            // Show video controls
+            if (videoControls) {
+              videoControls.classList.add('show');
+            }
+            
+            // Fade in video using material opacity
+            videoEntity.setAttribute('material', {
+              side: 'double',
+              shader: 'flat',
+              opacity: 0
+            });
+            
+            // Fade in images using material opacity
+            if (keringatImage) {
+              keringatImage.setAttribute('material', {
+                side: 'double',
+                shader: 'flat',
+                opacity: 0
+              });
+            }
+            if (kulitImage) {
+              kulitImage.setAttribute('material', {
+                side: 'double',
+                shader: 'flat',
+                opacity: 0
+              });
+            }
+            if (kulit2Image) {
+              kulit2Image.setAttribute('material', {
+                side: 'double',
+                shader: 'flat',
+                opacity: 0
+              });
+            }
+            
+            // Wait for video to be ready, then play
+            const playVideo = () => {
+              videoEl.play().catch(err => {
+                console.log('Video play error:', err);
+                // If autoplay is blocked, try again after user interaction
+                document.addEventListener('click', () => {
+                  videoEl.play().catch(e => console.log('Video play retry error:', e));
+                }, { once: true });
+              });
+            };
+            
+            if (videoEl.readyState >= 2) {
+              // Video is already loaded, play immediately
+              playVideo();
+            } else {
+              // Wait for video to load
+              videoEl.addEventListener('canplay', playVideo, { once: true });
+            }
+            
+            // Animate opacity to 1 for video and images
+            let opacity = 0;
+            const fadeInterval = setInterval(() => {
+              opacity += 0.05;
+              if (opacity >= 1) {
+                opacity = 1;
+                clearInterval(fadeInterval);
+              }
+              videoEntity.setAttribute('material', {
+                side: 'double',
+                shader: 'flat',
+                opacity: opacity
+              });
+              if (keringatImage) {
+                keringatImage.setAttribute('material', {
+                  side: 'double',
+                  shader: 'flat',
+                  opacity: opacity
+                });
+              }
+              if (kulitImage) {
+                kulitImage.setAttribute('material', {
+                  side: 'double',
+                  shader: 'flat',
+                  opacity: opacity
+                });
+              }
+              if (kulit2Image) {
+                kulit2Image.setAttribute('material', {
+                  side: 'double',
+                  shader: 'flat',
+                  opacity: opacity
+                });
+              }
+            }, 30);
+          }
+
+          console.log('Observasi dimulai - Video dan gambar akan ditampilkan');
+        }, 800); // Wait for button fade out
+      });
+    }
+
+    // Prevent avatar selection modal from appearing
+    function hideAvatarSelection() {
+      // Hide avatar selection modals immediately
+      const observer = new MutationObserver(() => {
+        const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
+        avatarModals.forEach(modal => {
+          if (modal.textContent.includes('Pilih Avatar') || 
+              modal.textContent.includes('Avatar') || 
+              modal.textContent.includes('Your avatar') ||
+              modal.textContent.includes('Gender') ||
+              modal.textContent.includes('Outfit')) {
+            modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+            modal.remove();
           }
         });
       });
 
-      console.log('VR-safe navigation setup complete for', links.length, 'links');
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Also hide any existing modals
+      setTimeout(() => {
+        const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
+        avatarModals.forEach(modal => {
+          modal.style.display = 'none';
+          modal.style.visibility = 'hidden';
+          modal.remove();
+        });
+      }, 100);
     }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', function () {
+      hideAvatarSelection();
+      setupMobileControls();
+      setupVideo();
+      setupVideoControls();
+      setupInteractiveFlow();
+      animate();
+    });
   </script>
 </body>
 

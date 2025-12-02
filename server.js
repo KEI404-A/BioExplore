@@ -48,10 +48,26 @@ if (process.env.NODE_ENV === "development") {
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Also serve static files from root directory for HTML files like getstarted.html, welcome.html, etc.
+// Explicit route for getstarted.html to ensure no caching
+app.get('/getstarted.html', (req, res) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Last-Modified', new Date().toUTCString());
+  res.sendFile(path.join(__dirname, 'getstarted.html'));
+});
+
+// Also serve static files from root directory for HTML files like welcome.html, etc.
 app.use(express.static(path.join(__dirname), {
   extensions: ['html'],
-  index: false // Don't serve index.html from root as default
+  index: false, // Don't serve index.html from root as default
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      res.set('Pragma', 'no-cache');
+      res.set('Expires', '0');
+    }
+  }
 }));
 
 // Start Express http server with increased timeout
