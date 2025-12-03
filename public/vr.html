@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
     
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.7.0/extras/primitives/primitives/a-link.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
     <script src="https://unpkg.com/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
     <script src="https://unpkg.com/networked-aframe@0.14.0/dist/easyrtc-adapter.js"></script>
@@ -777,7 +778,7 @@
         video: false;"
       shadow="type: pcfsoft"
       gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
-      raycaster="far: 100; objects: .clickable, .portal, .portal-click;"
+      raycaster="far: 100; objects: .clickable, .portal, .portal-click, #portal-1, #portal-2, #portal-3"
       cursor="rayOrigin: mouse; fuse: false"
     >
       <a-assets>
@@ -819,6 +820,7 @@
         class="clickable portal"
         data-scene="scene1.html"
         data-room="scene1"
+        link="href: scene1.html; title: Go to World 1; on: click"
       >
         <a-circle
           geometry="radius: 1.2"
@@ -849,6 +851,7 @@
         class="clickable portal"
         data-scene="scene2.html"
         data-room="scene2"
+        link="href: scene2.html; title: Go to World 2; on: click"
       >
         <a-circle
           geometry="radius: 1.2"
@@ -879,6 +882,7 @@
         class="clickable portal"
         data-scene="scane3.html"
         data-room="scene3"
+        link="href: scane3.html; title: Go to World 3; on: click"
       >
         <a-circle
           geometry="radius: 1.2"
@@ -940,13 +944,13 @@
         networked="template:#avatar-template;attachTemplateToLocal:false"
         player-info
       >
-        <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls>
+        <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls="pointerLockEnabled: true; reverseMouseDrag: false" pointer-lock="enabled: true">
           <a-entity
             position="0 0 -1"
             geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
             material="shader: flat; opacity: 0.9"
             cursor="fuse: false; rayOrigin: mouse"
-            raycaster="objects: .clickable, .portal, .portal-click; far: 20;"
+            raycaster="objects: .clickable, .portal, .portal-click, #portal-1, #portal-2, #portal-3; far: 20;"
             animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120"
           >
           </a-entity>
@@ -957,6 +961,74 @@
     </a-scene>
 
     <script>
+      // Auto-request pointer lock untuk menggerakkan view langsung tanpa klik 2 kali
+      function setupAutoPointerLock() {
+        const scene = document.querySelector('a-scene');
+        if (!scene) {
+          setTimeout(setupAutoPointerLock, 100);
+          return;
+        }
+        
+        function requestLock() {
+          const canvas = scene.canvas;
+          if (!canvas) return;
+          
+          // Request pointer lock saat user klik pertama kali di scene
+          const handleFirstClick = () => {
+            if (canvas.requestPointerLock) {
+              canvas.requestPointerLock();
+            } else if (canvas.mozRequestPointerLock) {
+              canvas.mozRequestPointerLock();
+            } else if (canvas.webkitRequestPointerLock) {
+              canvas.webkitRequestPointerLock();
+            }
+            // Hapus listener setelah request pertama
+            canvas.removeEventListener('click', handleFirstClick);
+            document.removeEventListener('click', handleFirstClick);
+          };
+          
+          // Request lock saat klik pertama kali di canvas
+          canvas.addEventListener('click', handleFirstClick, { once: true });
+          
+          // Juga request saat scene loaded (untuk desktop yang support)
+          scene.addEventListener('loaded', () => {
+            setTimeout(() => {
+              // Coba request otomatis (browser mungkin block tanpa user interaction)
+              try {
+                if (canvas.requestPointerLock) {
+                  canvas.requestPointerLock().catch(() => {
+                    // Normal - browser require user interaction, akan request saat klik
+                  });
+                }
+              } catch (e) {
+                // Normal - browser require user interaction
+              }
+            }, 500);
+          });
+          
+          // Re-request lock jika hilang (misal user tekan ESC)
+          document.addEventListener('pointerlockchange', () => {
+            if (document.pointerLockElement !== canvas) {
+              // Lock hilang, siapkan untuk request lagi saat klik
+              canvas.addEventListener('click', handleFirstClick, { once: true });
+            }
+          });
+        }
+        
+        if (scene.hasLoaded) {
+          requestLock();
+        } else {
+          scene.addEventListener('loaded', requestLock);
+        }
+      }
+      
+      // Initialize auto pointer lock saat DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupAutoPointerLock);
+      } else {
+        setupAutoPointerLock();
+      }
+      
       // Initialize Networked-Aframe after everything is loaded
       function initializeNetworkedAFrame() {
         console.log('Initializing Networked-Aframe...');
@@ -1275,67 +1347,125 @@
         setupDeviceButton('btn-desktop', 'desktop');
         setupDeviceButton('btn-mobile', 'mobile');
 
-        // Setup portal click handlers - only allow explicit clicks
+        // Setup portal click handlers - Simplified and more reliable
         function setupPortalHandlers() {
-          // Handle both parent portal entities and child circles
-          const portals = document.querySelectorAll('.portal, .portal-click');
+          console.log('Setting up portal handlers...');
+          
+          // Wait for A-Frame to be fully loaded
+          const sceneEl = document.querySelector('a-scene');
+          if (!sceneEl) {
+            console.error('Scene element not found');
+            return;
+          }
+
+          // Handle portal clicks using A-Frame's raycaster events
+          const portals = document.querySelectorAll('#portal-1, #portal-2, #portal-3');
           portals.forEach(portal => {
-            // Remove any existing change-room component
-            portal.removeAttribute('change-room');
+            console.log('Setting up portal:', portal.id);
             
-            // Get scene and room from this element or parent
-            let scene = portal.getAttribute('data-scene');
-            let room = portal.getAttribute('data-room');
+            // Get scene and room from data attributes
+            const scene = portal.getAttribute('data-scene');
+            const room = portal.getAttribute('data-room');
             
-            // If not found, try parent
-            if (!scene || !room) {
-              const parent = portal.parentElement;
-              if (parent) {
-                scene = scene || parent.getAttribute('data-scene');
-                room = room || parent.getAttribute('data-room');
-              }
+            if (!scene) {
+              console.warn('Portal', portal.id, 'missing data-scene attribute');
+              return;
             }
             
-            // Add explicit click handler using A-Frame event system
-            portal.addEventListener('click', function(e) {
+            console.log('Portal', portal.id, 'configured for:', scene, 'room:', room);
+            
+            // Use A-Frame's click event (works with raycaster)
+            const handleClick = function(e) {
+              console.log('=== PORTAL CLICK DETECTED ===');
+              console.log('Portal ID:', portal.id);
+              console.log('Scene:', scene);
+              console.log('Room:', room);
+              console.log('Event:', e);
+              
               e.preventDefault();
               e.stopPropagation();
               
-              if (scene && room) {
-                console.log('Portal clicked:', scene, room);
-                // Use NAF to change room if available
-                if (typeof NAF !== 'undefined' && NAF.connection && NAF.connection.adapter) {
+              // Change NAF room if available
+              if (typeof NAF !== 'undefined' && NAF.connection && NAF.connection.adapter && room) {
+                try {
                   NAF.connection.adapter.setRoom(room);
+                  console.log('NAF room changed to:', room);
+                } catch (err) {
+                  console.warn('Failed to change NAF room:', err);
                 }
-                // Navigate to scene
-                window.location.href = scene;
               }
+              
+              // Navigate to scene - try multiple path formats for reliability
+              console.log('Attempting navigation to:', scene);
+              
+              // Force navigation immediately
+              window.location.href = scene;
+            };
+            
+            // Add click event listener (A-Frame will trigger this via raycaster)
+            portal.addEventListener('click', handleClick);
+            
+            // Also handle child elements
+            const childElements = portal.querySelectorAll('a-circle, a-ring, a-text');
+            childElements.forEach(child => {
+              child.addEventListener('click', handleClick);
             });
             
-            // Also handle mousedown for better compatibility
+            // Fallback: Direct mouse click handler
             portal.addEventListener('mousedown', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              
-              if (scene && room) {
-                console.log('Portal mousedown:', scene, room);
-                if (typeof NAF !== 'undefined' && NAF.connection && NAF.connection.adapter) {
-                  NAF.connection.adapter.setRoom(room);
-                }
-                window.location.href = scene;
-              }
+              console.log('Portal mousedown detected:', portal.id);
+              handleClick(e);
             });
           });
+          
+          // Also handle link component clicks if present
+          const linkElements = document.querySelectorAll('[link]');
+          linkElements.forEach(linkEl => {
+            const linkAttr = linkEl.getAttribute('link');
+            if (linkAttr && linkAttr.includes('scene2.html')) {
+              console.log('Found link element for scene2');
+              linkEl.addEventListener('click', function(e) {
+                console.log('Link component clicked, navigating to scene2.html');
+                // Let link component handle it, but ensure it works
+                setTimeout(() => {
+                  if (window.location.pathname !== '/scene2.html' && window.location.pathname !== '/public/scene2.html') {
+                    console.log('Link component did not navigate, using fallback');
+                    window.location.href = 'scene2.html';
+                  }
+                }, 100);
+              });
+            }
+          });
+          
+          console.log('Portal handlers setup complete');
         }
 
-        // Setup portals after scene loads
-        const sceneEl = document.querySelector('a-scene');
-        if (sceneEl) {
+        // Setup portals after scene loads - with multiple fallbacks
+        function initializePortalHandlers() {
+          const sceneEl = document.querySelector('a-scene');
+          if (!sceneEl) {
+            console.warn('Scene not found, retrying...');
+            setTimeout(initializePortalHandlers, 500);
+            return;
+          }
+          
           if (sceneEl.hasLoaded) {
+            console.log('Scene already loaded, setting up portals');
             setupPortalHandlers();
           } else {
-            sceneEl.addEventListener('loaded', setupPortalHandlers);
+            console.log('Waiting for scene to load...');
+            sceneEl.addEventListener('loaded', function() {
+              console.log('Scene loaded, setting up portals');
+              setTimeout(setupPortalHandlers, 500); // Small delay to ensure everything is ready
+            });
           }
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initializePortalHandlers);
+        } else {
+          initializePortalHandlers();
         }
 
         // Function to start the experience (no avatar selection needed)
