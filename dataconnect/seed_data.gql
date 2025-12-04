@@ -1,0 +1,124 @@
+mutation CreateSeedData @transaction @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user_insertMany(data: [
+    {
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      displayName: "demouser1",
+      email: "demouser1@example.com",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "550e8400-e29b-41d4-a716-446655440001",
+      displayName: "demouser2",
+      email: "demouser2@example.com",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+  organism_insertMany(data: [
+    {
+      id: "650e8400-e29b-41d4-a716-446655440000",
+      commonName: "example organism 1",
+      scientificName: "scientific example 1",
+      taxonomy: "taxonomy example 1",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "650e8400-e29b-41d4-a716-446655440001",
+      commonName: "example organism 2",
+      scientificName: "scientific example 2",
+      taxonomy: "taxonomy example 2",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+  gene_insertMany(data: [
+    {
+      id: "750e8400-e29b-41d4-a716-446655440000",
+      organismId: "650e8400-e29b-41d4-a716-446655440000",
+      geneSymbol: "geneSymbol1",
+      name: "geneName1",
+      sequence: "sequence1",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "750e8400-e29b-41d4-a716-446655440001",
+      organismId: "650e8400-e29b-41d4-a716-446655440001",
+      geneSymbol: "geneSymbol2",
+      name: "geneName2",
+      sequence: "sequence2",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+ project_insertMany(data: [
+    {
+      id: "850e8400-e29b-41d4-a716-446655440000",
+      ownerId: "550e8400-e29b-41d4-a716-446655440000",
+      name: "project1",
+      description: "example project",
+      isPublic: true,
+      createdAt: "2024-04-26T12:00:00Z",
+      updatedAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "850e8400-e29b-41d4-a716-446655440001",
+      ownerId: "550e8400-e29b-41d4-a716-446655440001",
+      name: "project2",
+      description: "example project 2",
+      isPublic: false,
+      createdAt: "2024-04-26T12:00:00Z",
+      updatedAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+  protein_insertMany(data: [
+    {
+      id: "950e8400-e29b-41d4-a716-446655440000",
+      geneId: "750e8400-e29b-41d4-a716-446655440000",
+      proteinName: "protein1",
+      sequence: "protein sequence 1",
+      functionDescription: "protein function 1",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+    {
+      id: "950e8400-e29b-41d4-a716-446655440001",
+      geneId: "750e8400-e29b-41d4-a716-446655440001",
+      proteinName: "protein2",
+      sequence: "protein sequence 2",
+      functionDescription: "protein function 2",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+   publication_insertMany(data: [
+    {
+      id: "a50e8400-e29b-41d4-a716-446655440000",
+      title: "publication 1",
+      abstract: "abstract 1",
+      doi: "doi 1",
+      journal: "journal 1",
+      publicationDate: "2024-04-26",
+      createdAt: "2024-04-26T12:00:00Z",
+      authors: ["author1", "author2"]
+    },
+    {
+      id: "a50e8400-e29b-41d4-a716-446655440001",
+      title: "publication 2",
+      abstract: "abstract 2",
+      doi: "doi 2",
+      journal: "journal 2",
+      publicationDate: "2024-04-26",
+      createdAt: "2024-04-26T12:00:00Z",
+       authors: ["author3", "author4"]
+    }
+  ])
+    projectEntity_insertMany(data: [
+    {
+      projectId: "850e8400-e29b-41d4-a716-446655440000",
+      entityType: "gene",
+      entityId: "750e8400-e29b-41d4-a716-446655440000",
+      createdAt: "2024-04-26T12:00:00Z"
+    },
+        {
+      projectId: "850e8400-e29b-41d4-a716-446655440000",
+      entityType: "publication",
+      entityId: "a50e8400-e29b-41d4-a716-446655440000",
+      createdAt: "2024-04-26T12:00:00Z"
+    }
+  ])
+}

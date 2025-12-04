@@ -1,0 +1,33 @@
+mutation CreatePublicProject($name: String!, $description: String!, $isPublic: Boolean!) @auth(level: PUBLIC, insecureReason: "This mutation creates a public project and is safe for all users.") {
+  project_insert(data: {
+    name: $name,
+    description: $description,
+    isPublic: $isPublic,
+    ownerId_expr: "auth.uid",
+    updatedAt_expr: "request.time",
+    createdAt_expr: "request.time"
+  })
+}
+
+query GetMyProjects @auth(level: USER) {
+  projects(where: {ownerId: {eq_expr: "auth.uid"}}) {
+    id
+    name
+    description
+    isPublic
+  }
+}
+
+mutation UpdateProjectDescription($id: UUID!, $description: String!) @auth(level: USER) {
+  project_update(
+    key: {id: $id},
+    data: {
+      description: $description,
+      updatedAt_expr: "request.time"
+    }
+  )
+}
+
+mutation DeleteProject($id: UUID!) @auth(level: USER) {
+  project_delete(key: {id: $id})
+}

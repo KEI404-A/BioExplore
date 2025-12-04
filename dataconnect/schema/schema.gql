@@ -1,0 +1,65 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  bio: String
+}
+
+type Organism @table {
+  scientificName: String!
+  commonName: String!
+  taxonomy: String!
+  createdAt: Timestamp!
+  description: String
+  genomeLink: String
+}
+
+type Gene @table {
+  geneSymbol: String!
+  name: String!
+  sequence: String!
+  createdAt: Timestamp!
+  organism: Organism
+  description: String
+  ncbiGeneId: String
+}
+
+type Protein @table {
+  proteinName: String!
+  sequence: String!
+  createdAt: Timestamp!
+  gene: Gene
+  structureLink: String
+  functionDescription: String
+  uniprotId: String
+}
+
+type Publication @table {
+  title: String!
+  abstract: String!
+  publicationDate: Date!
+  journal: String!
+  doi: String!
+  createdAt: Timestamp!
+  authors: [String]
+  pubmedId: String
+}
+
+type Project @table {
+  name: String!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  owner: User
+  description: String
+  isPublic: Boolean
+}
+
+type ProjectEntity @table(key: ["project", "entityType", "entityId"]) {
+  project: Project!
+  entityType: String!
+  entityId: UUID!
+  createdAt: Timestamp!
+  note: String
+  order: Int
+}
