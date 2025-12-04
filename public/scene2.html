@@ -263,16 +263,16 @@
           data-action="toggle-bunsen"
           frustum-culled="true">
           <!-- Label - Disesuaikan posisi untuk ukuran baru -->
-          <a-text
+        <a-text
             value="Bunsen Burner"
             position="0 0.15 0"
-            align="center"
+          align="center"
             color="#fff"
             width="1.5"
             visible="false"
             id="bunsen-label"
             material="depthTest: false; transparent: true">
-          </a-text>
+        </a-text>
         </a-entity>
 
         <!-- Cawan Petri - Disesuaikan dengan meja yang lebih kecil -->
@@ -286,16 +286,16 @@
           data-action="apply-sample"
           frustum-culled="true">
           <!-- Label - Disesuaikan posisi untuk ukuran baru -->
-          <a-text
+        <a-text
             value="Petri Dish"
             position="0 0.15 0"
-            align="center"
+          align="center"
             color="#fff"
             width="1.5"
             visible="false"
             id="petri-label"
             material="depthTest: false; transparent: true">
-          </a-text>
+        </a-text>
         </a-entity>
 
         <!-- Termometer - Disesuaikan dengan meja yang lebih kecil -->
@@ -327,14 +327,14 @@
             align="center"
             color="#4CC3D9"
             width="1.5"
-            visible="false"
+          visible="false"
             material="depthTest: false; transparent: true">
           </a-text>
-        </a-entity>
+          </a-entity>
 
         <!-- Toples Kapas - Lazy Load (Model besar 57MB) - Disesuaikan ukurannya lebih kecil -->
         <!-- Fallback box sementara, akan diganti setelah model loaded -->
-        <a-entity
+          <a-entity
           id="cotton-jar"
           position="-0.7 0.2 -2.5"
           rotation="0 0 0"
@@ -342,25 +342,25 @@
           class="clickable lab-equipment"
           data-action="take-sample">
           <!-- Fallback box sementara - Disesuaikan dengan scale baru -->
-          <a-box
+        <a-box
             id="cotton-jar-fallback"
             width="0.15"
             height="0.18"
-            depth="0.15"
+          depth="0.15"
             color="#8B7355"
             material="metalness: 0.3; roughness: 0.7">
-          </a-box>
+        </a-box>
           <!-- Label - Disesuaikan posisi untuk ukuran baru -->
-          <a-text
+        <a-text
             value="Cotton Swab"
             position="0 0.2 0"
-            align="center"
+          align="center"
             color="#fff"
             width="1.5"
             visible="false"
             id="cotton-label"
             material="depthTest: false; transparent: true">
-          </a-text>
+        </a-text>
         </a-entity>
 
         <!-- Deodoran/Bahan Kimia - Disesuaikan ukurannya lebih kecil -->
@@ -374,19 +374,19 @@
           data-action="add-deodorant"
           frustum-culled="true">
           <!-- Label - Disesuaikan posisi untuk ukuran baru -->
-          <a-text
+        <a-text
             value="Deodorant"
             position="0 0.2 0"
-            align="center"
+          align="center"
             color="#fff"
             width="1.5"
             visible="false"
             id="deodorant-label"
             material="depthTest: false; transparent: true">
-          </a-text>
+        </a-text>
         </a-entity>
 
-      </a-entity>
+        </a-entity>
 
       <!-- Portal Kembali ke Menu -->
       <a-link
@@ -418,7 +418,7 @@
           depth="0.1"
           color="#1a1a2e"
           opacity="0.9">
-        </a-box>
+          </a-box>
         <a-text
           id="loading-text"
           value="Loading assets..."
@@ -429,7 +429,7 @@
           material="depthTest: false; transparent: true">
         </a-text>
       </a-entity>
-      
+
       <!-- Kamera dengan movement controls seperti di vr.html - Support sprint -->
       <a-entity
         id="rig"
@@ -452,13 +452,13 @@
             animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
             animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120">
           </a-entity>
-        </a-entity>
       </a-entity>
-      
+        </a-entity>
+        
       <!-- Instruction Panel -->
       <a-entity id="instruction-panel" position="0 2 -4" rotation="0 0 0">
         <!-- Background Panel -->
-        <a-box
+          <a-box 
           width="5"
           height="3.5"
           depth="0.1"
@@ -475,36 +475,36 @@
           depth="0.05"
           position="0 0 -0.03"
           color="#4CC3D9"
-          opacity="0.3"
+            opacity="0.3"
           material="metalness: 0.8; roughness: 0.2">
-        </a-box>
+            </a-box>
         
         <!-- Title -->
-        <a-text
+            <a-text
           value="KEGIATAN 2: EKSPERIMEN BIOLOGI"
           position="0 1.3 0.06"
-          align="center"
+              align="center"
           color="#4CC3D9"
           width="6"
-          material="depthTest: false; transparent: true">
-        </a-text>
-        
+            material="depthTest: false; transparent: true">
+          </a-text>
+
         <!-- Instructions -->
-        <a-text
+          <a-text
           id="instruction-text"
           value="1. Ambil sampel menggunakan cotton swab\n2. Oleskan ke cawan petri\n3. Tambahkan deodoran\n4. Amati pertumbuhan bakteri"
           position="0 0.2 0.06"
-          align="center"
-          color="#ffffff"
-          width="4.5"
+            align="center"
+              color="#ffffff"
+                width="4.5"
           line-height="50"
           material="depthTest: false; transparent: true">
-        </a-text>
-        
+              </a-text>
+
         <!-- Start Button -->
-        <a-box
+              <a-box
           id="btnStartExperiment"
-          class="clickable"
+                class="clickable"
           width="2"
           height="0.5"
           depth="0.1"
@@ -513,65 +513,65 @@
           material="metalness: 0.8; roughness: 0.2"
           event-set__mouseenter="scale:1.1 1.1 1.1; color:#7bdcff"
           event-set__mouseleave="scale:1 1 1; color:#4CC3D9">
-        </a-box>
-        <a-text
+              </a-box>
+              <a-text
           value="MULAI EKSPERIMEN"
           position="0 -1.1 0.11"
-          align="center"
-          color="#ffffff"
-          width="3"
+                align="center"
+                color="#ffffff"
+            width="3"
           material="depthTest: false; transparent: true">
-        </a-text>
-      </a-entity>
+              </a-text>
+            </a-entity>
 
       <!-- Observation Results (Initially Hidden) -->
       <a-entity id="observation-results" class="observation-content" visible="false">
         
         <!-- Result Panel Background -->
-        <a-box
+              <a-box
           width="6"
           height="4"
           depth="0.1"
           position="0 1.5 -5"
           color="#1a1a2e"
-          opacity="0.95"
+                opacity="0.95"
           material="metalness: 0.7; roughness: 0.3">
-        </a-box>
+              </a-box>
         
         <!-- Title -->
-        <a-text
+              <a-text
           value="HASIL OBSERVASI"
           position="0 3  -4.95"
-          align="center"
+                align="center"
           color="#4CC3D9"
           width="5"
           material="depthTest: false; transparent: true">
-        </a-text>
+              </a-text>
         
         <!-- Data Panel -->
-        <a-box
+          <a-box
           width="5"
           height="1.5"
-          depth="0.05"
+            depth="0.05"
           position="0 0.5 -4.95"
           color="#0d1520"
           opacity="0.9">
-        </a-box>
-        <a-text
+          </a-box>
+          <a-text
           id="experiment-data"
           value="Suhu: 37°C\nWaktu Observasi: 24 jam\nHasil: Pertumbuhan bakteri berkurang setelah treatment"
           position="0 0.5 -4.9"
-          align="center"
+            align="center"
           color="#fff"
           width="4.5"
           line-height="50"
           material="depthTest: false; transparent: true">
-        </a-text>
-      </a-entity>
+              </a-text>
+            </a-entity>
 
   </a-scene>
 
-  <script>
+    <script>
     // Experiment State Management
     const experimentState = {
       step: 0, // 0: intro, 1: sampling, 2: culture, 3: treatment, 4: observation, 5: question
@@ -583,48 +583,48 @@
       observationComplete: false
     };
 
-    // Flag untuk cek apakah model berhasil dimuat
-    let modelsLoaded = false;
-    let blockAnimationState = 'idle';
-    
+      // Flag untuk cek apakah model berhasil dimuat
+      let modelsLoaded = false;
+      let blockAnimationState = 'idle';
+      
     // Setup mobile controls
-    function setupMobileControls() {
-      const camera = document.querySelector('[camera]');
-      const rig = document.getElementById('rig');
+      function setupMobileControls() {
+        const camera = document.querySelector('[camera]');
+        const rig = document.getElementById('rig');
 
-      if (!camera) {
-        console.error('Camera element not found');
-        return;
-      }
+        if (!camera) {
+          console.error('Camera element not found');
+          return;
+        }
 
-      let joystick = null;
-      const movementSpeed = 0.1;
-      let isMobile = false;
-      
-      // Initialize joystick
-      function initJoystick() {
-        joystick = new JoyStick('joystick', {
-          title: 'joystick',
-          width: 150,
-          height: 150,
-          internalFillColor: 'rgba(255, 255, 255, 0.5)',
-          internalLineWidth: 2,
-          internalStrokeColor: '#FFFFFF',
-          externalLineWidth: 2,
-          externalStrokeColor: 'rgba(255, 255, 255, 0.3)',
-          autoReturnToCenter: true
-        }, function (stickData) {
-          if (stickData.x !== 0 || stickData.y !== 0) {
-            updateCameraMovement(stickData.x, stickData.y);
-          }
-        });
-      }
-      
-      // Update camera movement based on joystick input
-      // Menggunakan movement-controls jika tersedia, atau manual movement
-      function updateCameraMovement(x, y) {
-        if (!camera) return;
+        let joystick = null;
+        const movementSpeed = 0.1;
+        let isMobile = false;
         
+        // Initialize joystick
+        function initJoystick() {
+          joystick = new JoyStick('joystick', {
+            title: 'joystick',
+            width: 150,
+            height: 150,
+            internalFillColor: 'rgba(255, 255, 255, 0.5)',
+            internalLineWidth: 2,
+            internalStrokeColor: '#FFFFFF',
+            externalLineWidth: 2,
+            externalStrokeColor: 'rgba(255, 255, 255, 0.3)',
+            autoReturnToCenter: true
+          }, function (stickData) {
+            if (stickData.x !== 0 || stickData.y !== 0) {
+              updateCameraMovement(stickData.x, stickData.y);
+            }
+          });
+        }
+        
+        // Update camera movement based on joystick input
+      // Menggunakan movement-controls jika tersedia, atau manual movement
+        function updateCameraMovement(x, y) {
+          if (!camera) return;
+          
         const rig = document.getElementById('rig');
         if (!rig) return;
         
@@ -680,43 +680,43 @@
             z: currentPosition.z + movement.z
           });
         }
-      }
-      
-      // Show joystick for mobile devices
-      function checkDeviceType() {
-        const deviceType = localStorage.getItem('deviceType');
-        isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        console.log('Device type from localStorage:', deviceType);
-        console.log('Is mobile device:', isMobile);
-
-        // Show joystick if:
-        // 1. User selected 'mobile' in localStorage, OR
-        // 2. Device is detected as mobile (regardless of localStorage)
-        if (deviceType === 'mobile' || isMobile) {
-          console.log('Showing joystick for mobile device');
-          document.getElementById('mobile-controls').style.display = 'block';
-          initJoystick();
-        } else {
-          console.log('Hiding joystick for desktop');
-          document.getElementById('mobile-controls').style.display = 'none';
         }
+        
+        // Show joystick for mobile devices
+        function checkDeviceType() {
+          const deviceType = localStorage.getItem('deviceType');
+          isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+          console.log('Device type from localStorage:', deviceType);
+          console.log('Is mobile device:', isMobile);
+
+          // Show joystick if:
+          // 1. User selected 'mobile' in localStorage, OR
+          // 2. Device is detected as mobile (regardless of localStorage)
+          if (deviceType === 'mobile' || isMobile) {
+            console.log('Showing joystick for mobile device');
+            document.getElementById('mobile-controls').style.display = 'block';
+            initJoystick();
+          } else {
+            console.log('Hiding joystick for desktop');
+            document.getElementById('mobile-controls').style.display = 'none';
+          }
+        }
+
+        // Initialize mobile controls
+        checkDeviceType();
+        
+        // Start animation loop for smooth movement
+        function animate() {
+          requestAnimationFrame(animate);
+        }
+        animate();
       }
 
-      // Initialize mobile controls
-      checkDeviceType();
-      
-      // Start animation loop for smooth movement
-      function animate() {
-        requestAnimationFrame(animate);
-      }
-      animate();
-    }
-
-    // Load models dan setup mobile controls setelah DOM ready
-    document.addEventListener('DOMContentLoaded', () => {
-      setupMobileControls();
-    });
+      // Load models dan setup mobile controls setelah DOM ready
+      document.addEventListener('DOMContentLoaded', () => {
+        setupMobileControls();
+      });
 
     // Player collider: Disabled untuk tidak mengganggu movement-controls
     // Movement-controls sudah memiliki built-in collision handling
@@ -818,9 +818,9 @@
       
       // Visual feedback
       element.setAttribute('animation', 'property: scale; to: 0.9 0.9 0.9; dur: 200; easing: easeInOut');
-      setTimeout(() => {
+        setTimeout(() => {
         element.setAttribute('animation', 'property: scale; to: 0.8 0.8 0.8; dur: 200; easing: easeInOut');
-      }, 200);
+          }, 200);
       
       showMessage('Sampel berhasil diambil! Sekarang oleskan ke cawan petri.', 3000);
     }
@@ -841,7 +841,7 @@
       
       // Visual feedback
       element.setAttribute('animation', 'property: rotation; to: 0 0 5; dur: 300; easing: easeInOut');
-      setTimeout(() => {
+          setTimeout(() => {
         element.setAttribute('animation', 'property: rotation; to: 0 0 0; dur: 300; easing: easeInOut');
       }, 300);
       
@@ -890,7 +890,7 @@
         flame.setAttribute('position', '0 0.1 0');
         element.appendChild(flame);
         showMessage('Bunsen burner dinyalakan!', 2000);
-      } else {
+        } else {
         // Remove flame
         const flame = element.querySelector('[geometry="primitive: cylinder"]');
         if (flame) {
@@ -915,7 +915,7 @@
       
       // If all steps complete, show observation
       if (experimentState.sampleTaken && experimentState.sampleApplied && experimentState.deodorantAdded) {
-        setTimeout(() => {
+          setTimeout(() => {
           showObservationResults();
         }, 2000);
       }
@@ -945,7 +945,7 @@
       showMessage('Hasil observasi tersedia!', 3000);
       
       // Show final question after delay
-      setTimeout(() => {
+          setTimeout(() => {
         showFinalQuestion();
       }, 5000);
     }
@@ -971,7 +971,7 @@
       const scene = document.querySelector('a-scene');
       scene.appendChild(message);
       
-      setTimeout(() => {
+        setTimeout(() => {
         const msg = document.getElementById('temp-message');
         if (msg) {
           msg.remove();
@@ -1174,9 +1174,9 @@
       const scene = document.querySelector('a-scene');
       if (!scene) {
         setTimeout(setupSprintControls, 100);
-        return;
-      }
-      
+                  return;
+                }
+
       scene.addEventListener('loaded', function() {
         const rig = document.getElementById('rig');
         if (!rig) {
@@ -1205,10 +1205,10 @@
               // Return to normal speed
               rigEl.setAttribute('movement-controls', 'speed', 0.3);
               console.log('Sprint deactivated');
-            }
           }
-        });
-        
+        }
+      });
+
         console.log('Sprint controls initialized');
       });
     }
@@ -1248,20 +1248,20 @@
       }
       
       // Start lazy loading cotton jar
-      setTimeout(() => {
+            setTimeout(() => {
         loadCottonJarLazy();
       }, 500);
       
       // Initialize experiment flow
-      setTimeout(() => {
+          setTimeout(() => {
         initExperimentFlow();
-      }, 1000);
+          }, 1000);
     });
 
     // Hide loading indicator when scene is ready
     document.querySelector('a-scene').addEventListener('loaded', () => {
       // Check if small models are loaded
-      setTimeout(() => {
+            setTimeout(() => {
         const assets = document.querySelector('a-assets');
         if (assets) {
           const smallModels = ['desk-model', 'bunsen-model', 'petri-model', 'thermometer-model', 'deodorant-model'];

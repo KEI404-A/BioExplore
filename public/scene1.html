@@ -312,7 +312,7 @@
     /* Next Button */
     .next-video-btn {
       position: fixed;
-      bottom: 50px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -376,6 +376,41 @@
     }
 
     .finish-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Done Button */
+    .done-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20007;
+      box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.3s ease;
+    }
+
+    .done-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .done-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .done-btn:active {
       transform: translateX(-50%) scale(0.98);
     }
 
@@ -470,6 +505,11 @@
     <div class="question-item">Menurutmu, apakah keringat mengandung zat berbahaya?</div>
     <div class="question-item">Mengapa keringat sebagian orang berbau?</div>
   </div>
+
+  <!-- Done Button -->
+  <button id="doneBtn" class="done-btn">
+    Done
+  </button>
 
   <!-- Virtual Gamepad for Mobile -->
   <div id="mobile-controls"
@@ -606,8 +646,8 @@
           src="#kulit2Image"
           width="2"
           height="2"
-          position="3.4 1.5 -12.4"
-          rotation="0 360 0"
+          position="0.5 1.5 -9"
+          rotation="0 90 0"
           material="side: double; shader: flat; opacity: 0"
           visible="false">
         </a-image>
@@ -615,6 +655,11 @@
         
         <!-- Images for observation (will be added here) -->
         <!-- <a-image id="observationImage1" ... visible="false"></a-image> -->
+      </a-entity>
+
+      <!-- Lab Biologi 3D Model (initially hidden) -->
+      <a-entity id="lab-biologi" position="0 0 0" rotation="0 0 0" visible="false">
+        <a-gltf-model src="assets/map/LabBiologi.compressed.glb" scale="1 1 1"></a-gltf-model>
       </a-entity>
 
 
@@ -1494,11 +1539,11 @@
       setupMobileControls();
 
       // Set default avatar (no selection needed)
-      const rig = document.getElementById('rig');
-      if (rig) {
+        const rig = document.getElementById('rig');
+        if (rig) {
         // Use default male avatar
         const modelUrl = 'https://cdn.glitch.global/c2231c1a-2935-4332-8715-032588334f99/Asian_M_1_Busi.glb?v=16813662';
-        rig.setAttribute('player-info', 'avatarSrc', modelUrl);
+          rig.setAttribute('player-info', 'avatarSrc', modelUrl);
       }
     });
 
@@ -1644,7 +1689,7 @@
         console.error('Video error code:', videoEl.error ? videoEl.error.code : 'unknown');
         console.error('Video src:', videoEl.src);
         console.error('Video currentSrc:', videoEl.currentSrc);
-      });
+    });
     }
 
     // Setup video controls (play/pause, seekbar)
@@ -1838,15 +1883,91 @@
           finishBtn.classList.remove('show');
           
           // Show final question popup
-          setTimeout(() => {
+        setTimeout(() => {
             finalQuestionPopup.classList.add('show');
             
-            // Hide popup after 10 seconds
+            // Hide popup after 7 seconds and show Done button
             setTimeout(() => {
               finalQuestionPopup.classList.remove('show');
               finalQuestionPopup.classList.add('hide');
-            }, 10000);
+              
+              // Show Done button after popup fades out
+              setTimeout(() => {
+                const doneBtn = document.getElementById('doneBtn');
+                if (doneBtn) {
+                  doneBtn.classList.add('show');
+                }
+              }, 800); // Wait for fade out animation
+            }, 7000); // 7 seconds
           }, 500);
+        });
+    }
+
+      // Done Button Handler - Transition to Lab Biologi
+      const doneBtn = document.getElementById('doneBtn');
+      if (doneBtn) {
+        doneBtn.addEventListener('click', function() {
+          // Hide done button
+          doneBtn.classList.remove('show');
+          
+          // Hide all video and observation related elements
+          const videoControls = document.getElementById('videoControls');
+          const nextVideoBtn = document.getElementById('nextVideoBtn');
+          const finishBtn = document.getElementById('finishBtn');
+          const videoEntity = document.querySelector('#whiteScreenVideo');
+          const keringatImage = document.querySelector('#keringatImageEntity');
+          const kulitImage = document.querySelector('#kulitImageEntity');
+          const kulit2Image = document.querySelector('#kulit2ImageEntity');
+          const questionPopup = document.getElementById('questionPopup');
+          const explanationText = document.getElementById('explanationText');
+          const startBtn = document.getElementById('startObservationBtn');
+          const finalQuestionPopup = document.getElementById('finalQuestionPopup');
+          
+          // Hide video controls
+          if (videoControls) {
+            videoControls.classList.remove('show');
+            videoControls.style.display = 'none';
+          }
+          
+          // Hide buttons
+          if (nextVideoBtn) nextVideoBtn.classList.remove('show');
+          if (finishBtn) finishBtn.classList.remove('show');
+          if (startBtn) startBtn.classList.remove('show');
+          
+          // Hide popups
+          if (questionPopup) {
+            questionPopup.classList.remove('show');
+            questionPopup.classList.add('hide');
+          }
+          if (explanationText) {
+            explanationText.classList.remove('show');
+            explanationText.classList.add('hide');
+          }
+          if (finalQuestionPopup) {
+            finalQuestionPopup.classList.remove('show');
+            finalQuestionPopup.classList.add('hide');
+          }
+          
+          // Hide video and images
+          if (videoEntity) videoEntity.setAttribute('visible', 'false');
+          if (keringatImage) keringatImage.setAttribute('visible', 'false');
+          if (kulitImage) kulitImage.setAttribute('visible', 'false');
+          if (kulit2Image) kulit2Image.setAttribute('visible', 'false');
+          
+          // Pause all videos
+          const excretoryVideo = document.querySelector('#excretoryVideo');
+          const bodyOdorVideo = document.querySelector('#bodyOdorVideo');
+          if (excretoryVideo) {
+            excretoryVideo.pause();
+            excretoryVideo.currentTime = 0;
+          }
+          if (bodyOdorVideo) {
+            bodyOdorVideo.pause();
+            bodyOdorVideo.currentTime = 0;
+          }
+          
+          // Redirect to Scene 1 Bab 2 page
+          window.location.href = 'scene1-bab2.html';
         });
       }
     }
@@ -1887,9 +2008,9 @@
             setTimeout(() => {
               explanationText.classList.remove('show');
               explanationText.classList.add('hide');
-              
+
               // Step 5: Show "Mulai Observasi" button
-              setTimeout(() => {
+            setTimeout(() => {
                 startBtn.classList.add('show');
               }, 800); // Wait for fade out animation
             }, 7000);
@@ -1961,7 +2082,7 @@
                 shader: 'flat',
                 opacity: 0
               });
-            }
+          }
             if (kulitImage) {
               kulitImage.setAttribute('material', {
                 side: 'double',

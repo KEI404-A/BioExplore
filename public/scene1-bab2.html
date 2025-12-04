@@ -1,0 +1,2649 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Scene 1 - Bab 2 - AR-Room</title>
+  <meta name="description" content="Scene 1 Bab 2">
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="https://unpkg.com/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
+  <script src="https://unpkg.com/networked-aframe@0.14.0/dist/easyrtc-adapter.js"></script>
+  <script>
+    // Global configuration
+    window.NAF_OPTIONS = {
+      updateRate: 15,
+      useLerp: true,
+      useHttps: window.location.protocol === 'https:',
+      debug: true
+    };
+    
+    const iceServers = [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' }
+    ];
+    
+    // Initialize EasyRTC after script is loaded - with better error handling
+    function initEasyRTC() {
+      try {
+        if (typeof easyrtc !== 'undefined' && easyrtc) {
+          easyrtc.enableDebug(false);
+          easyrtc.setStunServers(iceServers);
+          easyrtc.enableVideo(false);
+          easyrtc.enableAudio(false);
+          easyrtc.enableDataChannels(true);
+          console.log('EasyRTC initialized successfully');
+        } else {
+          console.warn('EasyRTC not available, continuing without networking features');
+        }
+      } catch (e) {
+        console.warn('EasyRTC initialization error (non-critical):', e.message);
+        // Don't throw - allow scene to continue loading
+      }
+    }
+    
+    // Try to initialize EasyRTC, but don't block if it fails
+    try {
+      if (typeof easyrtc !== 'undefined') {
+        initEasyRTC();
+      } else {
+        // Wait for script to load, but with timeout
+        let easyrtcCheckCount = 0;
+        const maxChecks = 10;
+        const checkEasyRTC = setInterval(function() {
+          easyrtcCheckCount++;
+          if (typeof easyrtc !== 'undefined') {
+            clearInterval(checkEasyRTC);
+            initEasyRTC();
+          } else if (easyrtcCheckCount >= maxChecks) {
+            clearInterval(checkEasyRTC);
+            console.warn('EasyRTC not loaded after timeout, continuing without it');
+          }
+        }, 200);
+      }
+    } catch (e) {
+      console.warn('EasyRTC setup error (non-critical):', e.message);
+      // Continue execution - don't let EasyRTC errors block the scene
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-gltf-model-plus@1.0.0/dist/gltf-model-plus.min.js"></script>
+  <script src="/dist/components.js"></script>
+  <script src="/js/joystick.js"></script>
+  <script defer src="/dist/ui.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      height: auto;
+      min-height: 100vh;
+    }
+
+    /* Hide avatar selection modals */
+    div[class*="naf-centered-fullscreen"], 
+    div[class*="avatar-selection"], 
+    div[id*="avatar"], 
+    .avatar-modal, 
+    .avatar-selection-modal {
+      display: none !important;
+      visibility: hidden !important;
+    }
+
+    /* Question Popup */
+    .question-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 900px;
+      width: 90%;
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      display: block !important;
+    }
+
+    .question-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .question-popup.hide {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.9);
+      pointer-events: none;
+    }
+
+    .question-popup h2 {
+      color: #1e40af;
+      font-size: 28px;
+      margin-bottom: 30px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .question-popup .question-item {
+      color: #1f2937;
+      font-size: 20px;
+      margin-bottom: 20px;
+      padding: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #3b82f6;
+      line-height: 1.6;
+    }
+
+    .question-popup .question-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Kalimat Penjelas */
+    .explanation-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(59, 130, 246, 0.95);
+      color: white;
+      padding: 30px 50px;
+      border-radius: 15px;
+      font-size: 22px;
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      font-weight: 500;
+      display: block !important;
+    }
+
+    .explanation-text.show {
+      opacity: 1;
+    }
+
+    .explanation-text.hide {
+      opacity: 0;
+    }
+
+    /* Tombol Mulai Observasi */
+    .start-observation-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20002;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+      box-shadow: 0 5px 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .start-observation-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .start-observation-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .start-observation-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Video Controls */
+    .video-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px 20px;
+      border-radius: 10px;
+      z-index: 20003;
+      display: none;
+      align-items: center;
+      gap: 15px;
+      min-width: 400px;
+      max-width: 90%;
+    }
+
+    .video-controls.show {
+      display: flex;
+    }
+
+    .video-control-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.3s ease;
+    }
+
+    .video-control-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .video-seek-container {
+      flex: 1;
+      position: relative;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .video-seek-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #3b82f6;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .video-seek-handle {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 14px;
+      background: white;
+      border-radius: 50%;
+      cursor: grab;
+      transition: transform 0.2s ease;
+    }
+
+    .video-seek-handle:active {
+      cursor: grabbing;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    .video-time {
+      color: white;
+      font-size: 14px;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    /* Next Video Button */
+    .next-video-btn {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 15px 35px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20004;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+      box-shadow: 0 5px 20px rgba(16, 185, 129, 0.5);
+    }
+
+    .next-video-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .next-video-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    }
+
+    .next-video-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Panel Variabel Termometer */
+    .temperature-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      z-index: 20005;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      min-width: 250px;
+    }
+
+    .temperature-panel h3 {
+      margin: 0 0 15px 0;
+      color: #1e40af;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .temperature-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .temperature-option:hover {
+      background: rgba(59, 130, 246, 0.2);
+      transform: scale(1.02);
+    }
+
+    .temperature-option.active {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.3);
+    }
+
+    .temperature-option:last-child {
+      margin-bottom: 0;
+    }
+
+    .temperature-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+
+    .temperature-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 3px 10px rgba(59, 130, 246, 0.5);
+    }
+
+    .temperature-btn.cold {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    }
+
+    .temperature-btn.hot {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    /* Sweat Drops Animation */
+    .sweat-drop {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, rgba(135, 206, 250, 0.8) 0%, rgba(30, 144, 255, 0.6) 100%);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      animation: dropFall 3s ease-in infinite;
+    }
+
+    @keyframes dropFall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(-45deg) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(50px) rotate(-45deg) scale(0.5);
+      }
+    }
+
+
+    /* Pickup Pipette Button */
+    .pickup-pipette-btn {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      z-index: 20000;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .pickup-pipette-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+    }
+
+    .pickup-pipette-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Analysis Result Popup */
+    .analysis-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 600px;
+      width: 90%;
+      z-index: 20010;
+      opacity: 0;
+      pointer-events: none;
+      display: block !important;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .analysis-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .analysis-popup h3 {
+      color: #1e40af;
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .analysis-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .analysis-table th,
+    .analysis-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .analysis-table th {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1e40af;
+      font-weight: bold;
+    }
+
+    .analysis-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .close-analysis-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .close-analysis-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <a-scene light="defaultLightsEnabled:false" renderer="stencil:true; antialias: true;" vr-mode-ui="enabled: false"
+    webxr="requiredFeatures: local-floor; referenceSpaceType: local-floor;" networked-scene="
+        connectOnLoad: false;
+        room: scene1-bab2;
+        debug: true;
+        adapter: easyrtc;
+        onConnect: onConnect;
+        audio: false;
+        video: false;
+    " shadow="type: pcfsoft" gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+    raycaster="far: 100; objects: .clickable,[link];" cursor="rayOrigin: mouse">
+    <a-assets>
+      <template id="avatar-template">
+        <a-entity player-info>
+          <a-entity class="model" animation-mixer>
+            <a-text class="nametag" align="center" value="?" position="0 2.1 0" scale=".5 .5 .5"></a-text>
+          </a-entity>
+          <a-entity class="camera" position="0 1.6 0"></a-entity>
+        </a-entity>
+      </template>
+      <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
+      
+      <!-- 3D Model Assets - Preload untuk memastikan model dimuat -->
+      <!-- Note: Using direct paths instead of a-asset-item for better compatibility -->
+      
+      <!-- Video Assets -->
+      <video id="video1" playsinline preload="none" crossorigin="anonymous">
+        <source src="assets/video/Cara Subkultur Bakteri dari Stok Kultur Cair ke Media Plate.mp4" type="video/mp4">
+      </video>
+      <video id="video2" playsinline preload="none" crossorigin="anonymous">
+        <source src="assets/video/Clipto AI video downloader_Culturing Microorganisms Part 1 - Cells - Biology - FuseSchool.mp4" type="video/mp4">
+      </video>
+      <video id="video3" playsinline preload="none" crossorigin="anonymous">
+        <source src="assets/video/Clipto AI video downloader_Culturing Microorganisms Part 2 - Cells - Biology - FuseSchool.mp4" type="video/mp4">
+      </video>
+    </a-assets>
+
+    <!-- Lab Biologi 3D Model -->
+    <a-entity id="lab-biologi" position="0 0 0" rotation="0 0 0">
+      <a-gltf-model 
+        id="lab-biologi-model"
+        src="assets/map/LabBiologi.compressed.glb" 
+        scale="0.3 0.3 0.3"
+        visible="true"
+        material="side: double">
+      </a-gltf-model>
+      
+      <!-- Video Entity -->
+      <a-video 
+        id="labVideo"
+        class="observation-content"
+        src="#video1" 
+        width="4" 
+        height="2.25" 
+        position="0 1.5 -5" 
+        rotation="0 0 0"
+        material="side: double; shader: flat; opacity: 0"
+        visible="false">
+      </a-video>
+
+      <!-- Anatomi Tubuh Manusia (akan diatur posisinya oleh user) -->
+      <a-entity id="anatomi-tubuh" class="anatomi-container" 
+        position="4.1 1.9 -4.8" 
+        rotation="0 90 90" 
+        scale="1.5 1.5 1.5"
+        sweat-collector>
+        <a-entity id="sweat-drops-container"></a-entity>
+      </a-entity>
+
+      <!-- Termometer 3D Model -->
+      <a-entity id="thermometer-model" class="thermometer-container" position="4 1.4 -4.7" rotation="0 0 90" scale="3 3 3">
+        <a-gltf-model 
+          src="assets/alat/termo_meter.glb" 
+          id="thermometer-body">
+        </a-gltf-model>
+        <!-- Overlay untuk perubahan warna liquid (opsional, bisa dihapus jika model sudah memiliki animasi) -->
+        <a-entity id="thermometer-liquid-overlay" visible="false">
+          <a-cylinder 
+            id="thermometer-liquid"
+            position="0 0.1 0" 
+            radius="0.02" 
+            height="0.4" 
+            color="#3b82f6"
+            opacity="0.7">
+          </a-cylinder>
+        </a-entity>
+      </a-entity>
+
+      <!-- Pipet Digital -->
+      <a-entity 
+        id="pipette" 
+        class="clickable"
+        draggable
+        position="3.5 1.5 -2.3"
+        rotation="0 -90 0"
+        scale="0.19 0.19 0.19">
+        <a-gltf-model 
+          src="assets/alat/pipet.glb"
+          id="pipette-model">
+        </a-gltf-model>
+        <!-- Invisible box for better raycaster detection -->
+        <a-box 
+          position="0 0 0"
+          width="2" 
+          height="2" 
+          depth="2"
+          visible="false"
+          material="transparent: true; opacity: 0"
+          class="clickable">
+        </a-box>
+        <!-- Pipet liquid indicator (sampel) - akan muncul saat terisi -->
+        <a-cylinder 
+          id="pipette-sample"
+          position="0 -0.05 0" 
+          radius="0.015" 
+          height="0.08" 
+          color="#3b82f6"
+          opacity="0"
+          visible="false"
+          material="shader: flat; side: double; emissive: #3b82f6; emissiveIntensity: 0.5">
+        </a-cylinder>
+      </a-entity>
+
+      <!-- ISE Analyzer (tanpa drag and drop) -->
+      <a-entity 
+        id="ise-analyzer" 
+        position="4.2 1.6 -5"
+        rotation="0 -90 0"
+        scale="0.1 0.1 0.1">
+        <a-gltf-model 
+          src="assets/alat/ise-analyzer.glb"
+          id="ise-analyzer-model">
+        </a-gltf-model>
+      </a-entity>
+    </a-entity>
+
+    <!-- Ground -->
+    <a-plane class="ground" position="0 0 0" rotation="-90 0 0" width="100" height="100" visible="true" material="color: #cccccc"></a-plane>
+    
+    <!-- Lighting -->
+    <a-entity light="type:ambient;intensity:0.6"></a-entity>
+    <a-entity light="type:directional;intensity:0.8;position:5 10 5" cast-shadow></a-entity>
+    <a-entity light="type:directional;intensity:0.4;position:-5 5 -5"></a-entity>
+
+    <!-- Portal back to VR Lobby -->
+    <a-entity id="portal-group" position="0 0 0">
+      <a-link link="on:click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="4 1.5 6"
+        rotation="0 90 0" class="clickable" event-set__mouseenter="material.opacity: 0.8"
+        event-set__mouseleave="material.opacity: 0.6">
+      </a-link>
+    </a-entity>
+
+    <!-- Sweat Collection System (Fixed) -->
+<!-- Style untuk tombol analisis ISE -->
+<style>
+  /* ... style yang sudah ada ... */
+
+  /* ISE Analyze Button */
+  .ise-analyze-btn {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 20006;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+    box-shadow: 0 5px 20px rgba(139, 92, 246, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ise-analyze-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .ise-analyze-btn:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+  }
+
+  .ise-analyze-btn:active {
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+
+  .ise-analyze-btn:disabled {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .ise-analyze-btn .icon {
+    font-size: 24px;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid white;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: none;
+  }
+
+  .ise-analyze-btn.analyzing .spinner {
+    display: block;
+  }
+
+  .ise-analyze-btn.analyzing .icon {
+    display: none;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<!-- Tambahkan tombol sebelum closing </body> -->
+<!-- ISE Analyze Button -->
+<button id="iseAnalyzeBtn" class="ise-analyze-btn">
+  <span class="icon">🔬</span>
+  <span class="spinner"></span>
+  <span class="text">Analisis Keringat</span>
+</button>
+
+<script>
+  // Update Sweat Collection System
+  AFRAME.registerComponent('sweat-collector', {
+    init: function() {
+      this.isCollecting = false;
+      this.collectionTimer = null;
+      this.collectionProgress = 0;
+      this.collectedSweat = null;
+      this.anatomiTubuh = document.querySelector('#anatomi-tubuh');
+      this.iseAnalyzer = document.querySelector('#ise-analyzer');
+      this.sweatDropsContainer = document.querySelector('#sweat-drops-container');
+      this.analysisPopup = document.getElementById('analysisPopup');
+      this.iseAnalyzeBtn = document.getElementById('iseAnalyzeBtn');
+      this.collectedSweatCount = 0;
+      this.isMouseDown = false;
+      
+      // Create UI for collection progress
+      this.progressBar = document.createElement('div');
+      this.progressBar.id = 'sweat-collection-progress';
+      this.progressBar.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 20px;
+        border: 2px solid #87ceeb;
+        display: none;
+        z-index: 20000;
+        overflow: hidden;
+      `;
+      
+      this.progressFill = document.createElement('div');
+      this.progressFill.style.cssText = `
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #87ceeb 0%, #4682b4 100%);
+        transition: width 0.1s linear;
+      `;
+      
+      this.progressText = document.createElement('div');
+      this.progressText.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 1;
+      `;
+      this.progressText.textContent = 'Tekan dan tahan untuk mengumpulkan keringat...';
+      
+      this.progressBar.appendChild(this.progressFill);
+      this.progressBar.appendChild(this.progressText);
+      document.body.appendChild(this.progressBar);
+      
+      this.setupMouseDetection();
+      this.setupAnalyzeButton();
+    },
+    
+    setupMouseDetection: function() {
+      const self = this;
+      const scene = document.querySelector('a-scene');
+      const canvas = scene ? scene.canvas : null;
+      
+      if (!canvas) {
+        console.error('Canvas not found!');
+        return;
+      }
+      
+      canvas.addEventListener('mousedown', function(e) {
+        self.isMouseDown = true;
+        self.checkIfOverAnatomi();
+      });
+      
+      document.addEventListener('mouseup', function(e) {
+        self.isMouseDown = false;
+        if (self.isCollecting) {
+          self.stopCollection();
+        }
+      });
+      
+      canvas.addEventListener('mousemove', function(e) {
+        if (self.isMouseDown) {
+          self.checkIfOverAnatomi();
+        }
+      });
+    },
+    
+    checkIfOverAnatomi: function() {
+      const cursor = document.querySelector('[cursor]');
+      if (!cursor || !cursor.components || !cursor.components.raycaster) {
+        return;
+      }
+      
+      const raycaster = cursor.components.raycaster;
+      const intersections = raycaster.intersections || [];
+      
+      let isOverAnatomi = false;
+      
+      for (let i = 0; i < intersections.length; i++) {
+        const intersection = intersections[i];
+        if (intersection.object && intersection.object.el) {
+          let el = intersection.object.el;
+          
+          while (el) {
+            if (el.id === 'anatomi-tubuh' || el.classList.contains('anatomi-container')) {
+              isOverAnatomi = true;
+              break;
+            }
+            el = el.parentElement;
+          }
+          
+          if (isOverAnatomi) break;
+        }
+      }
+      
+      if (!isOverAnatomi) {
+        const camera = document.querySelector('[camera]');
+        if (camera) {
+          const cameraPos = camera.parentElement.getAttribute('position');
+          const anatomiPos = this.anatomiTubuh.getAttribute('position');
+          
+          if (cameraPos && anatomiPos) {
+            const dist = Math.sqrt(
+              Math.pow((cameraPos.x || 0) - (anatomiPos.x || 0), 2) +
+              Math.pow((cameraPos.y || 0) - (anatomiPos.y || 0), 2) +
+              Math.pow((cameraPos.z || 0) - (anatomiPos.z || 0), 2)
+            );
+            
+            if (dist < 3) {
+              isOverAnatomi = true;
+            }
+          }
+        }
+      }
+      
+      if (isOverAnatomi && this.isMouseDown && !this.isCollecting) {
+        this.startCollection();
+      } else if (!isOverAnatomi && this.isCollecting) {
+        this.stopCollection();
+      }
+    },
+    
+    startCollection: function() {
+      if (this.isCollecting) return;
+      
+      if (this.sweatDropsContainer.children.length === 0) {
+        console.log('No sweat drops to collect. Set temperature first!');
+        return;
+      }
+      
+      console.log('Starting sweat collection...');
+      this.isCollecting = true;
+      this.collectionProgress = 0;
+      this.progressBar.style.display = 'block';
+      
+      const self = this;
+      const startTime = Date.now();
+      const duration = 3000;
+      
+      this.collectionTimer = setInterval(function() {
+        const elapsed = Date.now() - startTime;
+        self.collectionProgress = Math.min((elapsed / duration) * 100, 100);
+        self.progressFill.style.width = self.collectionProgress + '%';
+        self.progressText.textContent = `Mengumpulkan... ${Math.floor(self.collectionProgress)}%`;
+        
+        if (self.collectionProgress >= 100) {
+          self.completeCollection();
+        }
+      }, 50);
+    },
+    
+    stopCollection: function() {
+      if (!this.isCollecting) return;
+      
+      console.log('Stopping sweat collection...');
+      this.isCollecting = false;
+      if (this.collectionTimer) {
+        clearInterval(this.collectionTimer);
+        this.collectionTimer = null;
+      }
+      this.progressBar.style.display = 'none';
+      this.progressFill.style.width = '0%';
+      this.progressText.textContent = 'Tekan dan tahan untuk mengumpulkan keringat...';
+      this.collectionProgress = 0;
+    },
+    
+    completeCollection: function() {
+      console.log('Sweat collection complete!');
+      this.stopCollection();
+      
+      const dropCount = this.sweatDropsContainer.children.length;
+      this.collectedSweatCount = dropCount;
+      
+      console.log('Collected', dropCount, 'sweat drops');
+      
+      this.animateSweatConvergence();
+    },
+    
+    animateSweatConvergence: function() {
+      const self = this;
+      const drops = Array.from(this.sweatDropsContainer.children);
+      if (drops.length === 0) return;
+      
+      console.log('Animating', drops.length, 'drops converging...');
+      
+      const anatomiPos = this.anatomiTubuh.getAttribute('position');
+      const centerPos = { x: 0, y: 0.1, z: 0 };
+      
+      drops.forEach((drop, index) => {
+        const dropPos = drop.getAttribute('position');
+        if (dropPos && typeof dropPos === 'object') {
+          const duration = 1000 + index * 50;
+          
+          drop.removeAttribute('animation');
+          drop.removeAttribute('animation__opacity');
+          drop.removeAttribute('animation__scale');
+          
+          drop.setAttribute('animation', {
+            property: 'position',
+            to: `${centerPos.x} ${centerPos.y} ${centerPos.z}`,
+            dur: duration,
+            easing: 'easeInOutQuad'
+          });
+          
+          drop.setAttribute('animation__scale', {
+            property: 'scale',
+            to: '1.5 1.5 1.5',
+            dur: duration,
+            easing: 'easeInOutQuad'
+          });
+          
+          drop.setAttribute('animation__opacity', {
+            property: 'material.opacity',
+            from: 0.9,
+            to: 1,
+            dur: duration,
+            easing: 'easeInOutQuad'
+          });
+        }
+      });
+      
+      setTimeout(function() {
+        console.log('Creating collected sweat entity...');
+        self.createCollectedSweat(centerPos);
+        while (self.sweatDropsContainer.firstChild) {
+          self.sweatDropsContainer.removeChild(self.sweatDropsContainer.firstChild);
+        }
+      }, 1500);
+    },
+    
+    createCollectedSweat: function(position) {
+      console.log('Creating collected sweat at position:', position);
+      
+      const collectedSweat = document.createElement('a-entity');
+      collectedSweat.id = 'collected-sweat';
+      
+      const anatomiPos = this.anatomiTubuh.getAttribute('position');
+      const worldPos = {
+        x: anatomiPos.x + position.x,
+        y: anatomiPos.y + position.y,
+        z: anatomiPos.z + position.z
+      };
+      
+      collectedSweat.setAttribute('position', worldPos);
+      collectedSweat.setAttribute('geometry', {
+        primitive: 'sphere',
+        radius: 0.1
+      });
+      collectedSweat.setAttribute('material', {
+        color: '#87ceeb',
+        opacity: 0.9,
+        shader: 'flat',
+        transparent: true
+      });
+      
+      collectedSweat.setAttribute('animation__pulse', {
+        property: 'scale',
+        from: '1 1 1',
+        to: '1.2 1.2 1.2',
+        dur: 1000,
+        loop: true,
+        dir: 'alternate',
+        easing: 'easeInOutQuad'
+      });
+      
+      this.el.sceneEl.appendChild(collectedSweat);
+      this.collectedSweat = collectedSweat;
+      
+      console.log('Collected sweat created successfully!');
+      
+      // Show analyze button
+      if (this.iseAnalyzeBtn) {
+        this.iseAnalyzeBtn.classList.add('show');
+      }
+      
+      // Show instruction
+      const instruction = document.createElement('div');
+      instruction.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(139, 92, 246, 0.95);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 20001;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      `;
+      instruction.textContent = '✓ Keringat terkumpul! Klik tombol "Analisis Keringat" untuk analisis';
+      document.body.appendChild(instruction);
+      
+      setTimeout(() => {
+        instruction.style.transition = 'opacity 0.5s';
+        instruction.style.opacity = '0';
+        setTimeout(() => instruction.remove(), 500);
+      }, 5000);
+    },
+    
+    setupAnalyzeButton: function() {
+      const self = this;
+      
+      if (!this.iseAnalyzeBtn) {
+        console.error('ISE Analyze button not found!');
+        return;
+      }
+      
+      this.iseAnalyzeBtn.addEventListener('click', function() {
+        if (!self.collectedSweat) {
+          console.log('No collected sweat to analyze');
+          return;
+        }
+        
+        // Disable button
+        self.iseAnalyzeBtn.disabled = true;
+        self.iseAnalyzeBtn.classList.add('analyzing');
+        const btnText = self.iseAnalyzeBtn.querySelector('.text');
+        btnText.textContent = 'Menganalisis...';
+        
+        // Animate sweat moving to ISE
+        self.animateSweatToISE();
+      });
+    },
+    
+    animateSweatToISE: function() {
+      const self = this;
+      
+      if (!this.collectedSweat || !this.iseAnalyzer) {
+        console.error('Missing required elements for animation');
+        return;
+      }
+      
+      const isePos = this.iseAnalyzer.getAttribute('position');
+      
+      // Remove pulse animation
+      this.collectedSweat.removeAttribute('animation__pulse');
+      
+      // Animate position to ISE
+      this.collectedSweat.setAttribute('animation', {
+        property: 'position',
+        to: `${isePos.x} ${isePos.y + 0.3} ${isePos.z}`,
+        dur: 2000,
+        easing: 'easeInOutQuad'
+      });
+      
+      // Animate scale (shrinking)
+      this.collectedSweat.setAttribute('animation__scale', {
+        property: 'scale',
+        from: '1 1 1',
+        to: '0.1 0.1 0.1',
+        dur: 2000,
+        easing: 'easeInQuad'
+      });
+      
+      // Animate opacity (fading out)
+      this.collectedSweat.setAttribute('animation__opacity', {
+        property: 'material.opacity',
+        from: 0.9,
+        to: 0,
+        dur: 2000,
+        easing: 'easeInQuad'
+      });
+      
+      // Show analysis result after animation
+      setTimeout(function() {
+        // Remove collected sweat
+        if (self.collectedSweat && self.collectedSweat.parentElement) {
+          self.collectedSweat.parentElement.removeChild(self.collectedSweat);
+          self.collectedSweat = null;
+        }
+        
+        // Show analysis popup
+        self.showAnalysis();
+        
+        // Hide analyze button
+        if (self.iseAnalyzeBtn) {
+          self.iseAnalyzeBtn.classList.remove('show', 'analyzing');
+          self.iseAnalyzeBtn.disabled = false;
+          const btnText = self.iseAnalyzeBtn.querySelector('.text');
+          btnText.textContent = 'Analisis Keringat';
+        }
+      }, 2100);
+    },
+    
+    showAnalysis: function() {
+      const count = this.collectedSweatCount;
+      let naLevel, kLevel, clLevel, phLevel;
+      
+      if (count >= 15) {
+        naLevel = '55-70';
+        kLevel = '10-15';
+        clLevel = '45-60';
+        phLevel = '5.5-6.0';
+      } else if (count >= 10) {
+        naLevel = '40-55';
+        kLevel = '7-10';
+        clLevel = '35-45';
+        phLevel = '5.8-6.2';
+      } else {
+        naLevel = '20-40';
+        kLevel = '4-7';
+        clLevel = '25-35';
+        phLevel = '6.0-6.5';
+      }
+      
+      const popup = this.analysisPopup;
+      if (popup) {
+        const tbody = popup.querySelector('tbody');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td>Na⁺</td>
+              <td>${naLevel} mmol/L</td>
+            </tr>
+            <tr>
+              <td>K⁺</td>
+              <td>${kLevel} mmol/L</td>
+            </tr>
+            <tr>
+              <td>Cl⁻</td>
+              <td>${clLevel} mmol/L</td>
+            </tr>
+            <tr>
+              <td>pH</td>
+              <td>${phLevel}</td>
+            </tr>
+            <tr>
+              <td>Laktat</td>
+              <td><em>tidak diukur dengan ISE</em></td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; padding-top: 10px; font-size: 12px; color: #666;">
+                Jumlah keringat yang dikumpulkan: ${count} partikel
+              </td>
+            </tr>
+          `;
+        }
+        popup.classList.add('show');
+      }
+      
+      // Reset collected sweat count
+      this.collectedSweatCount = 0;
+    }
+  });
+  
+  // Remove old sweat-draggable component (not needed anymore)
+</script>
+
+    <!-- Old Drag and Drop Component (Disabled) -->
+    <script>
+      AFRAME.registerComponent('draggable', {
+        init: function() {
+          console.log('Draggable component initialized on:', this.el.id);
+          this.isDragging = false;
+          this.hasSample = false;
+          this.isNearISE = false;
+          this.originalPosition = this.el.getAttribute('position');
+          this.anatomiTubuh = document.querySelector('#anatomi-tubuh');
+          this.iseAnalyzer = document.querySelector('#ise-analyzer');
+          this.pipetteSample = document.querySelector('#pipette-sample');
+          this.analysisPopup = document.getElementById('analysisPopup');
+          
+          console.log('Draggable component - Elements found:');
+          console.log('  - Anatomi tubuh:', this.anatomiTubuh ? 'Found' : 'NOT FOUND');
+          console.log('  - ISE analyzer:', this.iseAnalyzer ? 'Found' : 'NOT FOUND');
+          console.log('  - Pipette sample:', this.pipetteSample ? 'Found' : 'NOT FOUND');
+          console.log('  - Analysis popup:', this.analysisPopup ? 'Found' : 'NOT FOUND');
+          
+          if (this.analysisPopup) {
+            console.log('  - Analysis popup classes:', this.analysisPopup.className);
+            console.log('  - Analysis popup style:', window.getComputedStyle(this.analysisPopup).display);
+          }
+          
+          const self = this;
+          const scene = this.el.sceneEl;
+          
+          // Simplified approach: Use keyboard shortcut 'P' to pick up pipette
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'p' || e.key === 'P') {
+              if (!self.isDragging) {
+                console.log('P key pressed - starting drag');
+                self.isDragging = true;
+                self.startDrag();
+              }
+            }
+          });
+          
+          // Also try click on canvas with raycaster check
+          if (scene && scene.canvas) {
+            scene.canvas.addEventListener('mousedown', function(e) {
+              // Small delay to let raycaster update
+              setTimeout(function() {
+                const cursor = document.querySelector('[cursor]');
+                if (cursor && cursor.components && cursor.components.raycaster) {
+                  const raycaster = cursor.components.raycaster;
+                  const intersections = raycaster.intersections || [];
+                  
+                  for (let i = 0; i < intersections.length; i++) {
+                    const intersection = intersections[i];
+                    if (intersection.object && intersection.object.el) {
+                      let el = intersection.object.el;
+                      while (el) {
+                        if (el.id === 'pipette' || el === self.el || el.classList.contains('draggable')) {
+                          console.log('Pipette clicked!');
+                          if (!self.isDragging) {
+                            self.isDragging = true;
+                            self.startDrag();
+                          }
+                          return;
+                        }
+                        el = el.parentElement;
+                      }
+                    }
+                  }
+                }
+              }, 10);
+            });
+          }
+          
+          // Direct click event
+          this.el.addEventListener('click', function(e) {
+            console.log('Pipette clicked directly');
+            if (!self.isDragging) {
+              self.isDragging = true;
+              self.startDrag();
+            }
+          });
+        },
+        
+        startDrag: function() {
+          const self = this;
+          const camera = document.querySelector('[camera]');
+          
+          // Initialize pipette position at center of screen (reticle position)
+          const cameraEl = camera.parentElement;
+          if (cameraEl) {
+            const cameraPos = cameraEl.getAttribute('position');
+            const cameraRot = cameraEl.getAttribute('rotation');
+            if (cameraPos) {
+              // Get camera object3D and calculate position in front of camera (at screen center direction)
+              const cameraObj = camera.object3D;
+              const cameraWorldPos = new THREE.Vector3();
+              const cameraWorldDir = new THREE.Vector3();
+              cameraObj.getWorldPosition(cameraWorldPos);
+              cameraObj.getWorldDirection(cameraWorldDir);
+              
+              // Calculate position at screen center but with distance in front of camera
+              // Distance: 1.8 units in front of camera (so pipette is visible and not too close)
+              const distance = 1.8;
+              const centerPos = cameraWorldPos.clone().add(cameraWorldDir.clone().multiplyScalar(distance));
+              
+              // Ensure minimum height
+              const minY = 1.2;
+              const finalY = Math.max(centerPos.y, minY);
+              
+              self.el.setAttribute('position', { x: centerPos.x, y: finalY, z: centerPos.z });
+              console.log('Drag started - pipette positioned at screen center (1.8 units in front):', { x: centerPos.x, y: finalY, z: centerPos.z });
+              console.log('Camera position:', cameraWorldPos);
+              console.log('Camera direction:', cameraWorldDir);
+            }
+          }
+          
+          function onMouseMove(e) {
+            if (!self.isDragging) return;
+            
+            try {
+              const cameraEl = camera.parentElement;
+              if (!cameraEl) return;
+              
+              const cameraPos = cameraEl.getAttribute('position');
+              const cameraRot = cameraEl.getAttribute('rotation');
+              if (!cameraPos) return;
+              
+              // Calculate position relative to camera with distance in front
+              // Get camera object3D
+              const cameraObj = camera.object3D;
+              const cameraWorldPos = new THREE.Vector3();
+              const cameraWorldDir = new THREE.Vector3();
+              cameraObj.getWorldPosition(cameraWorldPos);
+              cameraObj.getWorldDirection(cameraWorldDir);
+              
+              // Calculate mouse offset in normalized coordinates (-1 to 1)
+              const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+              const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+              
+              // Get camera right and up vectors for offset calculation
+              const cameraRight = new THREE.Vector3(1, 0, 0).applyQuaternion(cameraObj.quaternion);
+              const cameraUp = new THREE.Vector3(0, 1, 0).applyQuaternion(cameraObj.quaternion);
+              
+              // Position at distance in front of camera with mouse offset
+              const distance = 1.8; // Same distance as initial position
+              const offsetX = mouseX * 0.5; // Horizontal offset
+              const offsetY = mouseY * 0.5; // Vertical offset
+              
+              const targetPos = cameraWorldPos.clone()
+                .add(cameraWorldDir.clone().multiplyScalar(distance))
+                .add(cameraRight.clone().multiplyScalar(offsetX))
+                .add(cameraUp.clone().multiplyScalar(offsetY));
+              
+              // Ensure minimum height
+              const minY = 1.2;
+              const finalY = Math.max(targetPos.y, minY);
+              
+              self.el.setAttribute('position', { x: targetPos.x, y: finalY, z: targetPos.z });
+              
+              // Check distance to anatomi tubuh
+              const pipettePos = self.el.getAttribute('position');
+              if (self.anatomiTubuh && pipettePos) {
+                const anatomiPos = self.anatomiTubuh.getAttribute('position');
+                if (anatomiPos && typeof anatomiPos === 'object') {
+                  const dist = Math.sqrt(
+                    Math.pow((pipettePos.x || 0) - (anatomiPos.x || 0), 2) +
+                    Math.pow((pipettePos.y || 0) - (anatomiPos.y || 0), 2) +
+                    Math.pow((pipettePos.z || 0) - (anatomiPos.z || 0), 2)
+                  );
+                  
+                  if (dist < 1.0 && !self.hasSample) { // Increased distance
+                    self.hasSample = true;
+                    if (self.pipetteSample) {
+                      self.pipetteSample.setAttribute('opacity', '0.9');
+                      self.pipetteSample.setAttribute('visible', 'true');
+                    }
+                    console.log('Sample collected! Distance:', dist);
+                  }
+                }
+              }
+              
+              // Check distance to ISE analyzer
+              if (self.iseAnalyzer && pipettePos) {
+                const isePos = self.iseAnalyzer.getAttribute('position');
+                if (isePos && typeof isePos === 'object') {
+                  const iseDist = Math.sqrt(
+                    Math.pow((pipettePos.x || 0) - (isePos.x || 0), 2) +
+                    Math.pow((pipettePos.y || 0) - (isePos.y || 0), 2) +
+                    Math.pow((pipettePos.z || 0) - (isePos.z || 0), 2)
+                  );
+                  
+                  const wasNearISE = self.isNearISE;
+                  self.isNearISE = (iseDist < 1.5); // Increased distance
+                  
+                  if (self.isNearISE && !wasNearISE) {
+                    console.log('Pipette is near ISE analyzer! Distance:', iseDist);
+                  }
+                }
+              }
+            } catch (err) {
+              console.error('Error in drag:', err);
+            }
+          }
+          
+          function onMouseUp(e) {
+            if (!self.isDragging) return;
+            
+            self.isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+            
+            const pickupBtn = document.getElementById('pickupPipetteBtn');
+            if (pickupBtn) {
+              pickupBtn.textContent = 'Ambil Pipette (Klik untuk drag)';
+            }
+            
+            try {
+              console.log('Mouse up - checking drop conditions');
+              console.log('isNearISE:', self.isNearISE);
+              console.log('hasSample:', self.hasSample);
+              
+              // Check if dropped on ISE analyzer with sample
+              if (self.isNearISE && self.hasSample) {
+                console.log('Conditions met! Showing analysis popup...');
+                // Show analysis popup immediately
+                if (self.analysisPopup) {
+                  console.log('Analysis popup element found:', self.analysisPopup);
+                  console.log('Adding "show" class...');
+                  self.analysisPopup.classList.add('show');
+                  console.log('Analysis popup classes after add:', self.analysisPopup.className);
+                  console.log('Analysis popup display:', window.getComputedStyle(self.analysisPopup).display);
+                  console.log('Analysis popup opacity:', window.getComputedStyle(self.analysisPopup).opacity);
+                  console.log('Analysis popup z-index:', window.getComputedStyle(self.analysisPopup).zIndex);
+                } else {
+                  console.error('Analysis popup element not found! Trying to find it again...');
+                  const retryPopup = document.getElementById('analysisPopup');
+                  if (retryPopup) {
+                    console.log('Found popup on retry!');
+                    retryPopup.classList.add('show');
+                    self.analysisPopup = retryPopup;
+                  } else {
+                    console.error('Still not found after retry!');
+                  }
+                }
+                
+                // Reset pipette
+                setTimeout(() => {
+                  self.el.setAttribute('position', self.originalPosition);
+                  self.hasSample = false;
+                  if (self.pipetteSample) {
+                    self.pipetteSample.setAttribute('opacity', '0');
+                    self.pipetteSample.setAttribute('visible', 'false');
+                  }
+                }, 500);
+              } else {
+                console.log('Drop conditions not met. isNearISE:', self.isNearISE, 'hasSample:', self.hasSample);
+                // Return to original position
+                self.el.setAttribute('position', self.originalPosition);
+              }
+              
+              self.isNearISE = false;
+            } catch (err) {
+              console.error('Error in drop:', err);
+            }
+          }
+          
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+        }
+      });
+    </script>
+
+    <!-- Jump Controls Component -->
+    <script>
+      AFRAME.registerComponent('jump-controls', {
+        schema: {
+          jumpHeight: { type: 'number', default: 1.0 },
+          jumpDuration: { type: 'number', default: 800 },
+          isJumping: { type: 'boolean', default: false },
+          initialY: { type: 'number', default: 1.6 }
+        },
+        init: function() {
+          document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !this.data.isJumping) {
+              this.jump();
+            }
+          });
+          
+          document.addEventListener('touchend', (e) => {
+            if (!this.data.isJumping && e.target.id === 'jump-button') {
+              this.jump();
+            }
+          });
+          
+          this.data.initialY = this.el.getAttribute('position').y || 1.6;
+        },
+        jump: function() {
+          if (this.data.isJumping) return;
+          
+          this.data.isJumping = true;
+          const startTime = Date.now();
+          const startY = this.el.getAttribute('position').y;
+          const jumpHeight = this.data.jumpHeight;
+          const jumpDuration = this.data.jumpDuration;
+          
+          const animateJump = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / jumpDuration, 1);
+            const jumpProgress = Math.sin(progress * Math.PI);
+            const currentY = startY + (jumpProgress * jumpHeight);
+            
+            const currentPos = this.el.getAttribute('position');
+            this.el.setAttribute('position', {
+              x: currentPos.x,
+              y: currentY,
+              z: currentPos.z
+            });
+            
+            if (progress < 1) {
+              requestAnimationFrame(animateJump);
+            } else {
+              this.el.setAttribute('position', {
+                x: currentPos.x,
+                y: this.data.initialY,
+                z: currentPos.z
+              });
+              this.data.isJumping = false;
+            }
+          };
+          
+          requestAnimationFrame(animateJump);
+        }
+      });
+    </script>
+
+    <a-entity id="rig" position="0 0 3" rotation="0 0 0" collider="distance: 0.3" movement-controls="fly:false;"
+      networked="template:#avatar-template;attachTemplateToLocal:false" player-info jump-controls>
+      <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls pointer-lock>
+        <a-entity position="0 0 -1" geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
+          material="shader: flat; opacity: 0.9" cursor="fuse: true; fuseTimeout: 1200"
+          raycaster="objects: .clickable, #anatomi-tubuh, .anatomi-container; far: 20;"
+          animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
+          animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120" id="main-cursor">
+        </a-entity>
+      </a-entity>
+      <a-entity id="left-hand" networked-hand-controls="hand: left" laser-controls="hand: left"></a-entity>
+      <a-entity id="right-hand" networked-hand-controls="hand:right" laser-controls="hand: right"></a-entity>
+    </a-entity>
+  </a-scene>
+
+  <!-- Popup Pertanyaan -->
+  <div id="questionPopup" class="question-popup">
+    <h2>Sub Driving Question:</h2>
+    <div class="question-item">Mengapa tubuh kita berkeringat?</div>
+    <div class="question-item">Bagaimana membuktikan kandungan keringat?</div>
+    <div class="question-item">Bagaimana bakteri dapat menimbulkan bau dari keringat?</div>
+  </div>
+
+  <!-- Kalimat Penjelas -->
+  <div id="explanationText" class="explanation-text">
+    Berikut Video yang akan menjelaskan pertanyaan tersebut
+  </div>
+
+  <!-- Tombol Mulai Observasi -->
+  <button id="startObservationBtn" class="start-observation-btn">
+    Mulai Observasi
+  </button>
+
+  <!-- Video Controls -->
+  <div id="videoControls" class="video-controls">
+    <button id="playPauseBtn" class="video-control-btn">⏸</button>
+    <div class="video-seek-container" id="seekContainer">
+      <div class="video-seek-bar" id="seekBar"></div>
+      <div class="video-seek-handle" id="seekHandle"></div>
+    </div>
+    <div class="video-time" id="videoTime">0:00 / 0:00</div>
+  </div>
+
+  <!-- Next Video Button -->
+  <button id="nextVideoBtn" class="next-video-btn">
+    Next
+  </button>
+
+  <!-- Panel Variabel Termometer -->
+  <div id="temperaturePanel" class="temperature-panel">
+    <h3>Panel Variabel Termometer</h3>
+    <div class="temperature-option" data-temp="20">
+      <div class="temperature-btn cold" id="temp20Btn">🔵 Suhu 20°C — Dingin</div>
+    </div>
+    <div class="temperature-option" data-temp="30">
+      <div class="temperature-btn hot" id="temp30Btn">🔴 Suhu 30°C — Panas</div>
+    </div>
+  </div>
+
+  <!-- Button untuk mengambil pipette -->
+  <button id="pickupPipetteBtn" class="pickup-pipette-btn" style="display: none;">
+    Ambil Pipette (Klik untuk drag)
+  </button>
+
+  <!-- Analysis Result Popup -->
+  <div id="analysisPopup" class="analysis-popup">
+    <button class="close-analysis-btn" id="closeAnalysisBtn">×</button>
+    <h3>Hasil Analisis Komposisi Keringat</h3>
+    <table class="analysis-table">
+      <thead>
+        <tr>
+          <th>Ion</th>
+          <th>Rentang Normal (mmol/L)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Na⁺</td>
+          <td>20 – 70 mmol/L</td>
+        </tr>
+        <tr>
+          <td>K⁺</td>
+          <td>4 – 15 mmol/L</td>
+        </tr>
+        <tr>
+          <td>Cl⁻</td>
+          <td>25 – 60 mmol/L</td>
+        </tr>
+        <tr>
+          <td>pH</td>
+          <td>5.0 – 6.5</td>
+        </tr>
+        <tr>
+          <td>Laktat</td>
+          <td><em>tidak diukur dengan ISE</em></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Collider Component
+    AFRAME.registerComponent('collider', {
+      schema: {
+        distance: { default: 1.2 },
+        debug: { default: false }
+      },
+      init: function () {
+        this.raycaster = new THREE.Raycaster();
+        this.lastSafePosition = new THREE.Vector3();
+        this.directions = [
+          new THREE.Vector3(0, 0, -1),
+          new THREE.Vector3(0, 0, 1),
+          new THREE.Vector3(-1, 0, 0),
+          new THREE.Vector3(1, 0, 0),
+          new THREE.Vector3(-0.7, 0, -0.7),
+          new THREE.Vector3(0.7, 0, -0.7),
+          new THREE.Vector3(-0.7, 0, 0.7),
+          new THREE.Vector3(0.7, 0, 0.7),
+        ];
+        this.el.addEventListener('loaded', () => {
+          this.el.object3D.getWorldPosition(this.lastSafePosition);
+        });
+      },
+      tick: function (time, delta) {
+        const collidableEls = this.el.sceneEl.querySelectorAll('.collidable');
+        if (collidableEls.length === 0) return;
+
+        const collidables = [];
+        collidableEls.forEach((el) => {
+          if (el.object3D) {
+            collidables.push(el.object3D);
+          }
+        });
+
+        let collision = false;
+        const currentPosition = new THREE.Vector3();
+        this.el.object3D.getWorldPosition(currentPosition);
+
+        for (const dir of this.directions) {
+          const worldDir = dir.clone().applyQuaternion(this.el.object3D.quaternion);
+          this.raycaster.set(currentPosition, worldDir);
+          this.raycaster.far = this.data.distance;
+          const intersects = this.raycaster.intersectObjects(collidables, true);
+
+          if (intersects.length > 0 && intersects[0].distance < this.data.distance) {
+            const hitEl = intersects[0].object.el;
+
+            if (this.data.debug) {
+              console.log('Collision detected with:', hitEl ? hitEl.id : 'unknown', 'distance:', intersects[0].distance);
+            }
+
+            this.el.object3D.position.copy(this.lastSafePosition);
+            collision = true;
+            break;
+          }
+        }
+
+        if (!collision) {
+          this.el.object3D.getWorldPosition(this.lastSafePosition);
+        }
+      },
+    });
+
+    // Mobile Controls Setup
+    function setupMobileControls() {
+      const joystick = document.getElementById('joystick');
+      if (!joystick) return;
+      // Mobile controls setup can be added here if needed
+    }
+
+    // Hide Avatar Selection
+    function hideAvatarSelection() {
+      const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
+      avatarModals.forEach(modal => {
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.remove();
+      });
+
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) {
+              if (node.classList && (
+                node.classList.contains('naf-centered-fullscreen') ||
+                node.classList.contains('avatar-selection') ||
+                node.id && node.id.includes('avatar') ||
+                node.classList.contains('avatar-modal') ||
+                node.classList.contains('avatar-selection-modal')
+              )) {
+                node.style.display = 'none';
+                node.style.visibility = 'hidden';
+                node.remove();
+              }
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+
+    // Networked-Aframe connection handler
+    function onConnect() {
+      console.log('Connected to networked-aframe');
+    }
+
+    // Video Controls Setup
+    function setupVideoControls() {
+      let currentVideoEl = document.querySelector('#video1'); // Start with video 1
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const seekContainer = document.getElementById('seekContainer');
+      const seekBar = document.getElementById('seekBar');
+      const seekHandle = document.getElementById('seekHandle');
+      const videoTime = document.getElementById('videoTime');
+      const videoControls = document.getElementById('videoControls');
+      const nextVideoBtn = document.getElementById('nextVideoBtn');
+      const videoEntity = document.querySelector('#labVideo');
+
+      if (!currentVideoEl || !playPauseBtn || !seekContainer || !seekBar || !seekHandle || !videoTime || !videoControls || !nextVideoBtn || !videoEntity) {
+        console.error('Video controls elements not found');
+        return;
+      }
+
+      let isDragging = false;
+      let currentVideoIndex = 1; // 1 = video1, 2 = video2, 3 = video3
+
+      // Format time (seconds to MM:SS)
+      function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      // Update video controls UI
+      function updateControls() {
+        if (!currentVideoEl || !currentVideoEl.duration) return;
+
+        const currentTime = currentVideoEl.currentTime;
+        const duration = currentVideoEl.duration;
+        const percent = (currentTime / duration) * 100;
+
+        // Update seekbar
+        seekBar.style.width = percent + '%';
+        seekHandle.style.left = percent + '%';
+
+        // Update time display
+        videoTime.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+
+        // Update play/pause button
+        if (currentVideoEl.paused) {
+          playPauseBtn.textContent = '▶';
+        } else {
+          playPauseBtn.textContent = '⏸';
+        }
+      }
+
+      // Play/Pause button
+      playPauseBtn.addEventListener('click', function() {
+        if (currentVideoEl.paused) {
+          currentVideoEl.play().catch(err => console.log('Play error:', err));
+        } else {
+          currentVideoEl.pause();
+        }
+      });
+
+      // Seekbar click
+      seekContainer.addEventListener('click', function(e) {
+        if (isDragging || !currentVideoEl.duration) return;
+        const rect = seekContainer.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        const newTime = percent * currentVideoEl.duration;
+        currentVideoEl.currentTime = newTime;
+      });
+
+      // Seekbar drag
+      seekHandle.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', function(e) {
+        if (!isDragging || !currentVideoEl.duration) return;
+        const rect = seekContainer.getBoundingClientRect();
+        let percent = (e.clientX - rect.left) / rect.width;
+        percent = Math.max(0, Math.min(1, percent)); // Clamp between 0 and 1
+        const newTime = percent * currentVideoEl.duration;
+        currentVideoEl.currentTime = newTime;
+      });
+
+      document.addEventListener('mouseup', function() {
+        isDragging = false;
+      });
+
+      // Touch support for mobile
+      seekHandle.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        e.preventDefault();
+      });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!isDragging || !currentVideoEl.duration) return;
+        const rect = seekContainer.getBoundingClientRect();
+        const touch = e.touches[0];
+        let percent = (touch.clientX - rect.left) / rect.width;
+        percent = Math.max(0, Math.min(1, percent));
+        const newTime = percent * currentVideoEl.duration;
+        currentVideoEl.currentTime = newTime;
+      });
+
+      document.addEventListener('touchend', function() {
+        isDragging = false;
+      });
+
+      // Update controls on video events
+      function attachVideoEvents(videoElement) {
+        videoElement.addEventListener('timeupdate', updateControls);
+        videoElement.addEventListener('loadedmetadata', updateControls);
+        videoElement.addEventListener('play', updateControls);
+        videoElement.addEventListener('pause', updateControls);
+        videoElement.addEventListener('ended', function() {
+          // Show Next button when video 1 or 2 ends
+          if (currentVideoIndex === 1 || currentVideoIndex === 2) {
+            nextVideoBtn.classList.add('show');
+          }
+          // Hide video and controls when video 3 (last video) ends
+          if (currentVideoIndex === 3) {
+            // Hide video entity with fade out
+            if (videoEntity) {
+              let opacity = 1;
+              const fadeInterval = setInterval(() => {
+                opacity -= 0.05;
+                if (opacity <= 0) {
+                  opacity = 0;
+                  clearInterval(fadeInterval);
+                  videoEntity.setAttribute('visible', 'false');
+                }
+                videoEntity.setAttribute('material', 'opacity', opacity);
+              }, 50);
+            }
+            
+            // Hide video controls
+            if (videoControls) {
+              videoControls.classList.remove('show');
+            }
+          }
+        });
+      }
+
+      // Attach events to initial video
+      attachVideoEvents(currentVideoEl);
+
+      // Next Video Button Handler
+      nextVideoBtn.addEventListener('click', function() {
+        if (currentVideoIndex === 1) {
+          // Switch to video 2
+          const video2 = document.querySelector('#video2');
+          if (!video2) {
+            console.error('Video 2 not found');
+            return;
+          }
+
+          // Hide Next button
+          nextVideoBtn.classList.remove('show');
+
+          // Remove old video events
+          currentVideoEl.removeEventListener('timeupdate', updateControls);
+          currentVideoEl.removeEventListener('loadedmetadata', updateControls);
+          currentVideoEl.removeEventListener('play', updateControls);
+          currentVideoEl.removeEventListener('pause', updateControls);
+
+          // Pause and reset old video
+          currentVideoEl.pause();
+          currentVideoEl.currentTime = 0;
+
+          // Switch to new video
+          currentVideoEl = video2;
+          currentVideoIndex = 2;
+
+          // Update video entity source
+          videoEntity.setAttribute('src', '#video2');
+
+          // Load and play new video
+          if (video2.readyState === 0) {
+            video2.load();
+          }
+
+          // Attach events to new video
+          attachVideoEvents(video2);
+
+          // Play new video
+          video2.play().catch(err => {
+            console.log('Video 2 play error:', err);
+            document.addEventListener('click', () => {
+              video2.play().catch(e => console.log('Video 2 play retry error:', e));
+            }, { once: true });
+          });
+
+          console.log('Switched to Video 2');
+        } else if (currentVideoIndex === 2) {
+          // Switch to video 3
+          const video3 = document.querySelector('#video3');
+          if (!video3) {
+            console.error('Video 3 not found');
+            return;
+          }
+
+          // Hide Next button
+          nextVideoBtn.classList.remove('show');
+
+          // Remove old video events
+          currentVideoEl.removeEventListener('timeupdate', updateControls);
+          currentVideoEl.removeEventListener('loadedmetadata', updateControls);
+          currentVideoEl.removeEventListener('play', updateControls);
+          currentVideoEl.removeEventListener('pause', updateControls);
+
+          // Pause and reset old video
+          currentVideoEl.pause();
+          currentVideoEl.currentTime = 0;
+
+          // Switch to new video
+          currentVideoEl = video3;
+          currentVideoIndex = 3;
+
+          // Update video entity source
+          videoEntity.setAttribute('src', '#video3');
+
+          // Load and play new video
+          if (video3.readyState === 0) {
+            video3.load();
+          }
+
+          // Attach events to new video
+          attachVideoEvents(video3);
+
+          // Play new video
+          video3.play().catch(err => {
+            console.log('Video 3 play error:', err);
+            document.addEventListener('click', () => {
+              video3.play().catch(e => console.log('Video 3 play retry error:', e));
+            }, { once: true });
+          });
+
+          console.log('Switched to Video 3');
+        }
+      });
+    }
+
+    // Interactive Flow Setup
+    function setupInteractiveFlow() {
+      const questionPopup = document.getElementById('questionPopup');
+      const explanationText = document.getElementById('explanationText');
+      const startBtn = document.getElementById('startObservationBtn');
+      const videoEntity = document.querySelector('#labVideo');
+
+      // Check if elements exist
+      if (!questionPopup || !explanationText || !startBtn) {
+        console.error('Interactive flow elements not found!');
+        return;
+      }
+
+      // Initialize all elements as hidden
+      questionPopup.classList.remove('show', 'hide');
+      explanationText.classList.remove('show', 'hide');
+      startBtn.classList.remove('show');
+
+      // Step 1: Show question popup when scene loads
+      function startFlow() {
+        // Show question popup immediately
+        questionPopup.classList.remove('hide');
+        questionPopup.classList.add('show');
+
+        // Step 2: Hide question popup after 10 seconds with smooth animation
+        setTimeout(() => {
+          questionPopup.classList.remove('show');
+          questionPopup.classList.add('hide');
+          
+          // Step 3: Show explanation text after popup fades out
+          setTimeout(() => {
+            explanationText.classList.remove('hide');
+            explanationText.classList.add('show');
+            
+            // Step 4: Hide explanation text after 7 seconds
+            setTimeout(() => {
+              explanationText.classList.remove('show');
+              explanationText.classList.add('hide');
+
+              // Step 5: Show "Mulai Observasi" button
+              setTimeout(() => {
+                startBtn.classList.add('show');
+              }, 800); // Wait for fade out animation
+            }, 7000);
+          }, 800); // Wait for fade out animation
+        }, 10000); // 10 seconds for question popup
+      }
+
+      // Try multiple ways to detect when scene is ready
+      const scene = document.querySelector('a-scene');
+      
+      function initFlow() {
+        console.log('Initializing interactive flow...');
+        console.log('Question popup:', questionPopup);
+        console.log('Explanation text:', explanationText);
+        console.log('Start button:', startBtn);
+        
+        // Start flow immediately with small delay
+        setTimeout(function() {
+          console.log('Starting flow...');
+          startFlow();
+        }, 1000);
+      }
+      
+      if (scene) {
+        if (scene.hasLoaded) {
+          // Scene already loaded
+          console.log('Scene already loaded');
+          initFlow();
+        } else {
+          // Wait for scene to load
+          console.log('Waiting for scene to load...');
+          scene.addEventListener('loaded', function() {
+            console.log('Scene loaded event fired');
+            initFlow();
+          });
+          
+          // Fallback: start after 3 seconds if scene doesn't fire loaded event
+          setTimeout(function() {
+            if (!questionPopup.classList.contains('show')) {
+              console.log('Fallback: Starting flow after timeout');
+              initFlow();
+            }
+          }, 3000);
+        }
+      } else {
+        // No scene found, start immediately
+        console.log('No scene found, starting flow immediately');
+        initFlow();
+      }
+
+      // Step 6: Handle button click to show video
+      startBtn.addEventListener('click', function() {
+        // Hide button with fade out
+        startBtn.classList.remove('show');
+        
+        // Show video after button fades out
+        setTimeout(() => {
+          const videoEl = document.querySelector('#video1');
+          const videoControls = document.getElementById('videoControls');
+          
+          if (videoEntity && videoEl) {
+            // Load video first (if not already loaded)
+            if (videoEl.readyState === 0) {
+              videoEl.load();
+            }
+            
+            // Make video visible
+            videoEntity.setAttribute('visible', 'true');
+            
+            // Show video controls
+            if (videoControls) {
+              videoControls.classList.add('show');
+            }
+            
+            // Fade in video using material opacity
+            videoEntity.setAttribute('material', {
+              side: 'double',
+              shader: 'flat',
+              opacity: 0
+            });
+            
+            // Animate opacity to 1
+            let opacity = 0;
+            const fadeInterval = setInterval(() => {
+              opacity += 0.05;
+              if (opacity >= 1) {
+                opacity = 1;
+                clearInterval(fadeInterval);
+              }
+              videoEntity.setAttribute('material', 'opacity', opacity);
+            }, 50);
+            
+            // Unmute and set volume on first user interaction
+            const unmuteVideo = () => {
+              videoEl.muted = false;
+              videoEl.volume = 1.0;
+              document.removeEventListener('click', unmuteVideo);
+              document.removeEventListener('keydown', unmuteVideo);
+              document.removeEventListener('touchstart', unmuteVideo);
+            };
+            
+            document.addEventListener('click', unmuteVideo, { once: true });
+            document.addEventListener('keydown', unmuteVideo, { once: true });
+            document.addEventListener('touchstart', unmuteVideo, { once: true });
+            
+            // Play video after a short delay
+            setTimeout(() => {
+              videoEl.play().catch(err => {
+                console.log('Video play error:', err);
+                // Retry on user interaction
+                document.addEventListener('click', () => {
+                  videoEl.play().catch(e => console.log('Video play retry error:', e));
+                }, { once: true });
+              });
+            }, 500);
+          }
+        }, 300);
+      });
+    }
+
+    // Temperature Panel and Sweat Animation Setup
+    function setupTemperaturePanel() {
+      const temp20Btn = document.getElementById('temp20Btn');
+      const temp30Btn = document.getElementById('temp30Btn');
+      const thermometerLiquid = document.querySelector('#thermometer-liquid');
+      const thermometerModel = document.querySelector('#thermometer-model');
+      const sweatDropsContainer = document.querySelector('#sweat-drops-container');
+      let currentTemperature = null;
+      let sweatAnimationInterval = null;
+
+      // Function to create sweat drops
+      function createSweatDrops(count) {
+        // Clear existing drops
+        while (sweatDropsContainer.firstChild) {
+          sweatDropsContainer.removeChild(sweatDropsContainer.firstChild);
+        }
+
+        // Create new drops with staggered animation - more clustered
+        for (let i = 0; i < count; i++) {
+          const drop = document.createElement('a-sphere');
+          
+          // Reduced radius for more clustered effect (0.05 to 0.12 instead of 0.2 to 0.4)
+          // Using random distribution within a smaller circle for more natural clustering
+          const angle = Math.random() * Math.PI * 2;
+          const radius = 0.05 + Math.random() * 0.07; // Much smaller radius for clustering
+          const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 0.05; // Add small random offset
+          const z = Math.sin(angle) * radius + (Math.random() - 0.5) * 0.05; // Add small random offset
+          
+          // Multiple layers of Y positions for more realistic sweat distribution
+          const startY = 0.25 + Math.random() * 0.3;
+          const endY = startY - 0.4;
+
+          drop.setAttribute('position', `${x} ${startY} ${z}`);
+          drop.setAttribute('radius', '0.015');
+          drop.setAttribute('color', '#87ceeb');
+          drop.setAttribute('opacity', '0.9');
+          drop.setAttribute('material', 'shader: flat; side: double');
+          
+          // Animation for falling with varied timing
+          const duration = 1500 + Math.random() * 500;
+          const delay = i * 100 + Math.random() * 100; // Faster stagger for more simultaneous drops
+          drop.setAttribute('animation', `property: position; to: ${x} ${endY} ${z}; dur: ${duration}; loop: true; easing: easeIn; delay: ${delay}`);
+          drop.setAttribute('animation__opacity', `property: opacity; from: 0.9; to: 0; dur: ${duration}; loop: true; delay: ${delay}`);
+          drop.setAttribute('animation__scale', `property: scale; from: 1 1 1; to: 0.5 0.5 0.5; dur: ${duration}; loop: true; delay: ${delay}`);
+          
+          sweatDropsContainer.appendChild(drop);
+        }
+      }
+
+      // Function to update thermometer color
+      function updateThermometer(temp) {
+        // Method 1: Jika model GLB memiliki child element dengan ID/material tertentu
+        const thermometerBody = document.querySelector('#thermometer-body');
+        const thermometerLiquid = document.querySelector('#thermometer-liquid');
+        
+        if (thermometerLiquid) {
+          // Update overlay liquid color (jika menggunakan overlay)
+          if (temp === 20) {
+            thermometerLiquid.setAttribute('color', '#3b82f6'); // Blue
+          } else if (temp === 30) {
+            thermometerLiquid.setAttribute('color', '#ef4444'); // Red
+          }
+        }
+        
+        // Method 2: Jika model GLB memiliki material yang bisa diubah
+        // Cari semua material dalam model termometer dan ubah warnanya
+        if (thermometerBody) {
+          // Coba cari child elements dengan material
+          const liquidElements = thermometerBody.querySelectorAll('[material]');
+          liquidElements.forEach(el => {
+            const material = el.getAttribute('material');
+            // Jika material memiliki property color, ubah warnanya
+            if (material && typeof material === 'object' && material.color) {
+              if (temp === 20) {
+                el.setAttribute('material', 'color', '#3b82f6'); // Blue
+              } else if (temp === 30) {
+                el.setAttribute('material', 'color', '#ef4444'); // Red
+              }
+            }
+          });
+          
+          // Alternatif: Ubah material pada model langsung
+          // Jika model termometer memiliki material dengan nama tertentu
+          if (temp === 20) {
+            thermometerBody.setAttribute('material', 'color', '#3b82f6'); // Blue
+          } else if (temp === 30) {
+            thermometerBody.setAttribute('material', 'color', '#ef4444'); // Red
+          }
+        }
+      }
+
+      // Temperature 20°C button
+      if (temp20Btn) {
+        temp20Btn.addEventListener('click', function() {
+          currentTemperature = 20;
+          updateThermometer(20);
+          createSweatDrops(10); // 10 drops for cold (increased and more clustered)
+          
+          // Update button states
+          temp20Btn.parentElement.classList.add('active');
+          temp30Btn.parentElement.classList.remove('active');
+        });
+      }
+
+      // Temperature 30°C button
+      if (temp30Btn) {
+        temp30Btn.addEventListener('click', function() {
+          currentTemperature = 30;
+          updateThermometer(30);
+          createSweatDrops(18); // 18 drops for hot (increased and more clustered)
+          
+          // Update button states
+          temp30Btn.parentElement.classList.add('active');
+          temp20Btn.parentElement.classList.remove('active');
+        });
+      }
+
+      return { currentTemperature: () => currentTemperature };
+    }
+
+    // Simple Pipette Drag and Drop Setup (using draggable component)
+    // Note: The draggable component handles most of the logic
+    function setupPipetteDragDrop() {
+      try {
+        const pipette = document.querySelector('#pipette');
+        const pipetteSample = document.querySelector('#pipette-sample');
+        const anatomiTubuh = document.querySelector('#anatomi-tubuh');
+        const iseAnalyzer = document.querySelector('#ise-analyzer');
+        const analysisPopup = document.getElementById('analysisPopup');
+        const closeAnalysisBtn = document.getElementById('closeAnalysisBtn');
+        
+        if (!pipette) {
+          console.warn('Pipette not found');
+          return;
+        }
+
+        let isDragging = false;
+        let hasSample = false;
+        let originalPosition = { x: 3.5, y: 1.5, z: -2.3 };
+        
+        // Get original position
+        try {
+          const pos = pipette.getAttribute('position');
+          if (pos && typeof pos === 'object') {
+            originalPosition = { x: pos.x || 3.5, y: pos.y || 1.5, z: pos.z || -2.3 };
+          }
+        } catch (e) {
+          console.warn('Using default pipette position');
+        }
+
+        const camera = document.querySelector('[camera]');
+        let isNearAnatomi = false;
+        let isNearISE = false;
+
+        // Use multiple event listeners for better compatibility
+        // Method 1: Click event from cursor
+        pipette.addEventListener('click', function(e) {
+          try {
+            console.log('Pipette clicked');
+            isDragging = true;
+          } catch (err) {
+            console.error('Error in click:', err);
+          }
+        });
+
+        // Method 2: Mouse down on canvas (check if pipette is clicked)
+        const scene = document.querySelector('a-scene');
+        const canvas = scene ? scene.canvas : null;
+        
+        let mouseDownOnPipette = false;
+        
+        if (canvas) {
+          canvas.addEventListener('mousedown', function(e) {
+            // Use raycaster to check what was clicked
+            const cursor = document.querySelector('[cursor]');
+            if (cursor && cursor.components && cursor.components.raycaster) {
+              const raycaster = cursor.components.raycaster;
+              // Get current intersections
+              const intersections = raycaster.intersections || [];
+              for (let i = 0; i < intersections.length; i++) {
+                const intersection = intersections[i];
+                if (intersection.object && intersection.object.el) {
+                  let el = intersection.object.el;
+                  // Check if clicked element is pipette or its child
+                  while (el) {
+                    if (el.id === 'pipette' || el.classList.contains('draggable')) {
+                      console.log('Pipette clicked via canvas mousedown');
+                      isDragging = true;
+                      mouseDownOnPipette = true;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return;
+                    }
+                    el = el.parentElement;
+                  }
+                }
+              }
+            }
+            mouseDownOnPipette = false;
+          });
+        }
+
+        // Update pipette position
+        function updatePipettePosition(clientX, clientY) {
+          if (!isDragging || !camera) return;
+
+          try {
+            const cameraEl = camera.parentElement;
+            if (!cameraEl) return;
+            
+            const cameraPos = cameraEl.getAttribute('position');
+            if (!cameraPos) return;
+            
+            const mouseX = (clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(clientY / window.innerHeight) * 2 + 1;
+            const distance = 2;
+            const newX = cameraPos.x + mouseX * distance;
+            const newY = cameraPos.y + mouseY * distance;
+            const newZ = cameraPos.z - distance;
+            
+            pipette.setAttribute('position', { x: newX, y: newY, z: newZ });
+
+            // Check distance to anatomi tubuh
+            const pipettePos = pipette.getAttribute('position');
+            if (anatomiTubuh && pipettePos) {
+              const anatomiPos = anatomiTubuh.getAttribute('position');
+              if (anatomiPos && typeof anatomiPos === 'object') {
+                const dist = Math.sqrt(
+                  Math.pow((pipettePos.x || 0) - (anatomiPos.x || 0), 2) +
+                  Math.pow((pipettePos.y || 0) - (anatomiPos.y || 0), 2) +
+                  Math.pow((pipettePos.z || 0) - (anatomiPos.z || 0), 2)
+                );
+
+                if (dist < 0.8 && !hasSample) {
+                  hasSample = true;
+                  isNearAnatomi = true;
+                  if (pipetteSample) {
+                    pipetteSample.setAttribute('opacity', '0.9');
+                    pipetteSample.setAttribute('visible', 'true');
+                  }
+                } else {
+                  isNearAnatomi = false;
+                }
+              }
+            }
+
+            // Check distance to ISE analyzer
+            if (iseAnalyzer && pipettePos) {
+              const isePos = iseAnalyzer.getAttribute('position');
+              if (isePos && typeof isePos === 'object') {
+                const iseDist = Math.sqrt(
+                  Math.pow((pipettePos.x || 0) - (isePos.x || 0), 2) +
+                  Math.pow((pipettePos.y || 0) - (isePos.y || 0), 2) +
+                  Math.pow((pipettePos.z || 0) - (isePos.z || 0), 2)
+                );
+
+                isNearISE = (iseDist < 1.2);
+              }
+            }
+          } catch (err) {
+            console.error('Error updating pipette position:', err);
+          }
+        }
+
+        // Mouse move - only if dragging
+        function handleMouseMove(e) {
+          if (!isDragging && !mouseDownOnPipette) return;
+          if (!isDragging && mouseDownOnPipette) {
+            isDragging = true;
+          }
+          try {
+            updatePipettePosition(e.clientX, e.clientY);
+          } catch (err) {
+            console.error('Error in mousemove:', err);
+          }
+        }
+        
+        document.addEventListener('mousemove', handleMouseMove);
+        if (canvas) {
+          canvas.addEventListener('mousemove', handleMouseMove);
+        }
+
+        // Mouse up - drop
+        function handleMouseUp(e) {
+          if (!isDragging && !mouseDownOnPipette) return;
+          
+          isDragging = false;
+          mouseDownOnPipette = false;
+          
+          try {
+            // Check if dropped on ISE analyzer with sample
+            if (isNearISE && hasSample) {
+              // Show analysis popup
+              setTimeout(() => {
+                if (analysisPopup) {
+                  analysisPopup.classList.add('show');
+                }
+                // Reset pipette
+                pipette.setAttribute('position', originalPosition);
+                hasSample = false;
+                if (pipetteSample) {
+                  pipetteSample.setAttribute('opacity', '0');
+                  pipetteSample.setAttribute('visible', 'false');
+                }
+              }, 500);
+            } else {
+              // Return to original position
+              pipette.setAttribute('position', originalPosition);
+            }
+            
+            isNearAnatomi = false;
+            isNearISE = false;
+          } catch (err) {
+            console.error('Error in mouseup:', err);
+          }
+        }
+        
+        document.addEventListener('mouseup', handleMouseUp);
+        if (canvas) {
+          canvas.addEventListener('mouseup', handleMouseUp);
+        }
+
+        // Close analysis popup
+        if (closeAnalysisBtn && analysisPopup) {
+          closeAnalysisBtn.addEventListener('click', function() {
+            analysisPopup.classList.remove('show');
+          });
+        }
+      } catch (err) {
+        console.error('Error setting up pipette drag and drop:', err);
+      }
+    }
+
+    // Close analysis popup handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const closeAnalysisBtn = document.getElementById('closeAnalysisBtn');
+      const analysisPopup = document.getElementById('analysisPopup');
+      if (closeAnalysisBtn && analysisPopup) {
+        closeAnalysisBtn.addEventListener('click', function() {
+          analysisPopup.classList.remove('show');
+        });
+      }
+    });
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', function () {
+      hideAvatarSelection();
+      setupMobileControls();
+      setupVideoControls();
+      setupInteractiveFlow();
+      setupTemperaturePanel();
+      
+      // Setup pipette drag and drop after scene is loaded
+      const sceneForDragDrop = document.querySelector('a-scene');
+      if (sceneForDragDrop) {
+        if (sceneForDragDrop.hasLoaded) {
+          setTimeout(setupPipetteDragDrop, 2000);
+        } else {
+          sceneForDragDrop.addEventListener('loaded', function() {
+            setTimeout(setupPipetteDragDrop, 2000);
+          });
+        }
+      } else {
+        setTimeout(setupPipetteDragDrop, 3000);
+      }
+      
+      // Monitor model loading with better error handling
+      const sceneForMonitoring = document.querySelector('a-scene');
+      if (sceneForMonitoring) {
+        sceneForMonitoring.addEventListener('loaded', function() {
+          console.log('Scene loaded, checking models...');
+          
+          const models = [
+            { id: 'lab-biologi-model', name: 'Lab Biologi', required: true },
+            { id: 'thermometer-body', name: 'Thermometer', required: false },
+            { id: 'pipette-model', name: 'Pipette', required: false },
+            { id: 'ise-analyzer-model', name: 'ISE Analyzer', required: false }
+          ];
+          
+          models.forEach(function(model) {
+            setTimeout(function() {
+              const modelEl = document.getElementById(model.id);
+              if (modelEl) {
+                console.log('Checking model:', model.name);
+                const src = modelEl.getAttribute('src');
+                console.log('  Model src:', src);
+                console.log('  Model visible:', modelEl.getAttribute('visible'));
+                console.log('  Model position:', modelEl.getAttribute('position'));
+                console.log('  Model scale:', modelEl.getAttribute('scale'));
+                
+                // Check if model has loaded
+                const object3D = modelEl.getObject3D('mesh');
+                if (object3D) {
+                  console.log('✓ Model loaded:', model.name);
+                  console.log('  Object3D position:', object3D.position);
+                  console.log('  Object3D visible:', object3D.visible);
+                  console.log('  Object3D children:', object3D.children.length);
+                  // Force visible
+                  object3D.visible = true;
+                  modelEl.setAttribute('visible', 'true');
+                } else {
+                  console.warn('⚠ Model object3D not found yet:', model.name);
+                  // Wait a bit more for model to load
+                  setTimeout(function() {
+                    const obj = modelEl.getObject3D('mesh');
+                    if (obj) {
+                      console.log('✓ Model loaded (delayed):', model.name);
+                      console.log('  Object3D position:', obj.position);
+                      obj.visible = true;
+                      modelEl.setAttribute('visible', 'true');
+                    } else {
+                      console.error('✗ Model object3D still not found:', model.name);
+                      if (model.required) {
+                        console.error('✗ REQUIRED model failed to load:', model.name);
+                      }
+                    }
+                  }, 3000);
+                }
+                
+                // Listen for load events
+                modelEl.addEventListener('model-loaded', function() {
+                  console.log('✓ Model loaded event fired:', model.name);
+                  const obj = modelEl.getObject3D('mesh');
+                  if (obj) {
+                    console.log('  Object3D confirmed after event');
+                    obj.visible = true;
+                    modelEl.setAttribute('visible', 'true');
+                  }
+                });
+                
+                modelEl.addEventListener('model-error', function(e) {
+                  console.error('✗ Error loading model:', model.name, e.detail || e);
+                });
+              } else {
+                console.error('Model element NOT found:', model.id);
+              }
+            }, 500);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
+
