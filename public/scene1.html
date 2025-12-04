@@ -347,7 +347,7 @@
     /* Finish Button */
     .finish-btn {
       position: fixed;
-      bottom: 50px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -568,7 +568,7 @@
     <a-entity id="scene">
       <!-- School building with collision -->
       <a-entity id="school-group" position="0 -11 0">
-        <a-gltf-model src="assets/scene1/sekolah.glb" scale="2 2 2" rotation="0 0 0" class="collidable"></a-gltf-model>
+        <a-gltf-model src="assets/scene1/sekolah.glb" scale="2 2 2" rotation="0 0 0"></a-gltf-model>
         <!-- Collision box for school building -->
         <a-box class="collidable" position="0 8 0" width="12" height="24" depth="12" visible="false"></a-box>
       </a-entity>
@@ -577,7 +577,7 @@
 
       <!-- Virtual Lab 3D Model -->
       <a-entity id="virtual-lab" position="16 0 7" rotation="0 90 0">
-        <a-gltf-model src="assets/map/Virtual Lab.glb" scale="1 1 1" class="collidable"></a-gltf-model>
+        <a-gltf-model src="assets/map/Virtual Lab.glb" scale="1 1 1"></a-gltf-model>
         <!-- Collision boxes for Virtual Lab (walls, furniture, doors, etc.) -->
         <!-- Main room collision - adjust based on actual model size -->
         <a-box class="collidable" position="0 2.5 0" width="20" height="5" depth="20" visible="false"></a-box>
