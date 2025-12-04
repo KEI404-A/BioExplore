@@ -781,6 +781,9 @@
 </button>
 
 <script>
+  // Global variable to store selected temperature
+  window.currentSelectedTemperature = null;
+
   // Update Sweat Collection System
   AFRAME.registerComponent('sweat-collector', {
     init: function() {
@@ -1193,24 +1196,63 @@
     
     showAnalysis: function() {
       const count = this.collectedSweatCount;
+      const temperature = window.currentSelectedTemperature || 20; // Default to 20 if not set
       let naLevel, kLevel, clLevel, phLevel;
       
+      // Base values based on sweat count
+      let baseNa, baseK, baseCl, basePh;
+      
       if (count >= 15) {
-        naLevel = '55-70';
-        kLevel = '10-15';
-        clLevel = '45-60';
-        phLevel = '5.5-6.0';
+        baseNa = 55;
+        baseK = 10;
+        baseCl = 45;
+        basePh = 5.5;
       } else if (count >= 10) {
-        naLevel = '40-55';
-        kLevel = '7-10';
-        clLevel = '35-45';
-        phLevel = '5.8-6.2';
+        baseNa = 40;
+        baseK = 7;
+        baseCl = 35;
+        basePh = 5.8;
       } else {
-        naLevel = '20-40';
-        kLevel = '4-7';
-        clLevel = '25-35';
-        phLevel = '6.0-6.5';
+        baseNa = 20;
+        baseK = 4;
+        baseCl = 25;
+        basePh = 6.0;
       }
+      
+      // Adjust values based on temperature (higher temperature increases Na⁺ and Cl⁻)
+      let naAdjustment = 0;
+      let clAdjustment = 0;
+      let kAdjustment = 0;
+      let phAdjustment = 0;
+      
+      if (temperature === 30) {
+        // Higher temperature increases Na⁺ and Cl⁻ more significantly
+        naAdjustment = 10 + Math.floor(count * 0.5); // More adjustment with more sweat
+        clAdjustment = 8 + Math.floor(count * 0.4);
+        kAdjustment = 2 + Math.floor(count * 0.2);
+        phAdjustment = -0.2; // Slightly lower pH at higher temperature
+      } else {
+        // 20°C has minimal adjustment
+        naAdjustment = Math.floor(count * 0.2);
+        clAdjustment = Math.floor(count * 0.15);
+        kAdjustment = Math.floor(count * 0.1);
+        phAdjustment = 0.1;
+      }
+      
+      // Calculate final values with ranges
+      const finalNa = Math.min(70, Math.max(20, baseNa + naAdjustment));
+      const finalNaMax = Math.min(75, finalNa + 10);
+      const finalK = Math.min(15, Math.max(4, baseK + kAdjustment));
+      const finalKMax = Math.min(18, finalK + 5);
+      const finalCl = Math.min(60, Math.max(25, baseCl + clAdjustment));
+      const finalClMax = Math.min(65, finalCl + 10);
+      const finalPh = Math.max(5.0, Math.min(6.5, basePh + phAdjustment));
+      const finalPhMax = Math.min(6.5, finalPh + 0.3);
+      
+      naLevel = `${finalNa}-${finalNaMax}`;
+      kLevel = `${finalK}-${finalKMax}`;
+      clLevel = `${finalCl}-${finalClMax}`;
+      phLevel = `${finalPh.toFixed(1)}-${finalPhMax.toFixed(1)}`;
       
       const popup = this.analysisPopup;
       if (popup) {
@@ -2296,8 +2338,11 @@
       if (temp20Btn) {
         temp20Btn.addEventListener('click', function() {
           currentTemperature = 20;
+          window.currentSelectedTemperature = 20; // Store globally for analysis
           updateThermometer(20);
-          createSweatDrops(10); // 10 drops for cold (increased and more clustered)
+          // Random sweat drops: 8-10 for 20°C
+          const sweatCount = 8 + Math.floor(Math.random() * 3); // 8, 9, or 10
+          createSweatDrops(sweatCount);
           
           // Update button states
           temp20Btn.parentElement.classList.add('active');
@@ -2309,8 +2354,11 @@
       if (temp30Btn) {
         temp30Btn.addEventListener('click', function() {
           currentTemperature = 30;
+          window.currentSelectedTemperature = 30; // Store globally for analysis
           updateThermometer(30);
-          createSweatDrops(18); // 18 drops for hot (increased and more clustered)
+          // Random sweat drops: 11-20 for 30°C (more than 20°C)
+          const sweatCount = 11 + Math.floor(Math.random() * 10); // 11 to 20
+          createSweatDrops(sweatCount);
           
           // Update button states
           temp30Btn.parentElement.classList.add('active');
