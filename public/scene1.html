@@ -508,7 +508,7 @@
 
   <!-- Done Button -->
   <button id="doneBtn" class="done-btn">
-    Done
+    Continue
   </button>
 
   <!-- Virtual Gamepad for Mobile -->
@@ -566,11 +566,9 @@
     </a-assets>
 
     <a-entity id="scene">
-      <!-- School building with collision -->
+      <!-- School building -->
       <a-entity id="school-group" position="0 -11 0">
         <a-gltf-model src="assets/scene1/sekolah.glb" scale="2 2 2" rotation="0 0 0"></a-gltf-model>
-        <!-- Collision box for school building -->
-        <a-box class="collidable" position="0 8 0" width="12" height="24" depth="12" visible="false"></a-box>
       </a-entity>
       <a-plane class="ground" position="0 0 0" rotation="-90 0 0" width="100" height="100" visible="true"></a-plane>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
@@ -578,25 +576,6 @@
       <!-- Virtual Lab 3D Model -->
       <a-entity id="virtual-lab" position="16 0 7" rotation="0 90 0">
         <a-gltf-model src="assets/map/Virtual Lab.glb" scale="1 1 1"></a-gltf-model>
-        <!-- Collision boxes for Virtual Lab (walls, furniture, doors, etc.) -->
-        <!-- Main room collision - adjust based on actual model size -->
-        <a-box class="collidable" position="0 2.5 0" width="20" height="5" depth="20" visible="false"></a-box>
-        <!-- Left wall -->
-        <a-box class="collidable" position="-10 2.5 0" width="0.2" height="5" depth="20" visible="false"></a-box>
-        <!-- Right wall -->
-        <a-box class="collidable" position="10 2.5 0" width="0.2" height="5" depth="20" visible="false"></a-box>
-        <!-- Back wall -->
-        <a-box class="collidable" position="0 2.5 -10" width="20" height="5" depth="0.2" visible="false"></a-box>
-        <!-- Front wall (with door opening) -->
-        <a-box class="collidable" position="-5 2.5 10" width="5" height="5" depth="0.2" visible="false"></a-box>
-        <a-box class="collidable" position="5 2.5 10" width="5" height="5" depth="0.2" visible="false"></a-box>
-        <!-- Table collision -->
-        <a-box class="collidable" position="0 0.4 0" width="4" height="0.8" depth="2" visible="false"></a-box>
-        <!-- Chairs collision (4 chairs around table) -->
-        <a-box class="collidable" position="-2.5 0.4 0" width="0.5" height="1" depth="0.5" visible="false"></a-box>
-        <a-box class="collidable" position="2.5 0.4 0" width="0.5" height="1" depth="0.5" visible="false"></a-box>
-        <a-box class="collidable" position="0 0.4 -1.5" width="0.5" height="1" depth="0.5" visible="false"></a-box>
-        <a-box class="collidable" position="0 0.4 1.5" width="0.5" height="1" depth="0.5" visible="false"></a-box>
         
         <!-- Video on white screen (back wall) -->
         <!-- Position relative to virtual-lab entity -->

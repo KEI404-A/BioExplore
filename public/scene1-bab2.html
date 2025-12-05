@@ -334,6 +334,41 @@
       transform: translateX(-50%) scale(0.98);
     }
 
+    /* Next Scene Button (Bab 3) */
+    .next-scene-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20007;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+      box-shadow: 0 5px 20px rgba(139, 92, 246, 0.5);
+    }
+
+    .next-scene-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .next-scene-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+    }
+
+    .next-scene-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
     /* Panel Variabel Termometer */
     .temperature-panel {
       position: fixed;
@@ -537,6 +572,239 @@
     .close-analysis-btn:hover {
       background: rgba(239, 68, 68, 0.2);
       transform: scale(1.1);
+    }
+
+    /* Post Analysis Button */
+    .post-analysis-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20011;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.3s ease;
+      box-shadow: 0 5px 20px rgba(16, 185, 129, 0.5);
+    }
+
+    .post-analysis-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .post-analysis-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    }
+
+    .post-analysis-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Component Test Popup */
+    .component-test-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 700px;
+      width: 90%;
+      z-index: 20012;
+      opacity: 0;
+      pointer-events: none;
+      display: block !important;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .component-test-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .component-test-popup h3 {
+      color: #1e40af;
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .component-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .component-table th,
+    .component-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .component-table th {
+      background: rgba(59, 130, 246, 0.1);
+      color: #1e40af;
+      font-weight: bold;
+    }
+
+    .component-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .component-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    /* Temperature Selection Buttons in Component Test */
+    .component-temp-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .component-temp-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .component-temp-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.6);
+    }
+
+    .component-temp-btn:active {
+      transform: scale(0.98);
+    }
+
+    .component-temp-btn.hot {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.4);
+    }
+
+    .component-temp-btn.hot:hover {
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.6);
+    }
+
+    .component-temp-btn.active {
+      transform: scale(1.1);
+      box-shadow: 0 5px 20px rgba(59, 130, 246, 0.7);
+    }
+
+    .component-temp-btn.hot.active {
+      box-shadow: 0 5px 20px rgba(239, 68, 68, 0.7);
+    }
+
+    .selected-temp-result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: #1e40af;
+      min-height: 30px;
+      padding: 15px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 10px;
+    }
+
+    /* Component Chart */
+    .component-chart {
+      margin-top: 24px;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .component-chart-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 60px;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .component-chart-label {
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .component-chart-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .component-track {
+      width: 100%;
+      background: #e5e7eb;
+      border-radius: 9999px;
+      height: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .component-bar {
+      height: 10px;
+      border-radius: 9999px;
+      transition: width 0.35s ease, opacity 0.35s ease;
+    }
+
+    .bar-20 {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    }
+
+    .bar-30 {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .component-value {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+      color: #374151;
+      text-align: right;
+      line-height: 1.2;
+    }
+
+    .component-legend {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      display: inline-block;
+      margin-right: 6px;
     }
   </style>
 </head>
@@ -1287,6 +1555,15 @@
           `;
         }
         popup.classList.add('show');
+        
+        // Show post-analysis button after popup is shown
+        const postAnalysisBtn = document.getElementById('postAnalysisBtn');
+        if (postAnalysisBtn) {
+          // Small delay to ensure popup is fully visible
+          setTimeout(() => {
+            postAnalysisBtn.classList.add('show');
+          }, 500);
+        }
       }
       
       // Reset collected sweat count
@@ -1678,6 +1955,11 @@
     Next
   </button>
 
+  <!-- Next Scene Button (Bab 3) -->
+  <button id="nextSceneBtn" class="next-scene-btn">
+    Continue
+  </button>
+
   <!-- Panel Variabel Termometer -->
   <div id="temperaturePanel" class="temperature-panel">
     <h3>Panel Variabel Termometer</h3>
@@ -1728,6 +2010,59 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Post Analysis Button -->
+  <button id="postAnalysisBtn" class="post-analysis-btn">
+    Uji Sampel Keringat
+  </button>
+
+  <!-- Component Test Popup -->
+  <div id="componentTestPopup" class="component-test-popup">
+    <button class="close-analysis-btn" id="closeComponentTestBtn">×</button>
+    <h3>Komponen Keringat</h3>
+    <table class="component-table">
+      <thead>
+        <tr>
+          <th>Komponen</th>
+          <th>20°C (mmol/L)</th>
+          <th>30°C (mmol/L)</th>
+        </tr>
+      </thead>
+      <tbody id="componentTableBody">
+        <tr>
+          <td>Na⁺</td>
+          <td id="na-20">-</td>
+          <td id="na-30">-</td>
+        </tr>
+        <tr>
+          <td>Cl⁻</td>
+          <td id="cl-20">-</td>
+          <td id="cl-30">-</td>
+        </tr>
+        <tr>
+          <td>K⁺</td>
+          <td id="k-20">-</td>
+          <td id="k-30">-</td>
+        </tr>
+        <tr>
+          <td>Laktat</td>
+          <td id="laktat-20">-</td>
+          <td id="laktat-30">-</td>
+        </tr>
+        <tr>
+          <td>Urea</td>
+          <td id="urea-20">-</td>
+          <td id="urea-30">-</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="component-temp-buttons">
+      <button id="componentTemp20Btn" class="component-temp-btn">Pilih 20°C</button>
+      <button id="componentTemp30Btn" class="component-temp-btn hot">Pilih 30°C</button>
+    </div>
+    <div id="selectedTempResult" class="selected-temp-result"></div>
+    <div id="componentChart" class="component-chart"></div>
   </div>
 
   <script>
@@ -1979,6 +2314,14 @@
             if (videoControls) {
               videoControls.classList.remove('show');
             }
+            
+            // Show Next Scene button after video fades out
+            setTimeout(() => {
+              const nextSceneBtn = document.getElementById('nextSceneBtn');
+              if (nextSceneBtn) {
+                nextSceneBtn.classList.add('show');
+              }
+            }, 1000); // Wait 1 second after fade starts
           }
         });
       }
@@ -2575,6 +2918,11 @@
         if (closeAnalysisBtn && analysisPopup) {
           closeAnalysisBtn.addEventListener('click', function() {
             analysisPopup.classList.remove('show');
+            // Hide post-analysis button when popup is closed
+            const postAnalysisBtn = document.getElementById('postAnalysisBtn');
+            if (postAnalysisBtn) {
+              postAnalysisBtn.classList.remove('show');
+            }
           });
         }
       } catch (err) {
@@ -2586,10 +2934,391 @@
     document.addEventListener('DOMContentLoaded', function() {
       const closeAnalysisBtn = document.getElementById('closeAnalysisBtn');
       const analysisPopup = document.getElementById('analysisPopup');
+      const postAnalysisBtn = document.getElementById('postAnalysisBtn');
       if (closeAnalysisBtn && analysisPopup) {
         closeAnalysisBtn.addEventListener('click', function() {
           analysisPopup.classList.remove('show');
+          // Hide post-analysis button when popup is closed
+          if (postAnalysisBtn) {
+            postAnalysisBtn.classList.remove('show');
+          }
         });
+      }
+      
+      // Next Scene Button Handler (redirect to scene1-bab3.html)
+      const nextSceneBtn = document.getElementById('nextSceneBtn');
+      if (nextSceneBtn) {
+        nextSceneBtn.addEventListener('click', function() {
+          window.location.href = 'scene1-bab3.html';
+        });
+      }
+
+      // Post Analysis Button Handler - Start component test
+      if (postAnalysisBtn) {
+        postAnalysisBtn.addEventListener('click', function() {
+          startComponentTest();
+        });
+      }
+
+      // Component Test Functions
+      function startComponentTest() {
+        // Hide post-analysis button
+        if (postAnalysisBtn) {
+          postAnalysisBtn.classList.remove('show');
+        }
+
+        // Hide analysis popup
+        const analysisPopup = document.getElementById('analysisPopup');
+        if (analysisPopup) {
+          analysisPopup.classList.remove('show');
+        }
+
+        // Create and animate particles from ISE analyzer
+        animateParticlesFromISE();
+      }
+
+      function animateParticlesFromISE() {
+        const iseAnalyzer = document.querySelector('#ise-analyzer');
+        const anatomiTubuh = document.querySelector('#anatomi-tubuh');
+        
+        if (!iseAnalyzer || !anatomiTubuh) {
+          console.error('ISE analyzer or anatomi tubuh not found');
+          return;
+        }
+
+        const isePos = iseAnalyzer.getAttribute('position');
+        const anatomiPos = anatomiTubuh.getAttribute('position');
+        
+        // Create particle container
+        const particleContainer = document.createElement('a-entity');
+        particleContainer.id = 'test-particles-container';
+        document.querySelector('a-scene').appendChild(particleContainer);
+
+        // Create multiple particles
+        const particleCount = 15;
+        const particles = [];
+
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('a-sphere');
+          particle.setAttribute('radius', '0.02');
+          particle.setAttribute('color', '#87ceeb');
+          particle.setAttribute('opacity', '0.9');
+          particle.setAttribute('material', 'shader: flat; side: double; emissive: #87ceeb; emissiveIntensity: 0.5');
+          
+          // Start position at ISE
+          particle.setAttribute('position', {
+            x: isePos.x,
+            y: isePos.y + 0.3,
+            z: isePos.z
+          });
+          
+          particleContainer.appendChild(particle);
+          particles.push(particle);
+        }
+
+        // Phase 1: Particles exit from ISE (spread out smoothly)
+        particles.forEach((particle, index) => {
+          const angle = (index / particleCount) * Math.PI * 2;
+          const radius = 0.3;
+          const exitX = isePos.x + Math.cos(angle) * radius;
+          const exitY = isePos.y + 0.5;
+          const exitZ = isePos.z + Math.sin(angle) * radius;
+
+          particle.setAttribute('animation', {
+            property: 'position',
+            to: `${exitX} ${exitY} ${exitZ}`,
+            dur: 1500,
+            delay: index * 50,
+            easing: 'easeOutQuad'
+          });
+        });
+
+        // Phase 2: Particles move to anatomi and start orbiting
+        setTimeout(() => {
+          startOrbitingAnimation(particles, anatomiPos);
+        }, 2000);
+      }
+
+      function startOrbitingAnimation(particles, centerPos) {
+        const orbitRadius = 1.5;
+        const orbitHeight = 0.5;
+        const orbitDuration = 4000; // 4 seconds for one full orbit (smooth)
+        const totalOrbits = 2; // Number of full orbits
+        const totalSteps = 120; // Steps per orbit
+
+        let completedParticles = 0;
+
+        particles.forEach((particle, index) => {
+          const angleOffset = (index / particles.length) * Math.PI * 2;
+          
+          // Create orbital animation using smooth interpolation
+          let currentAngle = angleOffset;
+          const angleStep = (Math.PI * 2) / totalSteps;
+          let step = 0;
+          let orbitCount = 0;
+
+          const orbitInterval = setInterval(() => {
+            const x = centerPos.x + Math.cos(currentAngle) * orbitRadius;
+            const y = centerPos.y + orbitHeight + Math.sin(currentAngle * 2) * 0.1; // Slight vertical variation
+            const z = centerPos.z + Math.sin(currentAngle) * orbitRadius;
+
+            particle.setAttribute('position', { x: x, y: y, z: z });
+            
+            currentAngle += angleStep;
+            step++;
+
+            // Check if completed one orbit
+            if (step % totalSteps === 0) {
+              orbitCount++;
+            }
+
+            // Stop after specified number of orbits
+            if (orbitCount >= totalOrbits) {
+              clearInterval(orbitInterval);
+              completedParticles++;
+              
+              // Fade out particles smoothly
+              particle.setAttribute('animation__fade', {
+                property: 'material.opacity',
+                from: 0.9,
+                to: 0,
+                dur: 800,
+                easing: 'easeOutQuad'
+              });
+
+              // Remove particle after fade
+              setTimeout(() => {
+                if (particle.parentElement) {
+                  particle.parentElement.removeChild(particle);
+                }
+              }, 900);
+
+              // Show component test popup after all particles are removed
+              if (completedParticles === particles.length) {
+                setTimeout(() => {
+                  // Clean up container
+                  const container = document.getElementById('test-particles-container');
+                  if (container && container.parentElement) {
+                    container.parentElement.removeChild(container);
+                  }
+                  showComponentTestPopup();
+                }, 1000);
+              }
+            }
+          }, orbitDuration / totalSteps);
+        });
+      }
+
+      function showComponentTestPopup() {
+        // Calculate and display component values
+        const componentValues = calculateComponentValues();
+        renderComponentChart(componentValues);
+        
+        const popup = document.getElementById('componentTestPopup');
+        if (popup) {
+          popup.classList.add('show');
+        }
+
+        // Setup temperature selection buttons
+        setupComponentTempButtons();
+      }
+
+      function calculateComponentValues() {
+        // Calculate for 20°C
+        const temp20 = 20;
+        const na20 = (3.5 * temp20 - 45).toFixed(1);
+        const cl20 = (2.7 * temp20 - 36).toFixed(1);
+        const k20 = (0.4 * temp20 - 3).toFixed(1);
+        const laktat20 = (1.3 * temp20 - 14).toFixed(1);
+        const urea20 = (0.4 * temp20 - 2).toFixed(1);
+
+        // Calculate for 30°C
+        const temp30 = 30;
+        const na30 = (3.5 * temp30 - 45).toFixed(1);
+        const cl30 = (2.7 * temp30 - 36).toFixed(1);
+        const k30 = (0.4 * temp30 - 3).toFixed(1);
+        const laktat30 = (1.3 * temp30 - 14).toFixed(1);
+        const urea30 = (0.4 * temp30 - 2).toFixed(1);
+
+        // Update table
+        document.getElementById('na-20').textContent = na20;
+        document.getElementById('na-30').textContent = na30;
+        document.getElementById('cl-20').textContent = cl20;
+        document.getElementById('cl-30').textContent = cl30;
+        document.getElementById('k-20').textContent = k20;
+        document.getElementById('k-30').textContent = k30;
+        document.getElementById('laktat-20').textContent = laktat20;
+        document.getElementById('laktat-30').textContent = laktat30;
+        document.getElementById('urea-20').textContent = urea20;
+        document.getElementById('urea-30').textContent = urea30;
+
+        return {
+          na20: parseFloat(na20),
+          na30: parseFloat(na30),
+          cl20: parseFloat(cl20),
+          cl30: parseFloat(cl30),
+          k20: parseFloat(k20),
+          k30: parseFloat(k30),
+          laktat20: parseFloat(laktat20),
+          laktat30: parseFloat(laktat30),
+          urea20: parseFloat(urea20),
+          urea30: parseFloat(urea30)
+        };
+      }
+
+      function renderComponentChart(values) {
+        const chartEl = document.getElementById('componentChart');
+        if (!chartEl) return;
+
+        const rows = [
+          { label: 'Na⁺', v20: values.na20, v30: values.na30 },
+          { label: 'Cl⁻', v20: values.cl20, v30: values.cl30 },
+          { label: 'K⁺', v20: values.k20, v30: values.k30 },
+          { label: 'Laktat', v20: values.laktat20, v30: values.laktat30 },
+          { label: 'Urea', v20: values.urea20, v30: values.urea30 }
+        ];
+
+        const maxVal = Math.max(...rows.flatMap(r => [r.v20, r.v30]), 1);
+
+        const legend = `
+          <div class="component-legend">
+            <span><span class="legend-dot" style="background:#3b82f6;"></span>20°C</span>
+            <span><span class="legend-dot" style="background:#ef4444;"></span>30°C</span>
+          </div>
+        `;
+
+        chartEl.innerHTML = legend + rows.map(row => {
+          const w20 = Math.max(4, (row.v20 / maxVal) * 100);
+          const w30 = Math.max(4, (row.v30 / maxVal) * 100);
+          return `
+            <div class="component-chart-row">
+              <div class="component-chart-label">${row.label}</div>
+              <div class="component-chart-bars">
+                <div class="component-track">
+                  <div class="component-bar bar-20" style="width:${w20}%;"></div>
+                </div>
+                <div class="component-track">
+                  <div class="component-bar bar-30" style="width:${w30}%;"></div>
+                </div>
+              </div>
+              <div class="component-value">
+                <span>${row.v20}</span>
+                <span>${row.v30}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Flag to prevent multiple event listener attachments
+      let componentTempButtonsSetup = false;
+
+      function setupComponentTempButtons() {
+        if (componentTempButtonsSetup) return; // Already setup
+        componentTempButtonsSetup = true;
+
+        const temp20Btn = document.getElementById('componentTemp20Btn');
+        const temp30Btn = document.getElementById('componentTemp30Btn');
+        const resultDiv = document.getElementById('selectedTempResult');
+
+        if (temp20Btn) {
+          temp20Btn.addEventListener('click', function() {
+            // Remove active class from both buttons
+            temp20Btn.classList.add('active');
+            temp30Btn.classList.remove('active');
+
+            // Calculate and display values for 20°C
+            const temp = 20;
+            const na = (3.5 * temp - 45).toFixed(1);
+            const cl = (2.7 * temp - 36).toFixed(1);
+            const k = (0.4 * temp - 3).toFixed(1);
+            const laktat = (1.3 * temp - 14).toFixed(1);
+            const urea = (0.4 * temp - 2).toFixed(1);
+
+            if (resultDiv) {
+              resultDiv.innerHTML = `
+                <div style="color: #3b82f6; margin-bottom: 10px; font-size: 20px;">Hasil untuk Suhu 20°C:</div>
+                <div style="font-size: 14px; color: #1f2937; line-height: 1.8;">
+                  Na⁺: ${na} mmol/L | Cl⁻: ${cl} mmol/L | K⁺: ${k} mmol/L<br>
+                  Laktat: ${laktat} mmol/L | Urea: ${urea} mmol/L
+                </div>
+              `;
+            }
+
+            // Update chart for consistency
+            renderComponentChart({
+              na20: parseFloat(na),
+              na30: parseFloat(document.getElementById('na-30').textContent),
+              cl20: parseFloat(cl),
+              cl30: parseFloat(document.getElementById('cl-30').textContent),
+              k20: parseFloat(k),
+              k30: parseFloat(document.getElementById('k-30').textContent),
+              laktat20: parseFloat(laktat),
+              laktat30: parseFloat(document.getElementById('laktat-30').textContent),
+              urea20: parseFloat(urea),
+              urea30: parseFloat(document.getElementById('urea-30').textContent)
+            });
+          });
+        }
+
+        if (temp30Btn) {
+          temp30Btn.addEventListener('click', function() {
+            // Remove active class from both buttons
+            temp30Btn.classList.add('active');
+            temp20Btn.classList.remove('active');
+
+            // Calculate and display values for 30°C
+            const temp = 30;
+            const na = (3.5 * temp - 45).toFixed(1);
+            const cl = (2.7 * temp - 36).toFixed(1);
+            const k = (0.4 * temp - 3).toFixed(1);
+            const laktat = (1.3 * temp - 14).toFixed(1);
+            const urea = (0.4 * temp - 2).toFixed(1);
+
+            if (resultDiv) {
+              resultDiv.innerHTML = `
+                <div style="color: #ef4444; margin-bottom: 10px; font-size: 20px;">Hasil untuk Suhu 30°C:</div>
+                <div style="font-size: 14px; color: #1f2937; line-height: 1.8;">
+                  Na⁺: ${na} mmol/L | Cl⁻: ${cl} mmol/L | K⁺: ${k} mmol/L<br>
+                  Laktat: ${laktat} mmol/L | Urea: ${urea} mmol/L
+                </div>
+              `;
+            }
+
+            // Update chart for consistency
+            renderComponentChart({
+              na20: parseFloat(document.getElementById('na-20').textContent),
+              na30: parseFloat(na),
+              cl20: parseFloat(document.getElementById('cl-20').textContent),
+              cl30: parseFloat(cl),
+              k20: parseFloat(document.getElementById('k-20').textContent),
+              k30: parseFloat(k),
+              laktat20: parseFloat(document.getElementById('laktat-20').textContent),
+              laktat30: parseFloat(laktat),
+              urea20: parseFloat(document.getElementById('urea-20').textContent),
+              urea30: parseFloat(urea)
+            });
+          });
+        }
+
+        // Close button handler
+        const closeBtn = document.getElementById('closeComponentTestBtn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function() {
+            const popup = document.getElementById('componentTestPopup');
+            if (popup) {
+              popup.classList.remove('show');
+            }
+            // Reset buttons
+            temp20Btn.classList.remove('active');
+            temp30Btn.classList.remove('active');
+            if (resultDiv) {
+              resultDiv.innerHTML = '';
+            }
+            // Reset flag to allow setup again if popup is reopened
+            componentTempButtonsSetup = false;
+          });
+        }
       }
     });
 

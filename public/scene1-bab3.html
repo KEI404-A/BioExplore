@@ -1,0 +1,404 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Scene 1 - Bab 3 - AR-Room</title>
+  <meta name="description" content="Scene 1 Bab 3">
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="https://unpkg.com/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
+  <script src="https://unpkg.com/networked-aframe@0.14.0/dist/easyrtc-adapter.js"></script>
+  <script>
+    // Global configuration
+    window.NAF_OPTIONS = {
+      updateRate: 15,
+      useLerp: true,
+      useHttps: window.location.protocol === 'https:',
+      debug: true
+    };
+    
+    const iceServers = [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' }
+    ];
+    
+    // Initialize EasyRTC after script is loaded - with better error handling
+    function initEasyRTC() {
+      try {
+        if (typeof easyrtc !== 'undefined' && easyrtc) {
+          easyrtc.enableDebug(false);
+          easyrtc.setStunServers(iceServers);
+          easyrtc.enableVideo(false);
+          easyrtc.enableAudio(false);
+          easyrtc.enableDataChannels(true);
+          console.log('EasyRTC initialized successfully');
+        } else {
+          console.warn('EasyRTC not available, continuing without networking features');
+        }
+      } catch (e) {
+        console.warn('EasyRTC initialization error (non-critical):', e.message);
+      }
+    }
+    
+    // Try to initialize EasyRTC, but don't block if it fails
+    try {
+      if (typeof easyrtc !== 'undefined') {
+        initEasyRTC();
+      } else {
+        let easyrtcCheckCount = 0;
+        const maxChecks = 10;
+        const checkEasyRTC = setInterval(function() {
+          easyrtcCheckCount++;
+          if (typeof easyrtc !== 'undefined') {
+            clearInterval(checkEasyRTC);
+            initEasyRTC();
+          } else if (easyrtcCheckCount >= maxChecks) {
+            clearInterval(checkEasyRTC);
+            console.warn('EasyRTC not loaded after timeout, continuing without it');
+          }
+        }, 200);
+      }
+    } catch (e) {
+      console.warn('EasyRTC setup error (non-critical):', e.message);
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.5.4/dist/aframe-extras.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-environment-component@1.5.0/dist/aframe-environment-component.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-cursor-teleport@1.6.0/dist/aframe-cursor-teleport-component.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-gltf-model-plus@1.0.0/dist/gltf-model-plus.min.js"></script>
+  <script src="/dist/components.js"></script>
+  <script src="/js/joystick.js"></script>
+  <script defer src="/dist/ui.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      height: auto;
+      min-height: 100vh;
+    }
+
+    /* Hide avatar selection modals */
+    div[class*="naf-centered-fullscreen"], 
+    div[class*="avatar-selection"], 
+    div[id*="avatar"], 
+    .avatar-modal, 
+    .avatar-selection-modal {
+      display: none !important;
+      visibility: hidden !important;
+    }
+  </style>
+</head>
+
+<body>
+  <a-scene light="defaultLightsEnabled:false" renderer="stencil:true; antialias: true;" vr-mode-ui="enabled: false"
+    webxr="requiredFeatures: local-floor; referenceSpaceType: local-floor;" networked-scene="
+        connectOnLoad: false;
+        room: scene1-bab3;
+        debug: true;
+        adapter: easyrtc;
+        onConnect: onConnect;
+        audio: false;
+        video: false;
+    " shadow="type: pcfsoft" gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
+    raycaster="far: 100; objects: .clickable,[link];" cursor="rayOrigin: mouse">
+    <a-assets>
+      <template id="avatar-template">
+        <a-entity player-info>
+          <a-entity class="model" animation-mixer>
+            <a-text class="nametag" align="center" value="?" position="0 2.1 0" scale=".5 .5 .5"></a-text>
+          </a-entity>
+          <a-entity class="camera" position="0 1.6 0"></a-entity>
+        </a-entity>
+      </template>
+      <img id="thumbForest" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
+    </a-assets>
+
+    <!-- Lab Beta 3D Model -->
+    <a-entity id="lab-beta" position="0 1.7 0" rotation="0 0 0">
+      <a-gltf-model 
+        id="lab-beta-model"
+        src="assets/map/LabBeta.compressed.glb" 
+        scale="1.1 1.1 1.1"
+        visible="true"
+        material="side: double">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Ground -->
+    <a-plane class="ground" position="0 0 0" rotation="-90 0 0" width="100" height="100" visible="true" material="color: #cccccc"></a-plane>
+    
+    <!-- Lighting -->
+    <a-entity light="type:ambient;intensity:0.6"></a-entity>
+    <a-entity light="type:directional;intensity:0.8;position:5 10 5" cast-shadow></a-entity>
+    <a-entity light="type:directional;intensity:0.4;position:-5 5 -5"></a-entity>
+
+    <!-- Portal back to VR Lobby -->
+    <a-entity id="portal-group" position="-1.1 1.3 -8.6">
+      <a-link link="on:click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="4 1.5 6"
+        rotation="0 90 0" scale="0.5 0.5 0.5" class="clickable" event-set__mouseenter="material.opacity: 0.8"
+        event-set__mouseleave="material.opacity: 0.6">
+      </a-link>
+    </a-entity>
+
+    <!-- Jump Controls Component -->
+    <script>
+      AFRAME.registerComponent('jump-controls', {
+        schema: {
+          jumpHeight: { type: 'number', default: 1.0 },
+          jumpDuration: { type: 'number', default: 800 },
+          isJumping: { type: 'boolean', default: false },
+          initialY: { type: 'number', default: 1.6 }
+        },
+        init: function() {
+          document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !this.data.isJumping) {
+              this.jump();
+            }
+          });
+          
+          document.addEventListener('touchend', (e) => {
+            if (!this.data.isJumping && e.target.id === 'jump-button') {
+              this.jump();
+            }
+          });
+          
+          this.data.initialY = this.el.getAttribute('position').y || 1.6;
+        },
+        jump: function() {
+          if (this.data.isJumping) return;
+          
+          this.data.isJumping = true;
+          const startTime = Date.now();
+          const startY = this.el.getAttribute('position').y;
+          const jumpHeight = this.data.jumpHeight;
+          const jumpDuration = this.data.jumpDuration;
+          
+          const animateJump = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / jumpDuration, 1);
+            const jumpProgress = Math.sin(progress * Math.PI);
+            const currentY = startY + (jumpProgress * jumpHeight);
+            
+            const currentPos = this.el.getAttribute('position');
+            this.el.setAttribute('position', {
+              x: currentPos.x,
+              y: currentY,
+              z: currentPos.z
+            });
+            
+            if (progress < 1) {
+              requestAnimationFrame(animateJump);
+            } else {
+              this.el.setAttribute('position', {
+                x: currentPos.x,
+                y: this.data.initialY,
+                z: currentPos.z
+              });
+              this.data.isJumping = false;
+            }
+          };
+          
+          requestAnimationFrame(animateJump);
+        }
+      });
+    </script>
+
+    <!-- Player Rig - Spawn inside the lab -->
+    <a-entity id="rig" position="0 1.6 0" rotation="0 0 0" collider="distance: 0.3" movement-controls="fly:false;"
+      networked="template:#avatar-template;attachTemplateToLocal:false" player-info jump-controls>
+      <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls pointer-lock>
+        <a-entity position="0 0 -1" geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
+          material="shader: flat; opacity: 0.9" cursor="fuse: true; fuseTimeout: 1200"
+          raycaster="objects: .clickable,[link]; far: 20;"
+          animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
+          animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120" id="main-cursor">
+        </a-entity>
+      </a-entity>
+      <a-entity id="left-hand" networked-hand-controls="hand: left" laser-controls="hand: left"></a-entity>
+      <a-entity id="right-hand" networked-hand-controls="hand:right" laser-controls="hand: right"></a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    // Collider Component
+    AFRAME.registerComponent('collider', {
+      schema: {
+        distance: { default: 1.2 },
+        debug: { default: false }
+      },
+      init: function () {
+        this.raycaster = new THREE.Raycaster();
+        this.lastSafePosition = new THREE.Vector3();
+        this.directions = [
+          new THREE.Vector3(0, 0, -1),
+          new THREE.Vector3(0, 0, 1),
+          new THREE.Vector3(-1, 0, 0),
+          new THREE.Vector3(1, 0, 0),
+          new THREE.Vector3(-0.7, 0, -0.7),
+          new THREE.Vector3(0.7, 0, -0.7),
+          new THREE.Vector3(-0.7, 0, 0.7),
+          new THREE.Vector3(0.7, 0, 0.7),
+        ];
+        this.el.addEventListener('loaded', () => {
+          this.el.object3D.getWorldPosition(this.lastSafePosition);
+        });
+      },
+      tick: function (time, delta) {
+        const collidableEls = this.el.sceneEl.querySelectorAll('.collidable');
+        if (collidableEls.length === 0) return;
+
+        const collidables = [];
+        collidableEls.forEach((el) => {
+          if (el.object3D) {
+            collidables.push(el.object3D);
+          }
+        });
+
+        let collision = false;
+        const currentPosition = new THREE.Vector3();
+        this.el.object3D.getWorldPosition(currentPosition);
+
+        for (const dir of this.directions) {
+          const worldDir = dir.clone().applyQuaternion(this.el.object3D.quaternion);
+          this.raycaster.set(currentPosition, worldDir);
+          this.raycaster.far = this.data.distance;
+          const intersects = this.raycaster.intersectObjects(collidables, true);
+
+          if (intersects.length > 0 && intersects[0].distance < this.data.distance) {
+            const hitEl = intersects[0].object.el;
+
+            if (this.data.debug) {
+              console.log('Collision detected with:', hitEl ? hitEl.id : 'unknown', 'distance:', intersects[0].distance);
+            }
+
+            this.el.object3D.position.copy(this.lastSafePosition);
+            collision = true;
+            break;
+          }
+        }
+
+        if (!collision) {
+          this.el.object3D.getWorldPosition(this.lastSafePosition);
+        }
+      },
+    });
+
+    // Mobile Controls Setup
+    function setupMobileControls() {
+      const joystick = document.getElementById('joystick');
+      if (!joystick) return;
+    }
+
+    // Hide Avatar Selection
+    function hideAvatarSelection() {
+      const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
+      avatarModals.forEach(modal => {
+        modal.style.display = 'none';
+        modal.style.visibility = 'hidden';
+        modal.remove();
+      });
+
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) {
+              if (node.classList && (
+                node.classList.contains('naf-centered-fullscreen') ||
+                node.classList.contains('avatar-selection') ||
+                node.id && node.id.includes('avatar') ||
+                node.classList.contains('avatar-modal') ||
+                node.classList.contains('avatar-selection-modal')
+              )) {
+                node.style.display = 'none';
+                node.style.visibility = 'hidden';
+                node.remove();
+              }
+            }
+          });
+        });
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+
+    // Networked-Aframe connection handler
+    function onConnect() {
+      console.log('Connected to networked-aframe');
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', function () {
+      hideAvatarSelection();
+      setupMobileControls();
+      
+      // Monitor model loading
+      const sceneForMonitoring = document.querySelector('a-scene');
+      if (sceneForMonitoring) {
+        sceneForMonitoring.addEventListener('loaded', function() {
+          console.log('Scene loaded, checking LabBeta model...');
+          
+          setTimeout(function() {
+            const modelEl = document.getElementById('lab-beta-model');
+            if (modelEl) {
+              console.log('Checking LabBeta model...');
+              const src = modelEl.getAttribute('src');
+              console.log('  Model src:', src);
+              console.log('  Model visible:', modelEl.getAttribute('visible'));
+              
+              // Check if model has loaded
+              const object3D = modelEl.getObject3D('mesh');
+              if (object3D) {
+                console.log('✓ LabBeta model loaded');
+                console.log('  Object3D position:', object3D.position);
+                console.log('  Object3D visible:', object3D.visible);
+                object3D.visible = true;
+                modelEl.setAttribute('visible', 'true');
+              } else {
+                console.warn('⚠ LabBeta model object3D not found yet');
+                setTimeout(function() {
+                  const obj = modelEl.getObject3D('mesh');
+                  if (obj) {
+                    console.log('✓ LabBeta model loaded (delayed)');
+                    obj.visible = true;
+                    modelEl.setAttribute('visible', 'true');
+                  } else {
+                    console.error('✗ LabBeta model object3D still not found');
+                  }
+                }, 3000);
+              }
+              
+              // Listen for load events
+              modelEl.addEventListener('model-loaded', function() {
+                console.log('✓ LabBeta model loaded event fired');
+                const obj = modelEl.getObject3D('mesh');
+                if (obj) {
+                  console.log('  Object3D confirmed after event');
+                  obj.visible = true;
+                  modelEl.setAttribute('visible', 'true');
+                }
+              });
+              
+              modelEl.addEventListener('model-error', function(e) {
+                console.error('✗ Error loading LabBeta model:', e.detail || e);
+              });
+            } else {
+              console.error('LabBeta model element NOT found');
+            }
+          }, 500);
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
+
