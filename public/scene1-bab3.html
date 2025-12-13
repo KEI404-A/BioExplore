@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Scene 1 - Bab 3 - AR-Room</title>
-  <meta name="description" content="Scene 1 Bab 3">
+  <title>Scene 1 - Bab 3 - AR-Room (Bacteria Experiment Game)</title>
+  <meta name="description" content="Scene 1 Bab 3 - Interactive Bacteria Experiment">
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
   <script src="https://unpkg.com/networked-aframe@0.14.0/dist/networked-aframe.min.js"></script>
@@ -71,9 +71,6 @@
   <script src="https://cdn.jsdelivr.net/npm/aframe-blink-controls@0.4.3/dist/aframe-blink-controls.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AdaRoseCannon/aframe-xr-boilerplate@bca4792/simple-navmesh-constraint.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-gltf-model-plus@1.0.0/dist/gltf-model-plus.min.js"></script>
-  <script src="/dist/components.js"></script>
-  <script src="/js/joystick.js"></script>
-  <script defer src="/dist/ui.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -81,6 +78,7 @@
       overflow: auto;
       height: auto;
       min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     /* Hide avatar selection modals */
@@ -92,10 +90,498 @@
       display: none !important;
       visibility: hidden !important;
     }
+
+    /* Game UI Styles */
+    #game-ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .ui-panel {
+      pointer-events: auto;
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border: 2px solid #e0e0e0;
+      max-width: 500px;
+      animation: slideIn 0.4s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+
+    .fade-out {
+      animation: fadeOut 0.4s ease-out forwards;
+    }
+
+    .driving-question {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+
+    .driving-question h2 {
+      margin: 0 0 16px 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .driving-question p {
+      margin: 8px 0;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .choice-panel {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .choice-panel h3 {
+      margin: 0 0 20px 0;
+      color: #333;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .choice-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    .info-panel {
+      bottom: 30px;
+      right: 30px;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .info-panel h4 {
+      margin: 0 0 12px 0;
+      color: #667eea;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .info-panel p {
+      margin: 0;
+      color: #555;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .label-panel {
+      top: 30px;
+      left: 30px;
+      background: rgba(50, 50, 50, 0.95);
+      color: white;
+      font-family: 'Courier New', monospace;
+    }
+
+    .label-panel h4 {
+      margin: 0 0 12px 0;
+      color: #4ade80;
+      font-size: 14px;
+      font-weight: 700;
+      border-bottom: 1px solid #4ade80;
+      padding-bottom: 8px;
+    }
+
+    .label-panel p {
+      margin: 6px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .control-panel {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 350px;
+    }
+
+    .control-panel h3 {
+      margin: 0 0 24px 0;
+      color: #333;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 12px;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #e0e0e0;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+      border: none;
+    }
+
+    .value-display {
+      display: inline-block;
+      margin-left: 12px;
+      padding: 4px 12px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      font-weight: 700;
+      color: #667eea;
+      font-size: 14px;
+    }
+
+    .center-button {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .progress-indicator {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 16px 32px;
+      text-align: center;
+    }
+
+    .progress-indicator h4 {
+      margin: 0 0 8px 0;
+      color: #667eea;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .progress-indicator p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .countdown {
+      display: inline-block;
+      margin-left: 8px;
+      font-weight: 700;
+      color: #f5576c;
+    }
+
+    .table-panel {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 450px;
+      max-width: 600px;
+    }
+
+    .table-panel h3 {
+      margin: 0 0 20px 0;
+      color: #333;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .data-table th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+      color: #555;
+      font-size: 14px;
+    }
+
+    .data-table tr:hover {
+      background: #f9f9f9;
+    }
+
+    .comparison {
+      background: #f0f0f0;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+
+    .comparison p {
+      margin: 8px 0;
+      color: #333;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .comparison strong {
+      color: #667eea;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Instruction Tooltip */
+    .instruction-tooltip {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 12px;
+      font-size: 18px;
+      text-align: center;
+      z-index: 2000;
+      pointer-events: none;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
   </style>
 </head>
 
 <body>
+  <!-- Game UI Overlay -->
+  <div id="game-ui">
+    <!-- Driving Questions -->
+    <div id="driving-questions" class="ui-panel driving-question hidden">
+      <h2>🔬 Sub Driving Question</h2>
+      <p>Apa yang terjadi ketika keringat diinkubasi?</p>
+      <p>Adakah pertumbuhan bakteri?</p>
+    </div>
+
+    <!-- Sample Choice Panel -->
+    <div id="choice-panel" class="ui-panel choice-panel hidden">
+      <h3>Pilih Sampel Keringat</h3>
+      <div class="choice-buttons">
+        <button class="btn btn-primary" onclick="gameManager.selectSample('ND')">
+          ND (Non-Deodorant)
+        </button>
+        <button class="btn btn-secondary" onclick="gameManager.selectSample('D')">
+          D (Deodorant)
+        </button>
+      </div>
+    </div>
+
+    <!-- Plate Choice Panel -->
+    <div id="plate-choice-panel" class="ui-panel choice-panel hidden">
+      <h3>Pilih Plate</h3>
+      <div class="choice-buttons">
+        <button class="btn btn-primary" onclick="gameManager.selectPlate('ND')">
+          Plate ND (Non-Deodorant)
+        </button>
+        <button class="btn btn-secondary" onclick="gameManager.selectPlate('D')">
+          Plate D (Deodorant)
+        </button>
+      </div>
+    </div>
+
+    <!-- Action Button Panel -->
+    <div id="action-panel" class="ui-panel choice-panel hidden">
+      <div class="center-button">
+        <button id="action-button" class="btn btn-primary" onclick="gameManager.performAction()">
+          Action
+        </button>
+      </div>
+    </div>
+
+    <!-- Label Panel -->
+    <div id="label-panel" class="ui-panel label-panel hidden">
+      <h4>▸ SAMPLE INFORMATION</h4>
+      <p id="label-subject">Subject: Siswa-01</p>
+      <p id="label-condition">Condition: ND</p>
+      <p id="label-type">Sample Type: Axillary Swab</p>
+      <p id="label-id">Tube ID: #A-12</p>
+    </div>
+
+    <!-- Info Panel -->
+    <div id="info-panel" class="ui-panel info-panel hidden">
+      <h4>📘 Penjelasan Ilmiah</h4>
+      <p id="info-text"></p>
+    </div>
+
+    <!-- Incubator Control Panel -->
+    <div id="incubator-panel" class="ui-panel control-panel hidden">
+      <h3>⚙️ Pengaturan Inkubator</h3>
+      <div class="control-group">
+        <label>
+          Suhu Inkubasi
+          <span class="value-display" id="temp-value">37°C</span>
+        </label>
+        <input type="range" id="temp-slider" min="1" max="50" value="37" 
+               oninput="document.getElementById('temp-value').textContent = this.value + '°C'">
+      </div>
+      <div class="control-group">
+        <label>
+          Waktu Inkubasi
+          <span class="value-display" id="time-value">24 jam</span>
+        </label>
+        <input type="range" id="time-slider" min="24" max="48" value="24" step="1"
+               oninput="document.getElementById('time-value').textContent = this.value + ' jam'">
+      </div>
+      <div class="center-button">
+        <button class="btn btn-primary" onclick="gameManager.startIncubation()">
+          🧪 Simulasikan Pertumbuhan
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div id="progress-indicator" class="ui-panel progress-indicator hidden">
+      <h4 id="progress-title">⏳ Proses Berlangsung</h4>
+      <p id="progress-text">Mohon tunggu...</p>
+    </div>
+
+    <!-- Data Table Panel -->
+    <div id="table-panel" class="ui-panel table-panel hidden">
+      <h3>📊 Hasil Pengamatan Koloni</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Kondisi</th>
+            <th>Jumlah Koloni</th>
+            <th>Suhu</th>
+            <th>Waktu</th>
+          </tr>
+        </thead>
+        <tbody id="data-table-body">
+          <!-- Data will be inserted here -->
+        </tbody>
+      </table>
+      <div class="comparison" id="comparison-text">
+        <!-- Comparison will be inserted here -->
+      </div>
+      <div class="center-button">
+        <button class="btn btn-primary" onclick="gameManager.finishExperiment()">
+          ✅ Selesai
+        </button>
+      </div>
+    </div>
+
+    <!-- Instruction Tooltip -->
+    <div id="instruction-tooltip" class="instruction-tooltip hidden"></div>
+  </div>
+
   <a-scene light="defaultLightsEnabled:false" renderer="stencil:true; antialias: true;" vr-mode-ui="enabled: false"
     webxr="requiredFeatures: local-floor; referenceSpaceType: local-floor;" networked-scene="
         connectOnLoad: false;
@@ -106,7 +592,7 @@
         audio: false;
         video: false;
     " shadow="type: pcfsoft" gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
-    raycaster="far: 100; objects: .clickable,[link];" cursor="rayOrigin: mouse">
+    raycaster="far: 100; objects: .clickable, .portal-link, .interactive;" cursor="rayOrigin: mouse; fuse: false">
     <a-assets>
       <template id="avatar-template">
         <a-entity player-info>
@@ -124,11 +610,140 @@
       <a-gltf-model 
         id="lab-beta-model"
         src="assets/map/LabBeta.compressed.glb" 
-        scale="1.1 1.1 1.1"
+        scale="0.3 0.3 0.3"
         visible="true"
         material="side: double">
       </a-gltf-model>
     </a-entity>
+
+    <!-- Plant Incubator 3D Model -->
+    <a-entity id="plant-incubator" position="0.9 2.8 1.8" rotation="0 90 0" scale="0.002 0.002 0.002">
+      <a-gltf-model 
+        id="plant-incubator-model"
+        src="assets/alat/plant_incubator_2.glb" 
+        visible="true"
+        material="side: double"
+        class="interactive"
+        data-interactive="incubator">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Deodorant 3D Model -->
+    <a-entity id="deodorant" position="-0.8 2.85 1.7" rotation="0 180 0" scale="0.05 0.05 0.05">
+      <a-gltf-model 
+        id="deodorant-model"
+        src="assets/alat/desodorante_-_deodorant.glb" 
+        visible="true"
+        material="side: double">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Human Model 3D Model -->
+    <a-entity id="human-model" position="-2 1.9 1.42" rotation="0 135 0" scale="0.8 0.8 0.8">
+      <a-gltf-model 
+        id="human-model-model"
+        src="assets/alat/humanmodel.glb" 
+        visible="true"
+        material="side: double"
+        class="interactive"
+        data-interactive="human">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Blood Testing Tube 3D Model - Enhanced with glow -->
+    <a-entity id="blood-tube" position="-2 2.8 -1" rotation="0 0 90" scale="1 1 1" visible="false">
+      <a-gltf-model 
+        id="blood-tube-model"
+        src="assets/alat/revolutionizing_blood_testing_the_3d_blood_tub.glb" 
+        visible="true"
+        material="side: double">
+      </a-gltf-model>
+      <!-- Glow effect around tube -->
+      <a-cylinder 
+        height="0.15" 
+        radius="0.035" 
+        position="0 0 0"
+        material="opacity: 0.2; transparent: true; color: #4ade80; emissive: #4ade80; emissiveIntensity: 0.8"
+        animation__pulse="property: material.emissiveIntensity; from: 0.3; to: 0.8; dur: 1000; dir: alternate; loop: true; easing: easeInOutQuad">
+      </a-cylinder>
+    </a-entity>
+
+    <!-- Petri Dish 3D Model -->
+    <a-entity id="petri-dish" position="-2.2 2.8 0" rotation="0 0 0" scale="0.1 0.1 0.1" class="interactive clickable">
+      <a-gltf-model 
+        id="petri-dish-model"
+        src="assets/alat/microbial_culture_petri_dish_-_agar_plate.glb" 
+        visible="true"
+        material="side: double"
+        class="interactive clickable"
+        data-interactive="petri">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Microscope 3D Model -->
+    <a-entity id="microscope" position="-2.2 2.8 -1.2" rotation="0 0 0" scale="0.2 0.2 0.2">
+      <a-gltf-model 
+        id="microscope-model"
+        src="assets/alat/3d_mikroskop.glb" 
+        visible="true"
+        material="side: double">
+      </a-gltf-model>
+    </a-entity>
+
+    <!-- Cotton Swab 3D Model - Enhanced with clickable box -->
+    <a-entity id="cotton-swab" position="-1 2.81 1.67" rotation="0 90 0" scale="0.05 0.05 0.05">
+      <a-gltf-model 
+        id="cotton-swab-model"
+        src="assets/alat/cotton_swab_from_poly_by_google.glb" 
+        visible="true"
+        material="side: double">
+      </a-gltf-model>
+      <!-- Visible clickable hitbox for debugging -->
+      <a-box 
+        id="swab-hitbox"
+        width="3" height="3" depth="3" 
+        position="0 0 0"
+        material="opacity: 0.3; transparent: true; color: #4ade80; wireframe: true"
+        class="interactive clickable"
+        data-interactive="swab">
+      </a-box>
+    </a-entity>
+
+    <!-- Animated Swab for Collection - Enhanced visibility -->
+    <a-entity id="animated-swab" visible="false">
+      <!-- Stick part - bright yellow -->
+      <a-cylinder 
+        height="0.2" 
+        radius="0.008" 
+        color="#FFD700" 
+        position="0 0 0"
+        material="emissive: #FFD700; emissiveIntensity: 0.5">
+      </a-cylinder>
+      <!-- Cotton tip - bright white with glow -->
+      <a-sphere 
+        radius="0.025" 
+        color="#FFFFFF" 
+        position="0 0.12 0"
+        material="emissive: #FFFFFF; emissiveIntensity: 0.8">
+      </a-sphere>
+      <!-- Glow effect around tip -->
+      <a-sphere 
+        radius="0.035" 
+        color="#4ade80" 
+        position="0 0.12 0"
+        material="opacity: 0.3; transparent: true; emissive: #4ade80; emissiveIntensity: 0.5">
+      </a-sphere>
+      <!-- Trail effect -->
+      <a-entity id="swab-trail" position="0 0 0">
+        <a-sphere radius="0.01" color="#FFD700" material="opacity: 0.6; transparent: true"></a-sphere>
+      </a-entity>
+    </a-entity>
+
+    <!-- Zig-zag path visualization -->
+    <a-entity id="zigzag-path" position="-2.2 2.81 0"></a-entity>
+
+    <!-- Colony visualization entities -->
+    <a-entity id="colonies-container" position="-2.2 2.81 0"></a-entity>
 
     <!-- Ground -->
     <a-plane class="ground" position="0 0 0" rotation="-90 0 0" width="100" height="100" visible="true" material="color: #cccccc"></a-plane>
@@ -140,84 +755,24 @@
 
     <!-- Portal back to VR Lobby -->
     <a-entity id="portal-group" position="-1.1 1.3 -8.6">
-      <a-link link="on:click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="4 1.5 6"
-        rotation="0 90 0" scale="0.5 0.5 0.5" class="clickable" event-set__mouseenter="material.opacity: 0.8"
+      <a-link id="portal-link-bab3" link="on: click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="6.3 1.5 8"
+        rotation="0 90 0" scale="0.5 0.5 0.5" class="portal-link" event-set__mouseenter="material.opacity: 0.8"
         event-set__mouseleave="material.opacity: 0.6">
       </a-link>
     </a-entity>
-
-    <!-- Jump Controls Component -->
-    <script>
-      AFRAME.registerComponent('jump-controls', {
-        schema: {
-          jumpHeight: { type: 'number', default: 1.0 },
-          jumpDuration: { type: 'number', default: 800 },
-          isJumping: { type: 'boolean', default: false },
-          initialY: { type: 'number', default: 1.6 }
-        },
-        init: function() {
-          document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && !this.data.isJumping) {
-              this.jump();
-            }
-          });
-          
-          document.addEventListener('touchend', (e) => {
-            if (!this.data.isJumping && e.target.id === 'jump-button') {
-              this.jump();
-            }
-          });
-          
-          this.data.initialY = this.el.getAttribute('position').y || 1.6;
-        },
-        jump: function() {
-          if (this.data.isJumping) return;
-          
-          this.data.isJumping = true;
-          const startTime = Date.now();
-          const startY = this.el.getAttribute('position').y;
-          const jumpHeight = this.data.jumpHeight;
-          const jumpDuration = this.data.jumpDuration;
-          
-          const animateJump = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / jumpDuration, 1);
-            const jumpProgress = Math.sin(progress * Math.PI);
-            const currentY = startY + (jumpProgress * jumpHeight);
-            
-            const currentPos = this.el.getAttribute('position');
-            this.el.setAttribute('position', {
-              x: currentPos.x,
-              y: currentY,
-              z: currentPos.z
-            });
-            
-            if (progress < 1) {
-              requestAnimationFrame(animateJump);
-            } else {
-              this.el.setAttribute('position', {
-                x: currentPos.x,
-                y: this.data.initialY,
-                z: currentPos.z
-              });
-              this.data.isJumping = false;
-            }
-          };
-          
-          requestAnimationFrame(animateJump);
-        }
-      });
-    </script>
 
     <!-- Player Rig - Spawn inside the lab -->
     <a-entity id="rig" position="0 1.6 0" rotation="0 0 0" collider="distance: 0.3" movement-controls="fly:false;"
       networked="template:#avatar-template;attachTemplateToLocal:false" player-info jump-controls>
       <a-entity id="player" class="camera" camera position="0 1.6 0" look-controls pointer-lock>
         <a-entity position="0 0 -1" geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
-          material="shader: flat; opacity: 0.9" cursor="fuse: true; fuseTimeout: 1200"
-          raycaster="objects: .clickable,[link]; far: 20;"
-          animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
-          animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120" id="main-cursor">
+          material="shader: flat; opacity: 0.9; color: #4CAF50" cursor="fuse: true; fuseTimeout: 1500"
+          raycaster="objects: .clickable,.interactive,[link]; far: 20; interval: 100"
+          animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1500; easing: linear"
+          animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120" 
+          animation__click="property: material.color; startEvents: click; from: #4CAF50; to: #ffffff; dur: 200; dir: alternate"
+          debug-raycaster
+          id="main-cursor">
         </a-entity>
       </a-entity>
       <a-entity id="left-hand" networked-hand-controls="hand: left" laser-controls="hand: left"></a-entity>
@@ -226,7 +781,2061 @@
   </a-scene>
 
   <script>
-    // Collider Component
+    // ========================================
+    // DEBUG COMPONENT - For troubleshooting
+    // ========================================
+    AFRAME.registerComponent('debug-raycaster', {
+      init: function() {
+        this.el.addEventListener('raycaster-intersection', (e) => {
+          console.log('Raycaster hit:', e.detail.els.map(el => el.id || el.className));
+        });
+        
+        this.el.addEventListener('raycaster-intersection-cleared', (e) => {
+          console.log('Raycaster cleared');
+        });
+      }
+    });
+
+    // ========================================
+    // GAME MANAGER - Main Game Logic Controller
+    // ========================================
+    const gameManager = {
+      currentStage: 0,
+      selectedSample: null,
+      selectedPlate: null,
+      experimentData: {
+        ND: null,
+        D: null
+      },
+      holdTimer: null,
+      isHolding: false,
+      temperature: 37,
+      incubationTime: 24,
+      isZoomed: false,
+      originalCameraPos: null,
+      finalColonyCount: null,
+      
+      init: function() {
+        console.log('Game Manager initialized');
+        this.setupEventListeners();
+        
+        // Debug: Show all interactive elements
+        setTimeout(() => {
+          const interactives = document.querySelectorAll('.interactive');
+          console.log('Interactive elements found:', interactives.length);
+          interactives.forEach((el, i) => {
+            console.log(`  ${i + 1}. ${el.id || el.tagName} - classes: ${el.className}`);
+          });
+        }, 2000);
+        
+        // Start game after scene loads
+        setTimeout(() => {
+          this.startGame();
+        }, 2000);
+      },
+
+      startGame: function() {
+        console.log('Starting game - showing driving questions');
+        this.showDrivingQuestions();
+      },
+
+      showDrivingQuestions: function() {
+        const panel = document.getElementById('driving-questions');
+        panel.classList.remove('hidden');
+        
+        // Hide after 8 seconds
+        setTimeout(() => {
+          panel.classList.add('fade-out');
+          setTimeout(() => {
+            panel.classList.add('hidden');
+            panel.classList.remove('fade-out');
+            this.startStage1();
+          }, 400);
+        }, 8000);
+      },
+
+      // ========================================
+      // STAGE 1: Sample Collection
+      // ========================================
+      startStage1: function() {
+        console.log('Stage 1: Sample Collection');
+        this.currentStage = 1;
+        this.showInstruction('Tekan dan tahan Cotton Swab untuk mengambil sampel keringat');
+        
+        // Enable hold detection on cotton swab
+        this.enableSwabHold();
+      },
+
+      enableSwabHold: function() {
+        const swabHitbox = document.getElementById('swab-hitbox');
+        const cursor = document.getElementById('main-cursor');
+        
+        if (!swabHitbox || !cursor) {
+          console.error('Swab hitbox or cursor not found');
+          return;
+        }
+        
+        let holdStartTime = null;
+        let isHovering = false;
+        const HOLD_DURATION = 1500; // 1.5 seconds hold
+        
+        console.log('Swab hold enabled on hitbox');
+        
+        // Mouse enter event
+        swabHitbox.addEventListener('mouseenter', () => {
+          console.log('Mouse entered swab hitbox');
+          isHovering = true;
+          this.updateInstruction('Tahan kursor di sini untuk mengambil sampel...');
+          
+          // Visual feedback - highlight
+          swabHitbox.setAttribute('material', 'opacity: 0.2; color: #4ade80');
+        });
+        
+        // Mouse leave event
+        swabHitbox.addEventListener('mouseleave', () => {
+          console.log('Mouse left swab hitbox');
+          isHovering = false;
+          holdStartTime = null;
+          swabHitbox.setAttribute('material', 'opacity: 0; color: white');
+        });
+        
+        // Click/hold detection
+        swabHitbox.addEventListener('click', () => {
+          console.log('Swab clicked - starting hold timer');
+          holdStartTime = Date.now();
+          
+          // Check hold duration
+          const checkHold = setInterval(() => {
+            if (!holdStartTime || !isHovering) {
+              clearInterval(checkHold);
+              return;
+            }
+            
+            const holdTime = Date.now() - holdStartTime;
+            const progress = Math.min(holdTime / HOLD_DURATION, 1);
+            
+            // Update visual feedback
+            swabHitbox.setAttribute('material', `opacity: ${0.2 + progress * 0.3}; color: #4ade80`);
+            
+            if (holdTime >= HOLD_DURATION) {
+              clearInterval(checkHold);
+              console.log('Hold completed - starting swab animation');
+              this.hideInstruction();
+              swabHitbox.setAttribute('material', 'opacity: 0');
+              this.animateSwabCollection();
+              holdStartTime = null;
+            }
+          }, 50);
+        });
+        
+        // Alternative: Use fusing cursor
+        swabHitbox.addEventListener('fusing', () => {
+          console.log('Cursor fusing on swab');
+          this.updateInstruction('Tahan untuk mengambil sampel...');
+        });
+        
+        swabHitbox.addEventListener('fuse', () => {
+          console.log('Fuse completed on swab - starting animation');
+          this.hideInstruction();
+          this.animateSwabCollection();
+        });
+      },
+
+      animateSwabCollection: function() {
+        console.log('Animating swab collection with enhanced visuals');
+        const animatedSwab = document.getElementById('animated-swab');
+        const humanModel = document.getElementById('human-model');
+        
+        // Show animated swab with scale animation
+        animatedSwab.setAttribute('visible', 'true');
+        animatedSwab.setAttribute('animation__appear', {
+          property: 'scale',
+          from: '0 0 0',
+          to: '3 3 3',
+          dur: 300,
+          easing: 'easeOutBack'
+        });
+        
+        // Get human model position
+        const humanPos = humanModel.getAttribute('position');
+        const swabStart = { x: -1, y: 2.81, z: 1.67 };
+        const targetPos = { x: humanPos.x + 0.2, y: humanPos.y + 0.6, z: humanPos.z };
+        
+        // Create particle effect at start
+        this.createParticles(swabStart, '#4ade80', 10);
+        
+        // Show instruction
+        this.showProgress('Mengambil Sampel', 'Swab sedang bergerak ke model manusia...', 1);
+        
+        // Animate swab to human
+        this.animateObject(animatedSwab, swabStart, targetPos, 1000, () => {
+          this.hideProgress();
+          this.showProgress('Mengusap Permukaan Kulit', 'Mengumpulkan bakteri dari kulit...', 3);
+          
+          // Perform swabbing motion (random movements)
+          this.performSwabbingMotion(animatedSwab, targetPos, () => {
+            this.hideProgress();
+            this.showProgress('Kembali', 'Sampel berhasil dikumpulkan...', 1);
+            
+            // Create success particles
+            this.createParticles(targetPos, '#FFD700', 20);
+            
+            // Return swab
+            this.animateObject(animatedSwab, targetPos, swabStart, 1000, () => {
+              // Hide with scale animation
+              animatedSwab.setAttribute('animation__disappear', {
+                property: 'scale',
+                from: '3 3 3',
+                to: '0 0 0',
+                dur: 300,
+                easing: 'easeInBack'
+              });
+              
+              setTimeout(() => {
+                animatedSwab.setAttribute('visible', 'false');
+                this.hideProgress();
+                this.showSampleChoice();
+              }, 300);
+            });
+          });
+        });
+      },
+
+      performSwabbingMotion: function(swab, centerPos, callback) {
+        let swabCount = 0;
+        const maxSwabs = Math.floor(Math.random() * 6) + 5; // 5-10 swabs
+        
+        // Create swab trail container
+        const scene = document.querySelector('a-scene');
+        const trailContainer = document.createElement('a-entity');
+        trailContainer.setAttribute('id', 'swab-trails');
+        scene.appendChild(trailContainer);
+        
+        const performSwab = () => {
+          if (swabCount >= maxSwabs) {
+            // Remove trails after animation
+            setTimeout(() => {
+              if (trailContainer.parentNode) {
+                trailContainer.parentNode.removeChild(trailContainer);
+              }
+            }, 2000);
+            callback();
+            return;
+          }
+          
+          // Random offset for swabbing motion
+          const offsetX = (Math.random() - 0.5) * 0.3;
+          const offsetY = (Math.random() - 0.5) * 0.1;
+          const offsetZ = (Math.random() - 0.5) * 0.3;
+          
+          const newPos = {
+            x: centerPos.x + offsetX,
+            y: centerPos.y + offsetY,
+            z: centerPos.z + offsetZ
+          };
+          
+          // Create trail particle at current position
+          const trail = document.createElement('a-sphere');
+          trail.setAttribute('radius', '0.02');
+          trail.setAttribute('color', '#FF6B6B');
+          trail.setAttribute('position', `${newPos.x} ${newPos.y} ${newPos.z}`);
+          trail.setAttribute('material', 'opacity: 0.7; transparent: true; emissive: #FF6B6B; emissiveIntensity: 0.5');
+          trail.setAttribute('animation', {
+            property: 'scale',
+            from: '1 1 1',
+            to: '0 0 0',
+            dur: 1000,
+            easing: 'easeInQuad'
+          });
+          trail.setAttribute('animation__fade', {
+            property: 'material.opacity',
+            from: '0.7',
+            to: '0',
+            dur: 1000,
+            easing: 'easeInQuad'
+          });
+          trailContainer.appendChild(trail);
+          
+          // Animate swab with bounce effect
+          swab.setAttribute('animation__swab', {
+            property: 'position',
+            to: `${newPos.x} ${newPos.y} ${newPos.z}`,
+            dur: 250,
+            easing: 'easeInOutBack'
+          });
+          
+          // Add rotation for more dynamic movement
+          const rotation = swab.getAttribute('rotation') || { x: 0, y: 0, z: 0 };
+          swab.setAttribute('animation__rotate', {
+            property: 'rotation',
+            to: `${rotation.x + (Math.random() * 30 - 15)} ${rotation.y + (Math.random() * 30 - 15)} ${rotation.z + (Math.random() * 30 - 15)}`,
+            dur: 250,
+            easing: 'easeInOutQuad'
+          });
+          
+          swabCount++;
+          setTimeout(performSwab, 300);
+        };
+        
+        performSwab();
+      },
+
+      showSampleChoice: function() {
+        console.log('Showing sample choice');
+        this.hideInstruction();
+        const panel = document.getElementById('choice-panel');
+        panel.classList.remove('hidden');
+      },
+
+      selectSample: function(type) {
+        console.log('Sample selected:', type);
+        this.selectedSample = type;
+        
+        // Hide choice panel and any instructions
+        document.getElementById('choice-panel').classList.add('hidden');
+        this.hideInstruction();
+        
+        // Show action button
+        const actionPanel = document.getElementById('action-panel');
+        const actionButton = document.getElementById('action-button');
+        actionButton.textContent = 'Masukkan Swab ke Tabung Steril';
+        actionPanel.classList.remove('hidden');
+      },
+
+      performAction: function() {
+        const actionButton = document.getElementById('action-button');
+        const buttonText = actionButton.textContent;
+        
+        if (buttonText === 'Masukkan Swab ke Tabung Steril') {
+          this.insertSwabToTube();
+        } else if (buttonText === 'Masukkan Plate ke Inkubator') {
+          this.showIncubatorSettings();
+        }
+      },
+
+      insertSwabToTube: function() {
+        console.log('Inserting swab to tube with visual effects');
+        document.getElementById('action-panel').classList.add('hidden');
+        this.hideInstruction();
+        
+        // Show blood tube with dramatic entrance
+        const bloodTube = document.getElementById('blood-tube');
+        const tubePos = bloodTube.getAttribute('position');
+        bloodTube.setAttribute('visible', 'true');
+        bloodTube.setAttribute('animation__appear', {
+          property: 'scale',
+          from: '0 0 0',
+          to: '1.2 1.2 1.2',
+          dur: 500,
+          easing: 'easeOutBack'
+        });
+        
+        bloodTube.setAttribute('animation__bounce', {
+          property: 'scale',
+          from: '1.2 1.2 1.2',
+          to: '1 1 1',
+          dur: 300,
+          delay: 500,
+          easing: 'easeInOutQuad'
+        });
+        
+        // Create particles around tube
+        setTimeout(() => {
+          this.createParticles(tubePos, '#4ade80', 15);
+        }, 500);
+        
+        // Show swab inserting animation
+        const animatedSwab = document.getElementById('animated-swab');
+        animatedSwab.setAttribute('visible', 'true');
+        animatedSwab.setAttribute('position', `${tubePos.x} ${tubePos.y + 0.3} ${tubePos.z}`);
+        animatedSwab.setAttribute('scale', '2 2 2');
+        animatedSwab.setAttribute('rotation', '0 0 90');
+        
+        // Animate swab going into tube
+        animatedSwab.setAttribute('animation__insert', {
+          property: 'position',
+          from: `${tubePos.x} ${tubePos.y + 0.3} ${tubePos.z}`,
+          to: `${tubePos.x} ${tubePos.y} ${tubePos.z}`,
+          dur: 800,
+          easing: 'easeInQuad'
+        });
+        
+        setTimeout(() => {
+          animatedSwab.setAttribute('visible', 'false');
+          this.createParticles(tubePos, '#FFD700', 20);
+        }, 800);
+        
+        // Show label with entrance animation
+        setTimeout(() => {
+          this.showLabel();
+          // Show info panel
+          this.showInfo('Swabbing dilakukan dengan teknik klinis untuk mengumpulkan bakteri permukaan kulit.');
+        }, 1000);
+        
+        // Auto hide after 5 seconds and move to stage 2
+        setTimeout(() => {
+          this.hideLabel();
+          this.hideInfo();
+          this.startStage2();
+        }, 6000);
+      },
+
+      showLabel: function() {
+        const labelPanel = document.getElementById('label-panel');
+        document.getElementById('label-subject').textContent = 'Subject: Siswa-01';
+        document.getElementById('label-condition').textContent = `Condition: ${this.selectedSample} (${this.selectedSample === 'ND' ? 'Non-Deodorant' : 'Deodorant'})`;
+        document.getElementById('label-type').textContent = 'Sample Type: Axillary Swab';
+        document.getElementById('label-id').textContent = `Tube ID: #A-${Math.floor(Math.random() * 100)}`;
+        labelPanel.classList.remove('hidden');
+      },
+
+      hideLabel: function() {
+        const labelPanel = document.getElementById('label-panel');
+        labelPanel.classList.add('fade-out');
+        setTimeout(() => {
+          labelPanel.classList.add('hidden');
+          labelPanel.classList.remove('fade-out');
+        }, 400);
+      },
+
+      showInfo: function(text) {
+        const infoPanel = document.getElementById('info-panel');
+        document.getElementById('info-text').textContent = text;
+        infoPanel.classList.remove('hidden');
+      },
+
+      hideInfo: function() {
+        const infoPanel = document.getElementById('info-panel');
+        infoPanel.classList.add('fade-out');
+        setTimeout(() => {
+          infoPanel.classList.add('hidden');
+          infoPanel.classList.remove('fade-out');
+        }, 400);
+      },
+
+      // ========================================
+      // STAGE 2: Inoculation on Agar Plate
+      // ========================================
+      startStage2: function() {
+        console.log('Stage 2: Inoculation');
+        this.currentStage = 2;
+        
+        // Create stage transition effect
+        this.showStageTransition('STAGE 2', 'Inokulasi pada Media Agar');
+        
+        setTimeout(() => {
+          this.showInstruction('Klik dan seret swab dalam pola zig-zag di atas Geli Plate');
+          this.enableZigzagDrawing();
+        }, 2000);
+      },
+
+      enableZigzagDrawing: function() {
+        const petriDish = document.getElementById('petri-dish');
+        const zigzagPath = document.getElementById('zigzag-path');
+        let isDrawing = false;
+        let pathPoints = [];
+        let lastPoint = null;
+        
+        // Define limits for zigzag drawing
+        const MAX_POINTS = 80; // Maximum points for zigzag pattern
+        const MIN_POINTS = 15; // Minimum points required
+        
+        // Add visual guide circle - thicker and more visible
+        const guideCircle = document.createElement('a-torus');
+        guideCircle.setAttribute('id', 'draw-guide');
+        guideCircle.setAttribute('radius', '0.1');
+        guideCircle.setAttribute('radius-tubular', '0.006'); // Thicker tube
+        guideCircle.setAttribute('rotation', '-90 0 0');
+        guideCircle.setAttribute('position', '0 0.005 0');
+        guideCircle.setAttribute('color', '#4ade80');
+        guideCircle.setAttribute('material', 'emissive: #4ade80; emissiveIntensity: 1.0; opacity: 0.8; transparent: true');
+        guideCircle.setAttribute('animation__pulse', {
+          property: 'material.emissiveIntensity',
+          from: '0.8',
+          to: '1.5',
+          dur: 1000,
+          dir: 'alternate',
+          loop: true,
+          easing: 'easeInOutQuad'
+        });
+        petriDish.appendChild(guideCircle);
+        
+        const scene = document.querySelector('a-scene');
+        const camera = document.getElementById('player');
+        
+        // Improve raycaster for petri dish
+        const raycaster = new THREE.Raycaster();
+        const petriObj = petriDish.object3D;
+        
+        scene.addEventListener('mousedown', (e) => {
+          const intersected = e.detail.intersectedEl;
+          if (intersected && (intersected.id === 'petri-dish-model' || intersected.id === 'petri-dish' || intersected.parentNode.id === 'petri-dish')) {
+            isDrawing = true;
+            pathPoints = [];
+            lastPoint = null;
+            console.log('Started drawing zigzag');
+            this.updateInstruction('Gambar pola zig-zag! Terus gerakkan mouse...');
+            
+            // Change guide color to indicate drawing mode
+            guideCircle.setAttribute('material', 'color: #FFD700; emissive: #FFD700; emissiveIntensity: 1.5; opacity: 0.9; transparent: true');
+            
+            // Add pulse animation to guide circle
+            guideCircle.setAttribute('animation__pulse', {
+              property: 'material.emissiveIntensity',
+              from: '1.0',
+              to: '2.0',
+              dur: 500,
+              dir: 'alternate',
+              loop: true,
+              easing: 'easeInOutQuad'
+            });
+            
+            // Create particle burst at start
+            const petriPos = petriDish.object3D.getWorldPosition(new THREE.Vector3());
+            this.createParticles({x: petriPos.x, y: petriPos.y + 0.1, z: petriPos.z}, '#FFD700', 10);
+          }
+        });
+        
+        // Track mouse movement
+        let mouseMoveCounter = 0;
+        
+        scene.addEventListener('mousemove', (e) => {
+          if (isDrawing) {
+            // Stop drawing if already reached maximum points
+            if (pathPoints.length >= MAX_POINTS) {
+              isDrawing = false;
+              console.log('Maximum points reached:', pathPoints.length);
+              
+              // Reset guide color
+              guideCircle.setAttribute('material', 'color: #4ade80; emissive: #4ade80; emissiveIntensity: 0.8; opacity: 0.6; transparent: true');
+              
+              // Auto complete
+              this.hideInstruction();
+              
+              // Remove guide
+              guideCircle.setAttribute('animation__disappear', {
+                property: 'scale',
+                from: '1 1 1',
+                to: '0 0 0',
+                dur: 300,
+                easing: 'easeInBack'
+              });
+              
+              setTimeout(() => {
+                guideCircle.remove();
+              }, 300);
+              
+              this.completeInoculation();
+              return;
+            }
+            
+            mouseMoveCounter++;
+            
+            // Only add point every few movements for smoother lines
+            if (mouseMoveCounter % 2 === 0) {
+              // Generate point with some randomness for organic look
+              const newPoint = {
+                x: (Math.random() - 0.5) * 0.09,
+                y: 0.002,
+                z: (Math.random() - 0.5) * 0.09
+              };
+              
+              // Ensure points are somewhat connected (not too far apart)
+              if (lastPoint) {
+                const distance = Math.sqrt(
+                  Math.pow(newPoint.x - lastPoint.x, 2) +
+                  Math.pow(newPoint.z - lastPoint.z, 2)
+                );
+                
+                if (distance > 0.03) {
+                  // Interpolate points if too far
+                  const midPoint = {
+                    x: (newPoint.x + lastPoint.x) / 2,
+                    y: 0.002,
+                    z: (newPoint.z + lastPoint.z) / 2
+                  };
+                  // Check if adding midpoint would exceed max
+                  if (pathPoints.length < MAX_POINTS) {
+                    pathPoints.push(midPoint);
+                  }
+                }
+              }
+              
+              // Only add point if under maximum
+              if (pathPoints.length < MAX_POINTS) {
+                pathPoints.push(newPoint);
+                lastPoint = newPoint;
+                this.drawZigzagLine(zigzagPath, pathPoints);
+                
+                // Add particle effect at drawing point for visual feedback
+                const petriPos = petriDish.object3D.getWorldPosition(new THREE.Vector3());
+                const worldPoint = {
+                  x: petriPos.x + newPoint.x,
+                  y: petriPos.y + newPoint.y + 0.01,
+                  z: petriPos.z + newPoint.z
+                };
+                this.createParticles(worldPoint, '#FF6B6B', 2);
+                
+                // Update instruction with progress
+                const progress = Math.min((pathPoints.length / MAX_POINTS) * 100, 100);
+                if (pathPoints.length >= MAX_POINTS) {
+                  this.updateInstruction(`Pola zig-zag selesai! (${pathPoints.length}/${MAX_POINTS} titik)`);
+                } else if (pathPoints.length >= MIN_POINTS) {
+                  this.updateInstruction(`Pola zig-zag cukup! (${pathPoints.length}/${MAX_POINTS} titik) - Lepas untuk selesai`);
+                } else {
+                  this.updateInstruction(`Gambar pola zig-zag! (${pathPoints.length}/${MAX_POINTS} titik - minimal ${MIN_POINTS})`);
+                }
+              } else {
+                // Reached maximum, stop drawing
+                isDrawing = false;
+              }
+            }
+          }
+        });
+        
+        scene.addEventListener('mouseup', () => {
+          if (isDrawing) {
+            isDrawing = false;
+            console.log('Finished drawing zigzag, points:', pathPoints.length);
+            
+            // Reset guide color
+            guideCircle.setAttribute('material', 'color: #4ade80; emissive: #4ade80; emissiveIntensity: 0.8; opacity: 0.6; transparent: true');
+            
+            // Check if enough points drawn (use MIN_POINTS constant)
+            if (pathPoints.length >= MIN_POINTS) {
+              this.hideInstruction();
+              
+              // Remove guide
+              guideCircle.setAttribute('animation__disappear', {
+                property: 'scale',
+                from: '1 1 1',
+                to: '0 0 0',
+                dur: 300,
+                easing: 'easeInBack'
+              });
+              
+              setTimeout(() => {
+                guideCircle.remove();
+              }, 300);
+              
+              this.completeInoculation();
+            } else {
+              this.updateInstruction(`Gambar pola zig-zag yang lebih panjang (minimal ${MIN_POINTS} titik, saat ini: ${pathPoints.length})`);
+              
+              // Clear incomplete drawing
+              setTimeout(() => {
+                while (zigzagPath.firstChild) {
+                  zigzagPath.removeChild(zigzagPath.firstChild);
+                }
+                pathPoints = [];
+                lastPoint = null;
+              }, 2000);
+            }
+          }
+        });
+      },
+
+      drawZigzagLine: function(container, points) {
+        // Clear previous lines
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        
+        // Draw lines between points with enhanced visibility - using thick cylinders
+        for (let i = 0; i < points.length - 1; i++) {
+          const start = points[i];
+          const end = points[i + 1];
+          
+          // Calculate distance and midpoint for cylinder
+          const dx = end.x - start.x;
+          const dy = end.y - start.y;
+          const dz = end.z - start.z;
+          const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          const midX = (start.x + end.x) / 2;
+          const midY = (start.y + end.y) / 2;
+          const midZ = (start.z + end.z) / 2;
+          
+          // Calculate rotation for cylinder to point from start to end
+          const angleY = Math.atan2(dx, dz) * (180 / Math.PI);
+          const angleX = -Math.asin(dy / distance) * (180 / Math.PI);
+          
+          // Main thick line using cylinder - very visible
+          const thickLine = document.createElement('a-cylinder');
+          thickLine.setAttribute('radius', '0.015'); // Thick radius
+          thickLine.setAttribute('height', distance);
+          thickLine.setAttribute('position', `${midX} ${midY} ${midZ}`);
+          thickLine.setAttribute('rotation', `${angleX} ${angleY} 0`);
+          thickLine.setAttribute('color', '#FF6B6B');
+          thickLine.setAttribute('material', 'emissive: #FF6B6B; emissiveIntensity: 1.2; opacity: 1.0; transparent: false');
+          container.appendChild(thickLine);
+          
+          // Outer glow layer - even thicker
+          const glowLine = document.createElement('a-cylinder');
+          glowLine.setAttribute('radius', '0.020'); // Thicker glow
+          glowLine.setAttribute('height', distance);
+          glowLine.setAttribute('position', `${midX} ${midY} ${midZ}`);
+          glowLine.setAttribute('rotation', `${angleX} ${angleY} 0`);
+          glowLine.setAttribute('color', '#FFD700');
+          glowLine.setAttribute('material', 'emissive: #FFD700; emissiveIntensity: 0.8; opacity: 0.6; transparent: true');
+          container.appendChild(glowLine);
+          
+          // Add bright point marker at each point
+          const marker = document.createElement('a-sphere');
+          marker.setAttribute('radius', '0.015'); // Larger marker
+          marker.setAttribute('color', '#4ade80');
+          marker.setAttribute('position', `${start.x} ${start.y + 0.003} ${start.z}`);
+          marker.setAttribute('material', 'emissive: #4ade80; emissiveIntensity: 1.5');
+          marker.setAttribute('animation', {
+            property: 'scale',
+            from: '0 0 0',
+            to: '1 1 1',
+            dur: 200,
+            easing: 'easeOutBack'
+          });
+          container.appendChild(marker);
+          
+          // Add marker at end point too
+          if (i === points.length - 2) {
+            const endMarker = document.createElement('a-sphere');
+            endMarker.setAttribute('radius', '0.015');
+            endMarker.setAttribute('color', '#4ade80');
+            endMarker.setAttribute('position', `${end.x} ${end.y + 0.003} ${end.z}`);
+            endMarker.setAttribute('material', 'emissive: #4ade80; emissiveIntensity: 1.5');
+            endMarker.setAttribute('animation', {
+              property: 'scale',
+              from: '0 0 0',
+              to: '1 1 1',
+              dur: 200,
+              easing: 'easeOutBack'
+            });
+            container.appendChild(endMarker);
+          }
+        }
+      },
+
+      completeInoculation: function() {
+        console.log('Inoculation complete');
+        this.hideInstruction();
+        this.showInfo('Media agar menyediakan nutrisi bagi bakteri untuk tumbuh. Teknik zig-zag membantu menyebarkan bakteri agar koloni muncul terpisah.');
+        
+        setTimeout(() => {
+          this.hideInfo();
+          this.showPlateChoice();
+        }, 5000);
+      },
+      
+      showPlateChoice: function() {
+        console.log('Showing plate choice');
+        this.hideInstruction();
+        const panel = document.getElementById('plate-choice-panel');
+        panel.classList.remove('hidden');
+      },
+      
+      selectPlate: function(type) {
+        console.log('Plate selected:', type);
+        // Store plate selection (can be used later if needed)
+        this.selectedPlate = type;
+        
+        // Hide plate choice panel
+        document.getElementById('plate-choice-panel').classList.add('hidden');
+        
+        // Continue to stage 3
+        this.startStage3();
+      },
+
+      // ========================================
+      // STAGE 3: Incubation
+      // ========================================
+      startStage3: function() {
+        console.log('Stage 3: Incubation');
+        this.currentStage = 3;
+        
+        // Create stage transition effect
+        this.showStageTransition('STAGE 3', 'Inkubasi Bakteri');
+        
+        setTimeout(() => {
+          // Hide any existing instructions first
+          this.hideInstruction();
+          
+          // Show action button
+          const actionPanel = document.getElementById('action-panel');
+          const actionButton = document.getElementById('action-button');
+          actionButton.textContent = 'Masukkan Plate ke Inkubator';
+          actionPanel.classList.remove('hidden');
+        }, 2000);
+      },
+
+      showIncubatorSettings: function() {
+        console.log('Showing incubator settings');
+        // Hide action panel and any instructions
+        document.getElementById('action-panel').classList.add('hidden');
+        this.hideInstruction();
+        
+        // Show incubator panel
+        document.getElementById('incubator-panel').classList.remove('hidden');
+      },
+
+      startIncubation: function() {
+        console.log('Starting incubation');
+        this.temperature = parseInt(document.getElementById('temp-slider').value);
+        this.incubationTime = parseInt(document.getElementById('time-slider').value);
+        
+        console.log(`Incubation settings: ${this.temperature}°C for ${this.incubationTime} hours`);
+        
+        // Hide incubator panel and any instructions
+        document.getElementById('incubator-panel').classList.add('hidden');
+        this.hideInstruction();
+        
+        // Show progress with countdown
+        this.showProgress('Inkubasi Berlangsung', `Proses inkubasi sedang berjalan pada suhu ${this.temperature}°C selama ${this.incubationTime} jam...`, 10);
+        
+        console.log('Progress indicator shown, waiting 10 seconds...');
+        
+        // After 10 seconds, show finish button
+        setTimeout(() => {
+          console.log('10 seconds elapsed, showing finish button...');
+          this.hideProgress();
+          this.showFinishButton();
+        }, 10000);
+      },
+
+      showProgress: function(title, text, duration) {
+        const panel = document.getElementById('progress-indicator');
+        document.getElementById('progress-title').textContent = title;
+        document.getElementById('progress-text').innerHTML = `${text} <span class="countdown">${duration}s</span>`;
+        panel.classList.remove('hidden');
+        
+        let remaining = duration;
+        const interval = setInterval(() => {
+          remaining--;
+          document.getElementById('progress-text').innerHTML = `${text} <span class="countdown">${remaining}s</span>`;
+          
+          if (remaining <= 0) {
+            clearInterval(interval);
+          }
+        }, 1000);
+      },
+
+      hideProgress: function() {
+        const panel = document.getElementById('progress-indicator');
+        panel.classList.add('fade-out');
+        setTimeout(() => {
+          panel.classList.add('hidden');
+          panel.classList.remove('fade-out');
+        }, 400);
+      },
+
+      showFinishButton: function() {
+        console.log('showFinishButton called');
+        
+        // Hide any instructions first
+        this.hideInstruction();
+        
+        // Add finish text above incubator with enhanced visuals
+        const incubator = document.getElementById('plant-incubator');
+        if (!incubator) {
+          console.error('Incubator not found!');
+          return;
+        }
+        
+        const incubatorPos = incubator.getAttribute('position');
+        console.log('Incubator position:', incubatorPos);
+        
+        // Remove existing finish button if any
+        const existingFinish = document.getElementById('finish-container');
+        if (existingFinish) {
+          existingFinish.remove();
+        }
+        
+        // Create finish button container - position relative to incubator
+        const finishContainer = document.createElement('a-entity');
+        finishContainer.setAttribute('id', 'finish-container');
+        finishContainer.setAttribute('position', `${incubatorPos.x} ${incubatorPos.y + 0.8} ${incubatorPos.z}`);
+        finishContainer.setAttribute('rotation', '0 180 0'); // Rotate 180 degrees to face opposite direction
+        
+        // Glowing background - smaller and proportional
+        const bgGlow = document.createElement('a-box');
+        bgGlow.setAttribute('width', '0.8');
+        bgGlow.setAttribute('height', '0.3');
+        bgGlow.setAttribute('depth', '0.05');
+        bgGlow.setAttribute('color', '#4ade80');
+        bgGlow.setAttribute('material', 'emissive: #4ade80; emissiveIntensity: 1.0; opacity: 0.9; transparent: true');
+        bgGlow.setAttribute('animation__pulse', {
+          property: 'material.emissiveIntensity',
+          from: '0.7',
+          to: '1.3',
+          dur: 1000,
+          dir: 'alternate',
+          loop: true,
+          easing: 'easeInOutQuad'
+        });
+        bgGlow.setAttribute('class', 'interactive clickable');
+        finishContainer.appendChild(bgGlow);
+        
+        // Finish text - smaller size
+        const finishText = document.createElement('a-text');
+        finishText.setAttribute('value', '✓ FINISH');
+        finishText.setAttribute('align', 'center');
+        finishText.setAttribute('color', '#FFFFFF');
+        finishText.setAttribute('position', '0 0 0.05');
+        finishText.setAttribute('scale', '1 1 1'); // Reduced from 2 2 2
+        finishText.setAttribute('font', 'roboto');
+        finishText.setAttribute('class', 'interactive clickable');
+        finishText.setAttribute('id', 'finish-text');
+        finishText.setAttribute('material', 'emissive: #FFFFFF; emissiveIntensity: 0.5');
+        finishContainer.appendChild(finishText);
+        
+        // Add a clickable box for easier clicking
+        const clickBox = document.createElement('a-box');
+        clickBox.setAttribute('width', '1.0');
+        clickBox.setAttribute('height', '0.5');
+        clickBox.setAttribute('depth', '0.1');
+        clickBox.setAttribute('position', '0 0 0');
+        clickBox.setAttribute('material', 'opacity: 0; transparent: true');
+        clickBox.setAttribute('class', 'interactive clickable');
+        clickBox.setAttribute('id', 'finish-clickbox');
+        finishContainer.appendChild(clickBox);
+        
+        // Particles around button - smaller radius to match button size
+        for (let i = 0; i < 8; i++) {
+          const particle = document.createElement('a-sphere');
+          const angle = (Math.PI * 2 * i) / 8;
+          const radius = 0.5; // Reduced from 0.8 to match smaller button
+          particle.setAttribute('radius', '0.03');
+          particle.setAttribute('color', '#FFD700');
+          particle.setAttribute('position', `${Math.cos(angle) * radius} 0 ${Math.sin(angle) * radius}`);
+          particle.setAttribute('material', 'emissive: #FFD700; emissiveIntensity: 0.8');
+          particle.setAttribute('animation__orbit', {
+            property: 'position',
+            from: `${Math.cos(angle) * radius} 0 ${Math.sin(angle) * radius}`,
+            to: `${Math.cos(angle + Math.PI * 2) * radius} 0 ${Math.sin(angle + Math.PI * 2) * radius}`,
+            dur: 3000,
+            loop: true,
+            easing: 'linear'
+          });
+          finishContainer.appendChild(particle);
+        }
+        
+        // Scale in animation
+        finishContainer.setAttribute('animation__appear', {
+          property: 'scale',
+          from: '0 0 0',
+          to: '1 1 1',
+          dur: 500,
+          easing: 'easeOutBack'
+        });
+        
+        // Add to scene instead of incubator for better positioning
+        document.querySelector('a-scene').appendChild(finishContainer);
+        console.log('Finish button created and added to scene');
+        
+        // Spotlight effect
+        const spotlight = document.createElement('a-entity');
+        spotlight.setAttribute('light', 'type: spot; color: #4ade80; intensity: 3; angle: 45; penumbra: 0.5; decay: 2');
+        spotlight.setAttribute('position', `${incubatorPos.x} ${incubatorPos.y + 2} ${incubatorPos.z}`);
+        spotlight.setAttribute('rotation', '-90 0 0');
+        spotlight.setAttribute('id', 'finish-spotlight');
+        document.querySelector('a-scene').appendChild(spotlight);
+        
+        // Show instruction
+        this.showInstruction('Klik tombol "FINISH" di atas inkubator untuk melihat pertumbuhan koloni');
+        
+        // Add click handler - use a more reliable method
+        const scene = document.querySelector('a-scene');
+        const self = this;
+        
+        const clickHandler = function(e) {
+          const intersected = e.detail.intersectedEl;
+          console.log('Click detected, intersected element:', intersected ? intersected.id : 'none');
+          
+          if (intersected && (
+            intersected.id === 'finish-text' || 
+            intersected.id === 'finish-clickbox' ||
+            intersected.parentNode && intersected.parentNode.id === 'finish-container' ||
+            intersected.id === 'finish-container'
+          )) {
+            console.log('Finish button clicked!');
+            
+            // Remove event listener first
+            scene.removeEventListener('click', clickHandler);
+            
+            // Remove with animation
+            finishContainer.setAttribute('animation__disappear', {
+              property: 'scale',
+              from: '1 1 1',
+              to: '0 0 0',
+              dur: 300,
+              easing: 'easeInBack'
+            });
+            
+            setTimeout(() => {
+              if (finishContainer.parentNode) {
+                finishContainer.remove();
+              }
+              const spot = document.getElementById('finish-spotlight');
+              if (spot) spot.remove();
+              self.hideInstruction();
+              self.showColonyGrowth();
+            }, 300);
+          }
+        };
+        
+        scene.addEventListener('click', clickHandler);
+        
+        // Also listen for fuse event on all clickable elements
+        [finishText, clickBox, bgGlow].forEach(el => {
+          el.addEventListener('fuse', function() {
+            console.log('Finish button fused!');
+            scene.removeEventListener('click', clickHandler);
+            
+            finishContainer.setAttribute('animation__disappear', {
+              property: 'scale',
+              from: '1 1 1',
+              to: '0 0 0',
+              dur: 300,
+              easing: 'easeInBack'
+            });
+            
+            setTimeout(() => {
+              if (finishContainer.parentNode) {
+                finishContainer.remove();
+              }
+              const spot = document.getElementById('finish-spotlight');
+              if (spot) spot.remove();
+              self.hideInstruction();
+              self.showColonyGrowth();
+            }, 300);
+          });
+        });
+      },
+
+      showColonyGrowth: function() {
+        console.log('showColonyGrowth called');
+        console.log('Selected sample:', this.selectedSample);
+        
+        // Hide any instructions first
+        this.hideInstruction();
+        
+        const container = document.getElementById('colonies-container');
+        if (!container) {
+          console.error('Colonies container not found!');
+          return;
+        }
+        
+        // Clear previous colonies
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        
+        // Determine sample type (use selectedPlate if available, otherwise selectedSample)
+        const sampleType = this.selectedPlate || this.selectedSample;
+        
+        // Generate random colonies with variety - based on sample type
+        // Use existing count if already counted, otherwise generate new
+        let numColonies;
+        if (this.experimentData[sampleType] && this.experimentData[sampleType].count) {
+          // Use existing count from counting stage
+          numColonies = this.experimentData[sampleType].count;
+          console.log(`Using existing colony count: ${numColonies} for sample type: ${sampleType}`);
+        } else {
+          // Generate new count and store it for later use in counting
+          if (sampleType === 'ND') {
+            numColonies = Math.floor(Math.random() * 31) + 100; // 100-130 colonies for ND (inclusive)
+          } else {
+            numColonies = Math.floor(Math.random() * 21) + 25; // 25-45 colonies for D (inclusive)
+          }
+          
+          // Ensure numColonies is within valid range (safety check)
+          if (sampleType === 'ND') {
+            numColonies = Math.min(Math.max(numColonies, 100), 130); // Clamp between 100-130
+          } else {
+            numColonies = Math.min(Math.max(numColonies, 25), 45); // Clamp between 25-45
+          }
+          
+          // Store this count so counting stage will use the same number
+          this.finalColonyCount = numColonies;
+          console.log(`Generated new colony count: ${numColonies} for sample type: ${sampleType} (range: ${sampleType === 'ND' ? '100-130' : '25-45'})`);
+        }
+        
+        console.log(`Generating ${numColonies} colonies for sample type: ${sampleType}`);
+        
+        // Store colony count to experimentData if not already stored
+        // This ensures counting stage will use the same number
+        if (!this.experimentData[sampleType] || !this.experimentData[sampleType].count) {
+          this.experimentData[sampleType] = {
+            count: numColonies,
+            temperature: this.temperature,
+            time: this.incubationTime
+          };
+          // Also store as finalColonyCount for counting stage
+          this.finalColonyCount = numColonies;
+          console.log(`Stored colony count ${numColonies} for sample type ${sampleType}`);
+        }
+        
+        // Show progress
+        const totalTime = Math.ceil(numColonies * 0.08); // Slower, smoother animation
+        console.log(`Total animation time: ${totalTime} seconds`);
+        this.showProgress('Pertumbuhan Koloni', `Koloni bakteri mulai tumbuh... (0/${numColonies})`, totalTime);
+        
+        // Calculate delay per colony for smooth animation
+        const delayPerColony = (totalTime * 1000) / numColonies;
+        console.log(`Delay per colony: ${delayPerColony}ms`);
+        
+        for (let i = 0; i < numColonies; i++) {
+          setTimeout(() => {
+            // Update progress
+            const progressText = document.getElementById('progress-text');
+            if (progressText) {
+              const progress = Math.floor((i + 1) / numColonies * 100);
+              progressText.innerHTML = `Koloni bakteri sedang tumbuh... <span class="countdown">${i + 1}/${numColonies} (${progress}%)</span>`;
+            }
+            
+            // Random size variation
+            const radius = Math.random() * 0.012 + 0.008; // 0.008 - 0.020
+            
+            // Color variation - oranges, yellows, and greens for bacteria
+            const colorChoice = Math.floor(Math.random() * 4);
+            let color, emissive;
+            switch(colorChoice) {
+              case 0: 
+                color = '#FFD700'; // Gold
+                emissive = '#FFD700';
+                break;
+              case 1:
+                color = '#FFA500'; // Orange
+                emissive = '#FFA500';
+                break;
+              case 2:
+                color = '#FF6B6B'; // Red
+                emissive = '#FF6B6B';
+                break;
+              case 3:
+                color = '#4ade80'; // Green
+                emissive = '#4ade80';
+                break;
+            }
+            
+            // Random position within petri dish area
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 0.045; // Within petri dish radius
+            const x = Math.cos(angle) * distance;
+            const z = Math.sin(angle) * distance;
+            
+            const colony = document.createElement('a-sphere');
+            colony.setAttribute('radius', radius);
+            colony.setAttribute('color', color);
+            colony.setAttribute('position', {
+              x: x,
+              y: 0.002,
+              z: z
+            });
+            colony.setAttribute('material', `emissive: ${emissive}; emissiveIntensity: 0.6; metalness: 0.3; roughness: 0.7`);
+            
+            // Smooth grow animation with elastic easing
+            colony.setAttribute('animation__grow', {
+              property: 'scale',
+              from: '0 0 0',
+              to: '1 1 1',
+              dur: 800,
+              easing: 'easeOutElastic',
+              elasticity: 400
+            });
+            
+            // Fade in animation
+            colony.setAttribute('animation__fade', {
+              property: 'material.opacity',
+              from: '0',
+              to: '1',
+              dur: 600,
+              easing: 'easeOutQuad'
+            });
+            
+            // Add pulsing animation to some colonies for more realism
+            if (Math.random() > 0.4) {
+              colony.setAttribute('animation__pulse', {
+                property: 'scale',
+                from: '1 1 1',
+                to: '1.15 1.15 1.15',
+                dur: 1500 + Math.random() * 1000,
+                dir: 'alternate',
+                loop: true,
+                easing: 'easeInOutQuad',
+                delay: 800 + Math.random() * 500
+              });
+            }
+            
+            // Add glow effect to larger colonies
+            if (radius > 0.015) {
+              const glow = document.createElement('a-sphere');
+              glow.setAttribute('radius', radius * 1.5);
+              glow.setAttribute('color', color);
+              glow.setAttribute('material', `opacity: 0.3; transparent: true; emissive: ${emissive}; emissiveIntensity: 0.5`);
+              glow.setAttribute('animation__pulse', {
+                property: 'material.opacity',
+                from: '0.3',
+                to: '0.1',
+                dur: 1500,
+                dir: 'alternate',
+                loop: true,
+                easing: 'easeInOutQuad',
+                delay: 800
+              });
+              colony.appendChild(glow);
+            }
+            
+            container.appendChild(colony);
+            
+            // Create small particle burst when colony appears (less frequent for smoother performance)
+            if (i % 8 === 0) {
+              const colonyPos = colony.getAttribute('position');
+              const worldPos = {
+                x: container.object3D.position.x + colonyPos.x,
+                y: container.object3D.position.y + colonyPos.y,
+                z: container.object3D.position.z + colonyPos.z
+              };
+              this.createParticles(worldPos, color, 2);
+            }
+          }, i * delayPerColony);
+        }
+        
+        // Show info after all colonies appear
+        setTimeout(() => {
+          this.hideProgress();
+          this.hideInstruction();
+          this.showInfo('Suhu tubuh manusia adalah kondisi ideal untuk pertumbuhan bakteri kulit seperti Staphylococcus & Corynebacterium.');
+          
+          setTimeout(() => {
+            this.hideInfo();
+            this.startStage4();
+          }, 5000);
+        }, numColonies * delayPerColony + 1500);
+      },
+
+      // ========================================
+      // STAGE 4: Colony Observation
+      // ========================================
+      startStage4: function() {
+        console.log('Stage 4: Colony Observation');
+        this.currentStage = 4;
+        this.isZoomed = false;
+        this.originalCameraPos = null;
+        
+        // Create stage transition effect
+        this.showStageTransition('STAGE 4', 'Pengamatan Koloni Bakteri');
+        
+        setTimeout(() => {
+          this.showInstruction('Klik Plate, lalu tekan lama untuk menghitung koloni bakteri');
+          this.enableColonyCounting();
+        }, 2000);
+      },
+
+      enableColonyCounting: function() {
+        const petriDish = document.getElementById('petri-dish');
+        let holdStartTime = null;
+        let countInterval = null;
+        let count = 0;
+        let isCountingActive = false;
+        let clickStartTime = null;
+        const CLICK_THRESHOLD = 300; // 300ms to distinguish click from hold
+        
+        // Add visual counter display above petri dish
+        const counterDisplay = document.createElement('a-text');
+        counterDisplay.setAttribute('id', 'colony-counter');
+        counterDisplay.setAttribute('value', '0');
+        counterDisplay.setAttribute('align', 'center');
+        counterDisplay.setAttribute('color', '#FFD700');
+        counterDisplay.setAttribute('position', '0 0.3 0');
+        counterDisplay.setAttribute('scale', '1.5 1.5 1.5');
+        counterDisplay.setAttribute('visible', 'false');
+        counterDisplay.setAttribute('material', 'emissive: #FFD700; emissiveIntensity: 0.8');
+        petriDish.appendChild(counterDisplay);
+        
+        // Add glow ring around petri dish
+        const glowRing = document.createElement('a-torus');
+        glowRing.setAttribute('id', 'petri-glow');
+        glowRing.setAttribute('radius', '0.12');
+        glowRing.setAttribute('radius-tubular', '0.005');
+        glowRing.setAttribute('rotation', '-90 0 0');
+        glowRing.setAttribute('position', '0 0.01 0');
+        glowRing.setAttribute('color', '#4ade80');
+        glowRing.setAttribute('material', 'emissive: #4ade80; emissiveIntensity: 0; transparent: true; opacity: 0.8');
+        glowRing.setAttribute('visible', 'false');
+        petriDish.appendChild(glowRing);
+        
+        const scene = document.querySelector('a-scene');
+        const camera = document.getElementById('player');
+        
+        // Add invisible hitbox for easier clicking (larger than petri dish)
+        const hitbox = document.createElement('a-cylinder');
+        hitbox.setAttribute('id', 'petri-hitbox');
+        hitbox.setAttribute('radius', '0.15');
+        hitbox.setAttribute('height', '0.01');
+        hitbox.setAttribute('rotation', '-90 0 0');
+        hitbox.setAttribute('position', '0 0.01 0');
+        hitbox.setAttribute('material', 'opacity: 0; transparent: true');
+        hitbox.setAttribute('class', 'interactive clickable');
+        hitbox.setAttribute('data-interactive', 'petri');
+        petriDish.appendChild(hitbox);
+        
+        // Add direct event listeners on petri dish elements
+        [petriDish, petriDish.querySelector('#petri-dish-model'), hitbox].forEach(el => {
+          if (el) {
+            el.addEventListener('click', (e) => {
+              if (!isCountingActive) {
+                console.log('Direct click on petri dish element:', el.id || el.tagName);
+                e.stopPropagation();
+                this.toggleZoomOnPlate(petriDish, camera);
+              }
+            });
+          }
+        });
+        
+        // Handle mousedown - start timer to distinguish click from hold
+        let mousedownTimeout = null;
+        scene.addEventListener('mousedown', (e) => {
+          const intersected = e.detail.intersectedEl;
+          if (intersected && (intersected.id === 'petri-dish-model' || intersected.id === 'petri-dish' || intersected.parentNode.id === 'petri-dish')) {
+            if (isCountingActive) return;
+            
+            clickStartTime = Date.now();
+            console.log('Mouse down on petri dish, clickStartTime set');
+            
+            // Wait to see if it's a hold or click
+            // Only start counting if mouse is still down after threshold
+            mousedownTimeout = setTimeout(() => {
+              // Check if mouse is still down (not released yet)
+              if (clickStartTime && (Date.now() - clickStartTime) >= CLICK_THRESHOLD) {
+                // It's a hold, start counting
+                console.log('Hold detected, starting counting');
+                isCountingActive = true;
+                holdStartTime = Date.now();
+                count = 0;
+                
+                // Calculate final colony count FIRST based on sample type
+                // Use selectedPlate if available, otherwise use selectedSample
+                const sampleType = this.selectedPlate || this.selectedSample;
+                let finalCount;
+                
+                // Use existing count if available (from showColonyGrowth), otherwise generate new
+                if (this.finalColonyCount) {
+                  finalCount = this.finalColonyCount;
+                  console.log('Using pre-determined colony count:', finalCount, 'for sample type:', sampleType);
+                } else if (this.experimentData[sampleType] && this.experimentData[sampleType].count) {
+                  finalCount = this.experimentData[sampleType].count;
+                  console.log('Using existing colony count from experiment data:', finalCount, 'for sample type:', sampleType);
+                } else {
+                  // Generate new count with proper range
+                  if (sampleType === 'ND') {
+                    finalCount = Math.floor(Math.random() * 31) + 100; // 100-130 colonies for ND (inclusive)
+                  } else {
+                    finalCount = Math.floor(Math.random() * 21) + 25; // 25-45 colonies for D (inclusive)
+                  }
+                  
+                  // Ensure finalCount is within valid range (safety check)
+                  if (sampleType === 'ND') {
+                    finalCount = Math.min(Math.max(finalCount, 100), 130); // Clamp between 100-130
+                  } else {
+                    finalCount = Math.min(Math.max(finalCount, 25), 45); // Clamp between 25-45
+                  }
+                  
+                  // Store final count for later use
+                  this.finalColonyCount = finalCount;
+                  console.log('Generated new colony count:', finalCount, 'for sample type:', sampleType, '(range: ' + (sampleType === 'ND' ? '100-130' : '25-45') + ')');
+                }
+                
+                // Show counter and glow
+                counterDisplay.setAttribute('visible', 'true');
+                glowRing.setAttribute('visible', 'true');
+                
+                // Animate glow intensity
+                glowRing.setAttribute('animation__glow', {
+                  property: 'material.emissiveIntensity',
+                  from: '0',
+                  to: '1.5',
+                  dur: 300,
+                  easing: 'easeOutQuad'
+                });
+                
+                // Calculate counting duration (3-5 seconds to reach final count)
+                const countingDuration = 3000 + Math.random() * 2000; // 3-5 seconds
+                const incrementInterval = 50; // Update every 50ms for smooth counting
+                const totalSteps = Math.floor(countingDuration / incrementInterval);
+                const incrementPerStep = finalCount / totalSteps;
+                
+                let currentStep = 0;
+                
+                console.log(`Counting will reach ${finalCount} in ${(countingDuration/1000).toFixed(1)} seconds (${totalSteps} steps, ${incrementPerStep.toFixed(2)} per step)`);
+                
+                countInterval = setInterval(() => {
+                  currentStep++;
+                  
+                  // Calculate current count (smoothly increase to final count)
+                  // Use Math.min to ensure count NEVER exceeds finalCount
+                  const calculatedCount = Math.floor(currentStep * incrementPerStep);
+                  count = Math.min(calculatedCount, finalCount);
+                  
+                  // CRITICAL: Force stop if count reaches or exceeds finalCount
+                  if (count >= finalCount) {
+                    count = finalCount; // Ensure exact final count
+                    clearInterval(countInterval);
+                    countInterval = null;
+                    
+                    // Final count reached - show completion
+                    counterDisplay.setAttribute('value', finalCount.toString());
+                    counterDisplay.setAttribute('animation__final', {
+                      property: 'scale',
+                      from: '1.5 1.5 1.5',
+                      to: '3 3 3',
+                      dur: 500,
+                      easing: 'easeOutBack'
+                    });
+                    
+                    // Big particle burst
+                    const petriPos = petriDish.object3D.getWorldPosition(new THREE.Vector3());
+                    this.createParticles({x: petriPos.x, y: petriPos.y + 0.3, z: petriPos.z}, '#4ade80', 30);
+                    
+                    // Store result
+                    const sampleTypeForData = this.selectedPlate || this.selectedSample;
+                    console.log('Colony count completed:', finalCount, 'for sample type:', sampleTypeForData);
+                    this.experimentData[sampleTypeForData] = {
+                      count: finalCount,
+                      temperature: this.temperature,
+                      time: this.incubationTime
+                    };
+                    
+                    this.updateInstruction(`Selesai! Ditemukan ${finalCount} koloni bakteri`);
+                    
+                    // Auto complete after showing result
+                    setTimeout(() => {
+                      counterDisplay.setAttribute('visible', 'false');
+                      glowRing.setAttribute('visible', 'false');
+                      glowRing.setAttribute('material', 'emissiveIntensity: 0');
+                      this.hideInstruction();
+                      
+                      // Zoom out if zoomed in
+                      if (this.isZoomed) {
+                        this.toggleZoomOnPlate(petriDish, camera);
+                      }
+                      
+                      isCountingActive = false;
+                      holdStartTime = null;
+                      this.checkExperimentCompletion();
+                    }, 2000);
+                    
+                    return; // Stop counting
+                  }
+                  
+                  // Update display
+                  counterDisplay.setAttribute('value', count.toString());
+                  
+                  // Pulse animation on counter
+                  counterDisplay.setAttribute('animation__pulse', {
+                    property: 'scale',
+                    from: '1.5 1.5 1.5',
+                    to: '2 2 2',
+                    dur: 100,
+                    dir: 'alternate',
+                    easing: 'easeInOutQuad'
+                  });
+                  
+                  // Particle burst occasionally
+                  if (count % 20 === 0 && count < finalCount) {
+                    const petriPos = petriDish.object3D.getWorldPosition(new THREE.Vector3());
+                    this.createParticles({x: petriPos.x, y: petriPos.y + 0.2, z: petriPos.z}, '#FFD700', 5);
+                  }
+                  
+                  this.updateInstruction(`Menghitung koloni: ${count}... (${Math.floor((count / finalCount) * 100)}%)`);
+                }, incrementInterval);
+              }
+            }, CLICK_THRESHOLD);
+          }
+        });
+        
+        scene.addEventListener('mouseup', (e) => {
+          // Clear the mousedown timeout if it exists (user released before hold threshold)
+          if (mousedownTimeout) {
+            clearTimeout(mousedownTimeout);
+            mousedownTimeout = null;
+          }
+          
+          // Check if this was a quick click (for zoom) or a hold (for counting)
+          if (clickStartTime && !isCountingActive) {
+            const clickDuration = Date.now() - clickStartTime;
+            console.log('Mouse up, click duration:', clickDuration, 'ms');
+            
+            // If it was a quick click (less than threshold), don't do anything here
+            // Let the click event handler deal with zoom
+            if (clickDuration < CLICK_THRESHOLD) {
+              console.log('Quick click detected (< 300ms), will be handled by click event');
+              // Don't reset clickStartTime yet, let click handler use it
+            }
+          }
+          
+          // If counting is active and interval exists, allow it to continue
+          // Counting will stop automatically when it reaches final count
+          if (isCountingActive && countInterval) {
+            // User released mouse, but counting continues automatically
+            // Just update instruction to let user know counting will continue
+            this.updateInstruction('Menghitung... (proses akan selesai otomatis)');
+          } else if (isCountingActive && !countInterval) {
+            // Counting already completed automatically, do nothing
+            // The completion handler already took care of everything
+          }
+          
+          // Reset clickStartTime after a short delay to allow click event to process
+          setTimeout(() => {
+            clickStartTime = null;
+          }, 100);
+        });
+        
+        // Handle click event as primary method for zoom (more reliable)
+        scene.addEventListener('click', (e) => {
+          const intersected = e.detail.intersectedEl;
+          console.log('Click event detected, intersected:', intersected ? (intersected.id || intersected.className) : 'none');
+          
+          // Check if clicked on petri dish (check multiple ways)
+          const isPetriDish = intersected && (
+            intersected.id === 'petri-dish-model' || 
+            intersected.id === 'petri-dish' || 
+            (intersected.parentNode && intersected.parentNode.id === 'petri-dish') ||
+            (intersected.classList && intersected.classList.contains('interactive') && intersected.getAttribute('data-interactive') === 'petri')
+          );
+          
+          if (isPetriDish) {
+            // Only zoom if not counting
+            if (!isCountingActive) {
+              // Check if it was a quick click (not a hold)
+              if (clickStartTime) {
+                const clickDuration = Date.now() - clickStartTime;
+                if (clickDuration < CLICK_THRESHOLD) {
+                  console.log('Click event: Quick click detected (' + clickDuration + 'ms), triggering zoom');
+                  e.preventDefault();
+                  e.stopPropagation();
+                  this.toggleZoomOnPlate(petriDish, camera);
+                  clickStartTime = null;
+                  return false;
+                } else {
+                  console.log('Click event: Too long (' + clickDuration + 'ms), ignoring (was a hold)');
+                }
+              } else {
+                // No clickStartTime recorded, might be direct click - allow zoom anyway
+                console.log('Click event: Direct click detected (no mousedown), triggering zoom');
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleZoomOnPlate(petriDish, camera);
+                return false;
+              }
+            } else {
+              console.log('Click event: Counting is active, ignoring click');
+            }
+          }
+        });
+      },
+      
+      toggleZoomOnPlate: function(petriDish, camera) {
+        const petriPos = petriDish.object3D.getWorldPosition(new THREE.Vector3());
+        const cameraEntity = camera.parentElement; // Get the rig
+        
+        if (!this.isZoomed) {
+          // Zoom in
+          const currentPos = cameraEntity.getAttribute('position');
+          this.originalCameraPos = {
+            x: currentPos.x,
+            y: currentPos.y,
+            z: currentPos.z
+          };
+          
+          const zoomPos = {
+            x: petriPos.x,
+            y: petriPos.y + 0.3,
+            z: petriPos.z + 0.5
+          };
+          
+          // Animate camera to zoom position
+          cameraEntity.setAttribute('animation__zoom', {
+            property: 'position',
+            to: `${zoomPos.x} ${zoomPos.y} ${zoomPos.z}`,
+            dur: 1000,
+            easing: 'easeInOutQuad'
+          });
+          
+          // Rotate camera to look at plate
+          const currentRot = cameraEntity.getAttribute('rotation');
+          cameraEntity.setAttribute('animation__rotate', {
+            property: 'rotation',
+            to: '0 0 0',
+            dur: 1000,
+            easing: 'easeInOutQuad'
+          });
+          
+          this.isZoomed = true;
+          this.updateInstruction('Tekan lama Plate untuk menghitung koloni bakteri (Klik lagi untuk zoom out)');
+          
+          // Add zoom indicator
+          const zoomIndicator = document.createElement('a-text');
+          zoomIndicator.setAttribute('id', 'zoom-indicator');
+          zoomIndicator.setAttribute('value', '🔍 ZOOMED IN - Klik untuk zoom out');
+          zoomIndicator.setAttribute('align', 'center');
+          zoomIndicator.setAttribute('color', '#FFD700');
+          zoomIndicator.setAttribute('position', `${petriPos.x} ${petriPos.y + 0.5} ${petriPos.z}`);
+          zoomIndicator.setAttribute('scale', '2 2 2');
+          zoomIndicator.setAttribute('material', 'emissive: #FFD700; emissiveIntensity: 0.8');
+          zoomIndicator.setAttribute('animation__pulse', {
+            property: 'scale',
+            from: '2 2 2',
+            to: '2.2 2.2 2.2',
+            dur: 1000,
+            dir: 'alternate',
+            loop: true,
+            easing: 'easeInOutQuad'
+          });
+          document.querySelector('a-scene').appendChild(zoomIndicator);
+          
+        } else {
+          // Zoom out
+          if (this.originalCameraPos) {
+            cameraEntity.setAttribute('animation__zoom', {
+              property: 'position',
+              to: `${this.originalCameraPos.x} ${this.originalCameraPos.y} ${this.originalCameraPos.z}`,
+              dur: 1000,
+              easing: 'easeInOutQuad'
+            });
+            
+            cameraEntity.setAttribute('animation__rotate', {
+              property: 'rotation',
+              to: '0 0 0',
+              dur: 1000,
+              easing: 'easeInOutQuad'
+            });
+          }
+          
+          // Remove zoom indicator
+          const zoomIndicator = document.getElementById('zoom-indicator');
+          if (zoomIndicator) {
+            zoomIndicator.remove();
+          }
+          
+          this.isZoomed = false;
+          this.updateInstruction('Klik Plate, lalu tekan lama untuk menghitung koloni bakteri');
+        }
+      },
+
+      checkExperimentCompletion: function() {
+        // Update table immediately with current result
+        this.updateDataTable();
+        
+        // Check if both samples have been tested
+        if (this.experimentData.ND && this.experimentData.D) {
+          // Both samples complete - show full results
+          setTimeout(() => {
+            this.showResults();
+          }, 1000);
+        } else {
+          // Ask if user wants to test other sample
+          const otherSample = this.selectedSample === 'ND' ? 'D (Deodorant)' : 'ND (Non-Deodorant)';
+          
+          setTimeout(() => {
+            if (confirm(`Data untuk sampel ${this.selectedSample} telah disimpan ke tabel.\n\nHasil: ${this.experimentData[this.selectedSample].count} koloni\n\nApakah Anda ingin menguji sampel ${otherSample}?`)) {
+              // Reset and start from stage 1 with other sample
+              this.resetForNewSample();
+              this.startStage1();
+            } else {
+              // Show partial results
+              this.showResults();
+            }
+          }, 500);
+        }
+      },
+      
+      updateDataTable: function() {
+        // Update table with current data immediately
+        const tableBody = document.getElementById('data-table-body');
+        
+        // Clear existing rows for current sample type
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+          const firstCell = row.querySelector('td');
+          if (firstCell) {
+            const condition = firstCell.textContent;
+            if (condition.includes(this.selectedSample === 'ND' ? 'Non-Deodorant' : 'Deodorant')) {
+              row.remove();
+            }
+          }
+        });
+        
+        // Add current sample data
+        if (this.experimentData[this.selectedSample]) {
+          const row = document.createElement('tr');
+          const sampleType = this.selectedSample === 'ND' ? 'Non-Deodorant (ND)' : 'Deodorant (D)';
+          row.innerHTML = `
+            <td>${sampleType}</td>
+            <td><strong>${this.experimentData[this.selectedSample].count} koloni</strong></td>
+            <td>${this.experimentData[this.selectedSample].temperature}°C</td>
+            <td>${this.experimentData[this.selectedSample].time} jam</td>
+          `;
+          tableBody.appendChild(row);
+        }
+      },
+
+      resetForNewSample: function() {
+        // Clear colonies
+        const container = document.getElementById('colonies-container');
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+        
+        // Clear zigzag
+        const zigzag = document.getElementById('zigzag-path');
+        while (zigzag.firstChild) {
+          zigzag.removeChild(zigzag.firstChild);
+        }
+        
+        // Hide blood tube
+        document.getElementById('blood-tube').setAttribute('visible', 'false');
+        
+        // Reset zoom if active
+        if (this.isZoomed) {
+          const petriDish = document.getElementById('petri-dish');
+          const camera = document.getElementById('player');
+          this.toggleZoomOnPlate(petriDish, camera);
+        }
+        
+        // Remove zoom indicator if exists
+        const zoomIndicator = document.getElementById('zoom-indicator');
+        if (zoomIndicator) {
+          zoomIndicator.remove();
+        }
+        
+        this.selectedSample = null;
+        this.selectedPlate = null;
+        this.finalColonyCount = null; // Reset colony count for new sample
+        this.currentStage = 0;
+      },
+
+      showResults: function() {
+        console.log('Showing results');
+        
+        // Hide all other panels and instructions first
+        this.hideInstruction();
+        document.getElementById('action-panel').classList.add('hidden');
+        document.getElementById('incubator-panel').classList.add('hidden');
+        document.getElementById('progress-indicator').classList.add('hidden');
+        document.getElementById('label-panel').classList.add('hidden');
+        document.getElementById('info-panel').classList.add('hidden');
+        document.getElementById('plate-choice-panel').classList.add('hidden');
+        document.getElementById('choice-panel').classList.add('hidden');
+        
+        const tableBody = document.getElementById('data-table-body');
+        
+        // Clear and rebuild table to ensure correct order
+        tableBody.innerHTML = '';
+        
+        // Add data rows in order: ND first, then D
+        if (this.experimentData.ND) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>Non-Deodorant (ND)</td>
+            <td><strong>${this.experimentData.ND.count} koloni</strong></td>
+            <td>${this.experimentData.ND.temperature}°C</td>
+            <td>${this.experimentData.ND.time} jam</td>
+          `;
+          tableBody.appendChild(row);
+        }
+        
+        if (this.experimentData.D) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>Deodorant (D)</td>
+            <td><strong>${this.experimentData.D.count} koloni</strong></td>
+            <td>${this.experimentData.D.temperature}°C</td>
+            <td>${this.experimentData.D.time} jam</td>
+          `;
+          tableBody.appendChild(row);
+        }
+        
+        // Add comparison if both samples exist
+        const comparison = document.getElementById('comparison-text');
+        if (this.experimentData.ND && this.experimentData.D) {
+          const difference = this.experimentData.ND.count - this.experimentData.D.count;
+          const percentage = ((difference / this.experimentData.ND.count) * 100).toFixed(1);
+          
+          comparison.innerHTML = `
+            <p><strong>Analisis Perbandingan:</strong></p>
+            <p>Sampel <strong>Non-Deodorant</strong> menunjukkan <strong>${this.experimentData.ND.count} koloni</strong>, sedangkan sampel <strong>Deodorant</strong> hanya <strong>${this.experimentData.D.count} koloni</strong>.</p>
+            <p>Penurunan jumlah koloni sebesar <strong>${difference} koloni (${percentage}%)</strong> menunjukkan bahwa deodorant efektif menghambat pertumbuhan bakteri penyebab bau badan.</p>
+            <p>Bakteri seperti <em>Corynebacterium</em> dan <em>Staphylococcus</em> yang menguraikan keringat menjadi senyawa berbau dapat dikurangi dengan penggunaan deodorant antibakteri.</p>
+          `;
+        } else {
+          comparison.innerHTML = '<p>Lengkapi pengujian kedua sampel untuk melihat perbandingan hasil.</p>';
+        }
+        
+        // Show table panel
+        document.getElementById('table-panel').classList.remove('hidden');
+        this.hideInstruction();
+      },
+
+      finishExperiment: function() {
+        console.log('Experiment finished');
+        document.getElementById('table-panel').classList.add('hidden');
+        
+        // Check if both experiments are completed
+        if (this.experimentData.ND && this.experimentData.D) {
+          // Both experiments completed - show conclusion
+          alert('Selamat! Anda telah menyelesaikan eksperimen bakteri keringat.\n\nKesimpulan: Deodorant terbukti efektif mengurangi pertumbuhan bakteri pada permukaan kulit.');
+        } else {
+          // Only one or no experiment completed - show message without conclusion
+          const completedSamples = [];
+          if (this.experimentData.ND) completedSamples.push('Non-Deodorant');
+          if (this.experimentData.D) completedSamples.push('Deodorant');
+          
+          let message = 'Data eksperimen telah disimpan.\n\n';
+          if (completedSamples.length === 1) {
+            message += `Anda telah menyelesaikan pengujian sampel ${completedSamples[0]}.\n\n`;
+            message += 'Untuk mendapatkan kesimpulan yang lengkap, silakan lengkapi pengujian kedua sampel (Non-Deodorant dan Deodorant) untuk melihat perbandingan hasil.';
+          } else {
+            message += 'Silakan lengkapi pengujian kedua sampel (Non-Deodorant dan Deodorant) untuk melihat hasil dan kesimpulan.';
+          }
+          
+          alert(message);
+        }
+      },
+
+      // ========================================
+      // UTILITY FUNCTIONS
+      // ========================================
+      showStageTransition: function(stageTitle, stageSubtitle) {
+        // Create transition overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'stage-transition-overlay';
+        overlay.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+          z-index: 3000;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          animation: fadeIn 0.5s ease-out;
+        `;
+        
+        const title = document.createElement('h1');
+        title.textContent = stageTitle;
+        title.style.cssText = `
+          color: white;
+          font-size: 72px;
+          font-weight: 700;
+          margin: 0;
+          text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+          animation: slideDown 0.6s ease-out;
+        `;
+        
+        const subtitle = document.createElement('p');
+        subtitle.textContent = stageSubtitle;
+        subtitle.style.cssText = `
+          color: white;
+          font-size: 28px;
+          margin: 20px 0 0 0;
+          opacity: 0.9;
+          animation: slideUp 0.6s ease-out 0.2s both;
+        `;
+        
+        overlay.appendChild(title);
+        overlay.appendChild(subtitle);
+        document.body.appendChild(overlay);
+        
+        // Add keyframe animations
+        if (!document.getElementById('transition-styles')) {
+          const style = document.createElement('style');
+          style.id = 'transition-styles';
+          style.textContent = `
+            @keyframes slideDown {
+              from { transform: translateY(-50px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes slideUp {
+              from { transform: translateY(50px); opacity: 0; }
+              to { transform: translateY(0); opacity: 0.9; }
+            }
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes fadeOut {
+              from { opacity: 1; }
+              to { opacity: 0; }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+        
+        // Remove overlay after 2 seconds
+        setTimeout(() => {
+          overlay.style.animation = 'fadeOut 0.5s ease-out';
+          setTimeout(() => {
+            if (overlay.parentNode) {
+              overlay.parentNode.removeChild(overlay);
+            }
+          }, 500);
+        }, 1500);
+      },
+      
+      createParticles: function(position, color, count) {
+        const scene = document.querySelector('a-scene');
+        const particleContainer = document.createElement('a-entity');
+        particleContainer.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+        scene.appendChild(particleContainer);
+        
+        for (let i = 0; i < count; i++) {
+          const particle = document.createElement('a-sphere');
+          particle.setAttribute('radius', '0.02');
+          particle.setAttribute('color', color);
+          particle.setAttribute('material', `opacity: 0.8; transparent: true; emissive: ${color}; emissiveIntensity: 0.6`);
+          
+          // Random direction
+          const angle = (Math.PI * 2 * i) / count;
+          const speed = 0.3 + Math.random() * 0.3;
+          const targetX = Math.cos(angle) * speed;
+          const targetY = Math.random() * 0.5;
+          const targetZ = Math.sin(angle) * speed;
+          
+          particle.setAttribute('animation', {
+            property: 'position',
+            from: '0 0 0',
+            to: `${targetX} ${targetY} ${targetZ}`,
+            dur: 800,
+            easing: 'easeOutQuad'
+          });
+          
+          particle.setAttribute('animation__scale', {
+            property: 'scale',
+            from: '1 1 1',
+            to: '0 0 0',
+            dur: 800,
+            easing: 'easeInQuad'
+          });
+          
+          particle.setAttribute('animation__fade', {
+            property: 'material.opacity',
+            from: '0.8',
+            to: '0',
+            dur: 800,
+            easing: 'easeInQuad'
+          });
+          
+          particleContainer.appendChild(particle);
+        }
+        
+        // Remove container after animation
+        setTimeout(() => {
+          if (particleContainer.parentNode) {
+            particleContainer.parentNode.removeChild(particleContainer);
+          }
+        }, 1000);
+      },
+      
+      animateObject: function(obj, from, to, duration, callback) {
+        obj.setAttribute('position', `${from.x} ${from.y} ${from.z}`);
+        obj.setAttribute('animation', {
+          property: 'position',
+          to: `${to.x} ${to.y} ${to.z}`,
+          dur: duration,
+          easing: 'easeInOutQuad'
+        });
+        
+        if (callback) {
+          setTimeout(callback, duration);
+        }
+      },
+
+      showInstruction: function(text) {
+        const tooltip = document.getElementById('instruction-tooltip');
+        tooltip.textContent = text;
+        tooltip.classList.remove('hidden');
+      },
+
+      updateInstruction: function(text) {
+        const tooltip = document.getElementById('instruction-tooltip');
+        tooltip.textContent = text;
+      },
+
+      hideInstruction: function() {
+        const tooltip = document.getElementById('instruction-tooltip');
+        tooltip.classList.add('fade-out');
+        setTimeout(() => {
+          tooltip.classList.add('hidden');
+          tooltip.classList.remove('fade-out');
+        }, 400);
+      },
+
+      setupEventListeners: function() {
+        // Setup any additional event listeners here
+      }
+    };
+
+    // ========================================
+    // JUMP CONTROLS COMPONENT
+    // ========================================
+    AFRAME.registerComponent('jump-controls', {
+      schema: {
+        jumpHeight: { type: 'number', default: 1.0 },
+        jumpDuration: { type: 'number', default: 800 },
+        isJumping: { type: 'boolean', default: false },
+        initialY: { type: 'number', default: 1.6 }
+      },
+      init: function() {
+        document.addEventListener('keydown', (e) => {
+          if (e.code === 'Space' && !this.data.isJumping) {
+            this.jump();
+          }
+        });
+        
+        this.data.initialY = this.el.getAttribute('position').y || 1.6;
+      },
+      jump: function() {
+        if (this.data.isJumping) return;
+        
+        this.data.isJumping = true;
+        const startTime = Date.now();
+        const startY = this.el.getAttribute('position').y;
+        const jumpHeight = this.data.jumpHeight;
+        const jumpDuration = this.data.jumpDuration;
+        
+        const animateJump = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / jumpDuration, 1);
+          const jumpProgress = Math.sin(progress * Math.PI);
+          const currentY = startY + (jumpProgress * jumpHeight);
+          
+          const currentPos = this.el.getAttribute('position');
+          this.el.setAttribute('position', {
+            x: currentPos.x,
+            y: currentY,
+            z: currentPos.z
+          });
+          
+          if (progress < 1) {
+            requestAnimationFrame(animateJump);
+          } else {
+            this.el.setAttribute('position', {
+              x: currentPos.x,
+              y: this.data.initialY,
+              z: currentPos.z
+            });
+            this.data.isJumping = false;
+          }
+        };
+        
+        requestAnimationFrame(animateJump);
+      }
+    });
+
+    // ========================================
+    // COLLIDER COMPONENT
+    // ========================================
     AFRAME.registerComponent('collider', {
       schema: {
         distance: { default: 1.2 },
@@ -271,12 +2880,6 @@
           const intersects = this.raycaster.intersectObjects(collidables, true);
 
           if (intersects.length > 0 && intersects[0].distance < this.data.distance) {
-            const hitEl = intersects[0].object.el;
-
-            if (this.data.debug) {
-              console.log('Collision detected with:', hitEl ? hitEl.id : 'unknown', 'distance:', intersects[0].distance);
-            }
-
             this.el.object3D.position.copy(this.lastSafePosition);
             collision = true;
             break;
@@ -289,13 +2892,9 @@
       },
     });
 
-    // Mobile Controls Setup
-    function setupMobileControls() {
-      const joystick = document.getElementById('joystick');
-      if (!joystick) return;
-    }
-
-    // Hide Avatar Selection
+    // ========================================
+    // INITIALIZATION
+    // ========================================
     function hideAvatarSelection() {
       const avatarModals = document.querySelectorAll('div[class*="naf-centered-fullscreen"], div[class*="avatar-selection"], div[id*="avatar"], .avatar-modal, .avatar-selection-modal');
       avatarModals.forEach(modal => {
@@ -330,75 +2929,57 @@
       });
     }
 
-    // Networked-Aframe connection handler
     function onConnect() {
       console.log('Connected to networked-aframe');
     }
 
-    // Start the application
     document.addEventListener('DOMContentLoaded', function () {
       hideAvatarSelection();
-      setupMobileControls();
+      
+      // Initialize game manager
+      gameManager.init();
       
       // Monitor model loading
       const sceneForMonitoring = document.querySelector('a-scene');
       if (sceneForMonitoring) {
         sceneForMonitoring.addEventListener('loaded', function() {
-          console.log('Scene loaded, checking LabBeta model...');
-          
-          setTimeout(function() {
-            const modelEl = document.getElementById('lab-beta-model');
-            if (modelEl) {
-              console.log('Checking LabBeta model...');
-              const src = modelEl.getAttribute('src');
-              console.log('  Model src:', src);
-              console.log('  Model visible:', modelEl.getAttribute('visible'));
-              
-              // Check if model has loaded
-              const object3D = modelEl.getObject3D('mesh');
-              if (object3D) {
-                console.log('✓ LabBeta model loaded');
-                console.log('  Object3D position:', object3D.position);
-                console.log('  Object3D visible:', object3D.visible);
-                object3D.visible = true;
-                modelEl.setAttribute('visible', 'true');
-              } else {
-                console.warn('⚠ LabBeta model object3D not found yet');
-                setTimeout(function() {
-                  const obj = modelEl.getObject3D('mesh');
-                  if (obj) {
-                    console.log('✓ LabBeta model loaded (delayed)');
-                    obj.visible = true;
-                    modelEl.setAttribute('visible', 'true');
-                  } else {
-                    console.error('✗ LabBeta model object3D still not found');
-                  }
-                }, 3000);
-              }
-              
-              // Listen for load events
-              modelEl.addEventListener('model-loaded', function() {
-                console.log('✓ LabBeta model loaded event fired');
-                const obj = modelEl.getObject3D('mesh');
-                if (obj) {
-                  console.log('  Object3D confirmed after event');
-                  obj.visible = true;
-                  modelEl.setAttribute('visible', 'true');
-                }
-              });
-              
-              modelEl.addEventListener('model-error', function(e) {
-                console.error('✗ Error loading LabBeta model:', e.detail || e);
-              });
-            } else {
-              console.error('LabBeta model element NOT found');
-            }
-          }, 500);
+          console.log('Scene loaded successfully');
         });
       }
     });
+
+    // Fix: Prevent accidental portal clicks
+    (function() {
+      let portalClickEnabled = false;
+      
+      const portalLink = document.getElementById('portal-link-bab3');
+      if (portalLink) {
+        portalLink.addEventListener('mousedown', function(e) {
+          portalClickEnabled = true;
+        });
+        
+        portalLink.addEventListener('mouseup', function(e) {
+          if (portalClickEnabled) {
+            setTimeout(() => {
+              portalClickEnabled = false;
+            }, 100);
+          }
+        });
+        
+        portalLink.addEventListener('click', function(e) {
+          if (!portalClickEnabled) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+        });
+        
+        portalLink.addEventListener('mouseleave', function() {
+          portalClickEnabled = false;
+        });
+      }
+    })();
   </script>
 </body>
 
 </html>
-

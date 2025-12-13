@@ -1,0 +1,17 @@
+[debug] [2025-12-13T15:20:15.945Z] ----------------------------------------------------------------------
+[debug] [2025-12-13T15:20:15.959Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ADVAN\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2025-12-13T15:20:15.960Z] CLI Version:   14.27.0
+[debug] [2025-12-13T15:20:15.960Z] Platform:      win32
+[debug] [2025-12-13T15:20:15.960Z] Node Version:  v22.18.0
+[debug] [2025-12-13T15:20:15.960Z] Time:          Sat Dec 13 2025 22:20:15 GMT+0700 (Western Indonesia Time)
+[debug] [2025-12-13T15:20:15.960Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-12-13T15:20:15.963Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-12-13T15:20:16.272Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-12-13T15:20:16.273Z] > authorizing via signed-in user (hayasakaryne@gmail.com)
+[debug] [2025-12-13T15:20:16.273Z] [iam] checking project bioexpo-70912 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-12-13T15:20:16.274Z] Checked if tokens are valid: false, expires at: 1764927233321
+[debug] [2025-12-13T15:20:16.274Z] Checked if tokens are valid: false, expires at: 1764927233321
+[debug] [2025-12-13T15:20:16.274Z] > refreshing access token with scopes: []
+[debug] [2025-12-13T15:20:16.275Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-12-13T15:20:16.275Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
