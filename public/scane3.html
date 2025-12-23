@@ -1,0 +1,3282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>BioExplore - Scene 3</title>
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+  <script src="https://unpkg.com/aframe-event-set-component/dist/aframe-event-set-component.min.js"></script>
+  <script src="/js/joystick.js"></script>
+  <style>
+    /* Popup Driving Question - Modern Formal Design */
+    .driving-question-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.95);
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border: none;
+      border-radius: 20px;
+      padding: 0;
+      z-index: 20000;
+      max-width: 600px;
+      width: 85%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                  0 0 0 1px rgba(59, 130, 246, 0.1),
+                  0 8px 24px rgba(59, 130, 246, 0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .driving-question-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .driving-question-popup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #3b82f6 0%, #1e40af 50%, #3b82f6 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .driving-question-popup .popup-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 20px 28px;
+      color: white;
+      position: relative;
+    }
+
+    .driving-question-popup .popup-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .driving-question-popup .popup-header .header-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .driving-question-popup .popup-header h2 {
+      color: #ffffff;
+      font-size: 22px;
+      margin: 0;
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.3px;
+    }
+
+    .driving-question-popup .popup-content {
+      padding: 28px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .driving-question-popup .popup-content .question-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border-radius: 12px;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    .driving-question-popup .popup-content .question-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #3b82f6;
+    }
+
+    .driving-question-popup .popup-content {
+      padding: 28px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .driving-question-popup .popup-content p {
+      color: #1e293b;
+      font-size: 24px;
+      line-height: 1.6;
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      text-align: center;
+    }
+
+    .driving-question-popup .popup-footer {
+      padding: 16px 28px;
+      background: #f8f9fa;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .driving-question-popup .popup-footer .footer-note {
+      font-size: 12px;
+      color: #64748b;
+      font-style: italic;
+    }
+
+    /* Hidden canvas for pie chart generation */
+    .hidden-canvas {
+      display: none;
+    }
+
+    /* Instruction Text */
+    .instruction-text {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(76, 195, 217, 0.9);
+      color: white;
+      padding: 20px 40px;
+      border-radius: 10px;
+      z-index: 15002;
+      font-size: 20px;
+      font-weight: bold;
+      display: none;
+      text-align: center;
+    }
+
+    .instruction-text.show {
+      display: block;
+    }
+
+    /* CLAM Interface */
+    .clam-interface {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20001;
+      display: none;
+      background: rgba(26, 26, 46, 0.98);
+      border: 3px solid #4CC3D9;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 1400px;
+      width: 95%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .clam-interface.show {
+      display: block;
+    }
+
+    .clam-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #f87171;
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, transform 0.2s;
+      z-index: 20002;
+    }
+
+    .clam-close-btn:hover {
+      background: #ef4444;
+      transform: scale(1.1);
+    }
+
+    /* Button to open CLAM interface */
+    .open-clam-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: linear-gradient(135deg, #4CC3D9 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20000;
+      box-shadow: 0 5px 20px rgba(76, 195, 217, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: none;
+    }
+
+    .open-clam-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(76, 195, 217, 0.6);
+    }
+
+    .open-clam-btn.show {
+      display: block;
+    }
+
+    .clam-header {
+      text-align: center;
+      color: #4CC3D9;
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .clam-columns {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .clam-column {
+      flex: 1;
+      background: rgba(13, 21, 32, 0.8);
+      border: 2px solid #4CC3D9;
+      border-radius: 10px;
+      padding: 20px;
+      min-height: 400px;
+    }
+
+    .clam-column-title {
+      color: #4CC3D9;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #4CC3D9;
+    }
+
+    .clam-drop-zone {
+      min-height: 350px;
+      border: 2px dashed #4CC3D9;
+      border-radius: 8px;
+      padding: 15px;
+      transition: background 0.3s;
+    }
+
+    .clam-drop-zone.drag-over {
+      background: rgba(76, 195, 217, 0.2);
+      border-color: #7bdcff;
+    }
+
+    .clam-drop-zone.has-item {
+      border-style: solid;
+      background: rgba(76, 195, 217, 0.1);
+    }
+
+    .clam-statement {
+      background: rgba(76, 195, 217, 0.2);
+      border: 2px solid #4CC3D9;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: move;
+      color: #ffffff;
+      font-size: 16px;
+      line-height: 1.5;
+      transition: transform 0.2s, box-shadow 0.2s;
+      user-select: none;
+    }
+
+    .clam-statement:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(76, 195, 217, 0.4);
+    }
+
+    .clam-statement.dragging {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+
+    .clam-statement.in-column {
+      cursor: default;
+      margin-bottom: 10px;
+    }
+
+    .clam-statement.in-column:hover {
+      transform: none;
+    }
+
+    .clam-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .clam-options-title {
+      color: #4CC3D9;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    /* Feedback */
+    .feedback-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 26, 46, 0.98);
+      border: 3px solid #4CC3D9;
+      border-radius: 15px;
+      padding: 40px;
+      z-index: 20002;
+      max-width: 600px;
+      width: 90%;
+      display: none;
+      text-align: center;
+    }
+
+    .feedback-popup.show {
+      display: block;
+    }
+
+    .feedback-popup.correct {
+      border-color: #4ade80;
+    }
+
+    .feedback-popup.incorrect {
+      border-color: #f87171;
+    }
+
+    .feedback-popup h3 {
+      color: #4CC3D9;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .feedback-popup.correct h3 {
+      color: #4ade80;
+    }
+
+    .feedback-popup.incorrect h3 {
+      color: #f87171;
+    }
+
+    .feedback-popup p {
+      color: #ffffff;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .feedback-popup button {
+      background: #4CC3D9;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .feedback-popup button:hover {
+      background: #7bdcff;
+    }
+
+    /* Discussion Panel */
+    .discussion-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20003;
+      display: none;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border: none;
+      border-radius: 20px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                  0 0 0 1px rgba(59, 130, 246, 0.1),
+                  0 8px 24px rgba(59, 130, 246, 0.12);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .discussion-panel.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .discussion-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #3b82f6 0%, #1e40af 50%, #3b82f6 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    .discussion-panel .panel-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 24px 32px;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      position: relative;
+    }
+
+    .discussion-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, transform 0.2s;
+      z-index: 12;
+      pointer-events: auto;
+    }
+
+    .discussion-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    /* Button to open discussion panel */
+    .open-discussion-btn {
+      position: fixed;
+      bottom: 90px;
+      right: 30px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20000;
+      box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: none;
+    }
+
+    .open-discussion-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .open-discussion-btn.show {
+      display: block;
+    }
+
+    /* Button to open LKPD */
+    .open-lkpd-btn {
+      position: fixed;
+      bottom: 150px;
+      right: 30px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 20001;
+      box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: none;
+      pointer-events: auto;
+    }
+
+    .open-lkpd-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    }
+
+    .open-lkpd-btn.show {
+      display: block;
+    }
+
+    .discussion-panel .panel-header h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .discussion-panel .panel-header .subtitle {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 8px;
+    }
+
+    .discussion-panel .panel-content {
+      padding: 32px;
+    }
+
+    .discussion-question {
+      background: #ffffff;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    .discussion-question.active {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+
+    .discussion-question .question-number {
+      display: inline-block;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+
+    .discussion-question .question-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .discussion-question .question-text {
+      font-size: 18px;
+      color: #1e293b;
+      line-height: 1.6;
+      margin: 12px 0;
+      font-weight: 500;
+    }
+
+    .discussion-question textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    .discussion-question textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .discussion-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 32px;
+      background: #f8f9fa;
+      border-top: 1px solid #e5e7eb;
+      position: sticky;
+      bottom: 0;
+    }
+
+    .discussion-nav button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .discussion-nav button:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .discussion-nav button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .discussion-nav .progress-indicator {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* LKPD Panel */
+    .lkpd-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20004;
+      display: none;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border: none;
+      border-radius: 20px;
+      max-width: 1000px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                  0 0 0 1px rgba(59, 130, 246, 0.1),
+                  0 8px 24px rgba(59, 130, 246, 0.12);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .lkpd-panel.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .lkpd-panel .lkpd-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 24px 32px;
+      color: white;
+    }
+
+    .lkpd-panel .lkpd-header h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .lkpd-panel .lkpd-content {
+      padding: 32px;
+    }
+
+    .lkpd-section {
+      margin-bottom: 32px;
+    }
+
+    .lkpd-section h4 {
+      color: #1e40af;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .lkpd-section textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    .lkpd-section textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .lkpd-actions {
+      padding: 24px 32px;
+      background: #f8f9fa;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .lkpd-actions button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .lkpd-actions button:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .lkpd-actions button.secondary {
+      background: #64748b;
+    }
+
+    .lkpd-actions button.secondary:hover {
+      background: #475569;
+    }
+
+    /* Student Info Form */
+    .student-info-form {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20005;
+      display: none;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border: none;
+      border-radius: 20px;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                  0 0 0 1px rgba(59, 130, 246, 0.1),
+                  0 8px 24px rgba(59, 130, 246, 0.12);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .student-info-form.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .student-info-form::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #3b82f6 0%, #1e40af 50%, #3b82f6 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    .student-info-form .form-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 24px 32px;
+      color: white;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .student-info-form .form-header h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .student-info-form .form-content {
+      padding: 32px;
+    }
+
+    .student-info-form .form-group {
+      margin-bottom: 24px;
+    }
+
+    .student-info-form .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #1e293b;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .student-info-form .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    .student-info-form .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .student-info-form .form-actions {
+      padding: 24px 32px;
+      background: #f8f9fa;
+      border-top: 1px solid #e5e7eb;
+      border-radius: 0 0 20px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .student-info-form .form-actions button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .student-info-form .form-actions button:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .student-info-form .form-actions button.secondary {
+      background: #64748b;
+    }
+
+    .student-info-form .form-actions button.secondary:hover {
+      background: #475569;
+    }
+
+    /* Poster Panel */
+    .poster-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20006;
+      display: none;
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+      border: none;
+      border-radius: 20px;
+      max-width: 1200px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
+                  0 0 0 1px rgba(59, 130, 246, 0.1),
+                  0 8px 24px rgba(59, 130, 246, 0.12);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .poster-panel.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .poster-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, #3b82f6 0%, #1e40af 50%, #3b82f6 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    .poster-panel .poster-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 24px 32px;
+      color: white;
+      border-radius: 20px 20px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .poster-panel .poster-header h3 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .poster-panel .poster-content {
+      padding: 32px;
+    }
+
+    .poster-section {
+      margin-bottom: 32px;
+      padding: 24px;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .poster-section h4 {
+      margin: 0 0 16px 0;
+      color: #1e40af;
+      font-size: 18px;
+      font-weight: 600;
+      border-bottom: 2px solid #3b82f6;
+      padding-bottom: 8px;
+    }
+
+    .poster-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e40af;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-radius: 12px;
+      border: 2px solid #3b82f6;
+    }
+
+    .poster-graph-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 24px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+
+    .poster-diagram-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 24px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      overflow: visible;
+    }
+
+    .poster-diagram-container canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .poster-conclusion textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    .poster-conclusion textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .poster-evaluation {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 24px;
+    }
+
+    .poster-evaluation h5 {
+      margin: 0 0 12px 0;
+      color: #92400e;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .poster-evaluation ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #78350f;
+    }
+
+    .poster-evaluation li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    .poster-actions {
+      padding: 24px 32px;
+      background: #f8f9fa;
+      border-top: 1px solid #e5e7eb;
+      border-radius: 0 0 20px 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .poster-actions button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .poster-actions button:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .poster-actions button.secondary {
+      background: #64748b;
+    }
+
+    .poster-actions button.secondary:hover {
+      background: #475569;
+    }
+
+    .next-to-poster-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20005;
+      display: none;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transition: all 0.3s;
+    }
+
+    .next-to-poster-btn.show {
+      display: block;
+    }
+
+    .next-to-poster-btn:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    }
+
+    .open-poster-btn {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20005;
+      display: none;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transition: all 0.3s;
+      pointer-events: auto;
+    }
+
+    .open-poster-btn.show {
+      display: block;
+    }
+
+    .open-poster-btn:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+    }
+
+    /* VR Button - Hidden */
+    .a-enter-vr-button {
+      display: none !important;
+    }
+
+    #custom-vr-btn {
+      display: none !important;
+    }
+
+    /* Mobile Controls */
+    #mobile-controls {
+      position: fixed;
+      bottom: 30px;
+      left: 20px;
+      z-index: 1000;
+      display: none;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Popup Driving Question -->
+  <div id="driving-question-popup" class="driving-question-popup">
+    <div class="popup-header">
+      <span class="header-label">Sub Driving Question</span>
+      <h2>Pertanyaan Penuntun</h2>
+    </div>
+    <div class="popup-content">
+      <div class="question-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+        </svg>
+      </div>
+      <p>Mengapa keringat bisa bau?</p>
+    </div>
+    <div class="popup-footer">
+      <span class="footer-note">Silakan amati data yang akan ditampilkan</span>
+    </div>
+  </div>
+
+  <!-- Hidden canvas for pie chart generation -->
+  <canvas id="pie-chart-canvas" class="hidden-canvas" width="800" height="800"></canvas>
+
+  <!-- Instruction Text -->
+  <div id="instruction-text" class="instruction-text">
+    Gunakan data di atas untuk menyusun penjelasan ilmiah.
+  </div>
+
+  <!-- Button to Open CLAM Interface -->
+  <button id="open-clam-btn" class="open-clam-btn">
+    📝 Buka Quiz Pernyataan
+  </button>
+
+  <!-- CLAM Interface -->
+  <div id="clam-interface" class="clam-interface">
+    <button id="clam-close-btn" class="clam-close-btn" title="Tutup">×</button>
+    <div class="clam-header">SUSUN PENJELASAN ILMIAH</div>
+    <div class="clam-columns">
+      <div class="clam-column">
+        <div class="clam-column-title">CLAIM</div>
+        <div id="claim-zone" class="clam-drop-zone" data-column="claim"></div>
+      </div>
+      <div class="clam-column">
+        <div class="clam-column-title">EVIDENCE</div>
+        <div id="evidence-zone" class="clam-drop-zone" data-column="evidence"></div>
+      </div>
+      <div class="clam-column">
+        <div class="clam-column-title">REASONING</div>
+        <div id="reasoning-zone" class="clam-drop-zone" data-column="reasoning"></div>
+      </div>
+    </div>
+    <div class="clam-options">
+      <div class="clam-options-title">Pilih Pernyataan:</div>
+      <div id="clam-options-list"></div>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+      <button id="submit-clam" style="background: #4CC3D9; color: white; border: none; padding: 12px 40px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer;">
+        Submit
+      </button>
+    </div>
+  </div>
+
+  <!-- Feedback Popup -->
+  <div id="feedback-popup" class="feedback-popup">
+    <h3 id="feedback-title"></h3>
+    <p id="feedback-message"></p>
+    <button id="feedback-close">Tutup</button>
+  </div>
+
+  <!-- Button to Open Discussion Panel -->
+  <button id="open-discussion-btn" class="open-discussion-btn">
+    💬 Buka Diskusi
+  </button>
+
+  <!-- Button to Open LKPD -->
+  <button id="open-lkpd-btn" class="open-lkpd-btn" onclick="Scene3Controller.openLKPD()">
+    📄 Buka LKPD
+  </button>
+
+  <!-- Discussion Panel -->
+  <div id="discussion-panel" class="discussion-panel">
+    <div class="panel-header">
+      <button id="discussion-close-btn" class="discussion-close-btn" title="Tutup" onclick="Scene3Controller.hideDiscussionPanel()">×</button>
+      <h3>Diskusi Penyusunan Argumen (CER)</h3>
+      <div class="subtitle">Gunakan data hasil eksperimen ini untuk membangun argumen ilmiah</div>
+    </div>
+    <div class="panel-content" id="discussion-content">
+      <!-- Questions will be dynamically inserted here -->
+    </div>
+    <div class="discussion-nav">
+      <button id="discussion-prev" onclick="Scene3Controller.prevQuestion()">Sebelumnya</button>
+      <div class="progress-indicator">
+        <span id="question-progress">1</span> / <span id="question-total">5</span>
+      </div>
+      <button id="discussion-next" onclick="Scene3Controller.nextQuestion()">Selanjutnya</button>
+    </div>
+  </div>
+
+  <!-- Student Info Form -->
+  <div id="student-info-form" class="student-info-form">
+    <div class="form-header">
+      <h3>Informasi Peserta Didik</h3>
+    </div>
+    <div class="form-content">
+      <div class="form-group">
+        <label for="student-name">Nama Lengkap *</label>
+        <input type="text" id="student-name" placeholder="Masukkan nama lengkap" required>
+      </div>
+      <div class="form-group">
+        <label for="student-email">Alamat Email *</label>
+        <input type="email" id="student-email" placeholder="contoh@email.com" required>
+      </div>
+      <p style="color: #64748b; font-size: 13px; margin-top: 20px;">
+        * Informasi ini akan digunakan untuk identifikasi file LKPD yang diunduh.
+      </p>
+    </div>
+    <div class="form-actions">
+      <button onclick="Scene3Controller.submitStudentInfo()">Lanjutkan</button>
+    </div>
+  </div>
+
+  <!-- LKPD Panel -->
+  <div id="lkpd-panel" class="lkpd-panel">
+    <div class="lkpd-header">
+      <h3>Lembar Kerja Peserta Didik (LKPD)</h3>
+    </div>
+    <div class="lkpd-content">
+      <div class="lkpd-section">
+        <h4>A. CLAIM</h4>
+        <textarea id="lkpd-claim" placeholder="Tuliskan klaim yang dapat kalian buat berdasarkan data hasil eksperimen tentang penggunaan deodorant..."></textarea>
+      </div>
+      <div class="lkpd-section">
+        <h4>B. EVIDENCE</h4>
+        <textarea id="lkpd-evidence" placeholder="Tuliskan bukti (evidence) dari data eksperimen yang mendukung klaim tersebut..."></textarea>
+      </div>
+      <div class="lkpd-section">
+        <h4>C. REASONING</h4>
+        <textarea id="lkpd-reasoning" placeholder="Jelaskan hubungan antara penggunaan deodorant dan penurunan koloni bakteri secara ilmiah..."></textarea>
+      </div>
+      <div class="lkpd-section">
+        <h4>D. PENGUATAN ARGUMEN</h4>
+        <textarea id="lkpd-strengthening" placeholder="Tuliskan penjelasan ilmiah yang diperlukan agar argumen kalian kuat dan logis..."></textarea>
+      </div>
+      <div class="lkpd-section">
+        <h4>E. ALTERNATIVE EXPLANATION</h4>
+        <textarea id="lkpd-alternative" placeholder="Apakah terdapat penjelasan lain yang mungkin memengaruhi hasil eksperimen selain deodorant?"></textarea>
+      </div>
+      <div class="lkpd-section">
+        <h4>F. REFLEKSI</h4>
+        <textarea id="lkpd-reflection" placeholder="Bagaimana hasil eksperimen ini berkaitan dengan fenomena bau badan dalam kehidupan sehari-hari?"></textarea>
+      </div>
+    </div>
+    <div class="lkpd-actions">
+      <button class="secondary" onclick="Scene3Controller.closeLKPD()">Tutup</button>
+      <button class="secondary" onclick="Scene3Controller.downloadLKPD()">📥 Download</button>
+      <button onclick="Scene3Controller.saveLKPD()">Simpan</button>
+    </div>
+  </div>
+
+  <!-- Button to go to Poster Phase -->
+  <button id="next-to-poster-btn" class="next-to-poster-btn" onclick="Scene3Controller.showPosterPhase()">
+    ➡️ Lanjut ke Poster Digital
+  </button>
+
+  <!-- Button to Open Poster -->
+  <button id="open-poster-btn" class="open-poster-btn" onclick="Scene3Controller.openPoster()">
+    📊 Buka Poster Digital
+  </button>
+
+  <!-- Poster Panel -->
+  <div id="poster-panel" class="poster-panel">
+    <div class="poster-header">
+      <h3>Poster Digital - Komunikasi Ilmiah</h3>
+    </div>
+    <div class="poster-content">
+      <div class="poster-section">
+        <h4>A. Judul Poster</h4>
+        <div class="poster-title" id="poster-title">
+          Bagaimana Deodoran dan Antiperspiran Mengatasi Bau Tubuh?
+        </div>
+      </div>
+
+      <div class="poster-section">
+        <h4>B. Grafik Koloni Bakteri (ND vs D)</h4>
+        <div class="poster-graph-container">
+          <canvas id="bacteria-chart-canvas" width="700" height="500"></canvas>
+        </div>
+      </div>
+
+      <div class="poster-section">
+        <h4>C. Diagram Proses Biologi</h4>
+        <div class="poster-diagram-container">
+          <canvas id="process-diagram-canvas" width="800" height="350"></canvas>
+        </div>
+      </div>
+
+      <div class="poster-section poster-conclusion">
+        <h4>D. Kesimpulan</h4>
+        <textarea id="poster-conclusion" placeholder="Tuliskan kesimpulan ilmiah berdasarkan data eksperimen, hasil diskusi CER, dan jawaban LKPD sebelumnya. Kesimpulan harus mencerminkan bahwa: (1) Keringat tidak berbau secara alami, (2) Bakteri berperan dalam pembentukan bau, (3) Deodorant/antiperspiran memengaruhi jumlah dan aktivitas bakteri."></textarea>
+      </div>
+
+      <div class="poster-evaluation">
+        <h5>📋 Panduan Evaluasi Informasi</h5>
+        <ul>
+          <li>Apakah data yang ditampilkan mendukung kesimpulan?</li>
+          <li>Apakah hubungan sebab–akibat ditampilkan dengan jelas?</li>
+          <li>Apakah informasi disajikan secara logis dan ilmiah?</li>
+        </ul>
+      </div>
+    </div>
+    <div class="poster-actions">
+      <button class="secondary" onclick="Scene3Controller.closePoster()">Tutup</button>
+      <button class="secondary" onclick="Scene3Controller.downloadPoster()">📥 Download Poster</button>
+      <button onclick="Scene3Controller.savePoster()">Simpan Poster</button>
+    </div>
+  </div>
+
+  <!-- Hidden canvas for poster generation -->
+  <canvas id="poster-canvas" class="hidden-canvas" width="1200" height="1600"></canvas>
+
+  <!-- Mobile Controls -->
+  <div id="mobile-controls">
+    <div id="joystick" style="width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; position: relative; overflow: visible;">
+      <div id="joystick-knob" style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; position: absolute; left: 20px; top: 20px; transition: transform 0.1s ease-out; touch-action: none; pointer-events: none;"></div>
+    </div>
+  </div>
+
+  <!-- A-Frame Scene -->
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    style="height: 100vh;"
+    renderer="antialias: true; colorManagement: true; physicallyCorrectLights: false;">
+    
+    <a-assets timeout="30000">
+      <a-asset-item id="classroom-model" src="assets/map/classroom.glb"></a-asset-item>
+    </a-assets>
+
+    <!-- Ground -->
+    <a-plane
+      position="0 0 0"
+      rotation="-90 0 0"
+      width="50"
+      height="50"
+      color="#8B7355"
+      class="collidable">
+    </a-plane>
+
+    <!-- Sky -->
+    <a-sky color="#87CEEB"></a-sky>
+    
+    <!-- Lighting -->
+    <a-light type="ambient" color="#404040" intensity="0.7"></a-light>
+    <a-light type="directional" position="5 10 5" intensity="0.9"></a-light>
+
+    <!-- Classroom Model -->
+    <a-entity
+      id="classroom"
+      gltf-model="#classroom-model"
+      position="0 0 0"
+      scale="1 1 1">
+    </a-entity>
+
+    <!-- Diagram Display Area (in front of classroom) -->
+    <a-entity id="diagram-display" position="0 3.9 -5" visible="false">
+      <!-- Introduction Text -->
+      <a-text
+        value="Gunakan data hasil eksperimen ini untuk membangun argumen ilmiah"
+        align="center"
+        position="0 4.5 0"
+        scale="1.3 1.3 1.3"
+        color="#3b82f6"
+        width="12"
+        wrap-count="80"
+        font="roboto"
+        shader="msdf"
+        baseline="center"
+        visible="false">
+      </a-text>
+ 
+      <!-- Diagram Left: Ceased Deodorant Use -->
+      <a-entity id="diagram-left-container" position="-2.8 0.3 0.1">
+        <!-- Title with background -->
+        <a-plane
+          position="0 1.8 -0.01"
+          width="3.5"
+          height="0.5"
+          color="#16213e"
+          opacity="0.5">
+        </a-plane>
+        <a-text
+          value="Ceased Deodorant Use"
+          align="center"
+          position="0 1.8 0"
+          scale="1.2 1.2 1.2"
+          color="#4CC3D9"
+          font="roboto"
+          shader="msdf">
+        </a-text>
+        <!-- Pie Chart -->
+        <a-plane
+          id="diagram-left-plane"
+          width="2.5"
+          height="2.5"
+          position="0 0.3 0"
+          rotation="0 0 0"
+          material="shader: flat; side: double">
+        </a-plane>
+        <!-- Legend with improved layout -->
+        <a-entity position="0 -1.8 0">
+          <!-- Legend background -->
+          <a-plane
+            position="0 0 -0.01"
+            width="3.2"
+            height="1.5"
+            color="#0d1520"
+            opacity="0.4">
+          </a-plane>
+          
+          <!-- Legend items with better spacing -->
+          <a-entity position="-1.3 0.5 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#3b82f6"></a-box>
+            <a-text value="Staphylococcaceae 61%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+          
+          <a-entity position="-1.3 0.15 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#10b981"></a-box>
+            <a-text value="Corynebacterium 29%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+          
+          <a-entity position="-1.3 -0.2 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#f59e0b"></a-box>
+            <a-text value="Anaerococcus 5%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+          
+          <a-entity position="-1.3 -0.55 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#6b7280"></a-box>
+            <a-text value="Other 5%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+        </a-entity>
+      </a-entity>
+
+      <!-- Diagram Right: No Product Use -->
+      <a-entity id="diagram-right-container" position="2.8 0.3 0.1">
+        <!-- Title with background -->
+        <a-plane
+          position="0 1.8 -0.01"
+          width="3.5"
+          height="0.5"
+          color="#16213e"
+          opacity="0.5">
+        </a-plane>
+        <a-text
+          value="No Product Use"
+          align="center"
+          position="0 1.8 0"
+          scale="1.2 1.2 1.2"
+          color="#4CC3D9"
+          font="roboto"
+          shader="msdf">
+        </a-text>
+        <!-- Pie Chart -->
+        <a-plane
+          id="diagram-right-plane"
+          width="2.5"
+          height="2.5"
+          position="0 0.3 0"
+          rotation="0 0 0"
+          material="shader: flat; side: double">
+        </a-plane>
+        <!-- Legend with improved layout -->
+        <a-entity position="0 -1.8 0">
+          <!-- Legend background -->
+          <a-plane
+            position="0 0 -0.01"
+            width="3.2"
+            height="1.5"
+            color="#0d1520"
+            opacity="0.4">
+          </a-plane>
+          
+          <!-- Legend items with better spacing -->
+          <a-entity position="-1.3 0.5 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#10b981"></a-box>
+            <a-text value="Corynebacterium 62%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+          
+          <a-entity position="-1.3 0.15 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#3b82f6"></a-box>
+            <a-text value="Staphylococcaceae 21%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+          
+          <a-entity position="-1.3 -0.2 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#f59e0b"></a-box>
+            <a-text value="Anaerococcus 8%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+          
+          <a-entity position="-1.3 -0.55 0">
+            <a-box width="0.18" height="0.18" depth="0.02" position="0 0 0" color="#6b7280"></a-box>
+            <a-text value="Other 9%" align="left" position="0.25 0 0" scale="0.75 0.75 0.75" color="#ffffff" font="roboto" shader="msdf"></a-text>
+          </a-entity>
+        </a-entity>
+      </a-entity>
+
+      <!-- Explanation Text with background -->
+      <a-plane
+        position="0 -3.2 0"
+        width="10"
+        height="1.2"
+        color="#16213e"
+        opacity="0.5">
+      </a-plane>
+      <a-text
+        value="Terdapat perbedaan komposisi bakteri pada kulit ketiak tergantung penggunaan produk. Beberapa bakteri, terutama Corynebacterium, diketahui berperan dalam pembentukan bau badan."
+        align="center"
+        position="0 -3.2 0.01"
+        scale="1 1 1"
+        color="#ffffff"
+        width="9.5"
+        wrap-count="85"
+        font="roboto"
+        shader="msdf"
+        baseline="center">
+      </a-text>
+    </a-entity>
+
+    <!-- Camera with movement controls -->
+    <a-entity
+      id="rig"
+      position="0 1.6 5"
+      movement-controls="speed: 0.3; constrainToNavMesh: false; fly: false; acceleration: 65">
+      <a-entity
+        id="player"
+        class="camera"
+        camera
+        position="0 0 0"
+        look-controls="pointerLockEnabled: true; reverseMouseDrag: false"
+        pointer-lock="enabled: true">
+        <a-entity
+          id="reticle"
+          position="0 0 -1"
+          geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
+          material="shader: flat; opacity: 0.9; color: #fff; depthTest: false"
+          cursor="fuse: true; fuseTimeout: 1200"
+          raycaster="objects: .clickable"
+          animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
+          animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120">
+        </a-entity>
+      </a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    // Scene 3 Logic
+    const Scene3Controller = {
+      currentStage: 0,
+      clamIsCorrect: false,
+      
+      init: function() {
+        // Show driving question popup first
+        this.showDrivingQuestion();
+        
+        // Setup mobile controls
+        this.setupMobileControls();
+        
+        // Setup CLAM interface
+        this.setupCLAMInterface();
+        
+        // Setup sprint controls
+        this.setupSprintControls();
+      },
+
+      showDrivingQuestion: function() {
+        const popup = document.getElementById('driving-question-popup');
+        popup.classList.add('show');
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+          popup.classList.remove('show');
+          setTimeout(() => {
+            this.showDiagrams();
+          }, 500);
+        }, 3000);
+      },
+
+      showDiagrams: function() {
+        // Create pie chart images and display in A-Frame
+        const leftData = [
+          { label: 'Staphylococcaceae', value: 61, color: '#3b82f6' },
+          { label: 'Corynebacterium', value: 29, color: '#10b981' },
+          { label: 'Anaerococcus', value: 5, color: '#f59e0b' },
+          { label: 'Other', value: 5, color: '#6b7280' }
+        ];
+
+        const rightData = [
+          { label: 'Corynebacterium', value: 62, color: '#10b981' },
+          { label: 'Staphylococcaceae', value: 21, color: '#3b82f6' },
+          { label: 'Anaerococcus', value: 8, color: '#f59e0b' },
+          { label: 'Other', value: 9, color: '#6b7280' }
+        ];
+
+        // Generate pie chart images
+        const leftImageUrl = this.createPieChartImage(leftData);
+        const rightImageUrl = this.createPieChartImage(rightData);
+
+        // Wait for scene to be ready
+        const scene = document.querySelector('a-scene');
+        if (scene && scene.hasLoaded) {
+          this.applyDiagramsToScene(leftImageUrl, rightImageUrl);
+        } else {
+          scene.addEventListener('loaded', () => {
+            this.applyDiagramsToScene(leftImageUrl, rightImageUrl);
+          });
+        }
+      },
+
+      applyDiagramsToScene: function(leftImageUrl, rightImageUrl) {
+        // Apply to A-Frame planes
+        const leftPlane = document.getElementById('diagram-left-plane');
+        const rightPlane = document.getElementById('diagram-right-plane');
+        
+        console.log('Applying diagrams to scene...');
+        console.log('Left image URL:', leftImageUrl ? 'Generated' : 'Missing');
+        console.log('Right image URL:', rightImageUrl ? 'Generated' : 'Missing');
+        
+        if (leftPlane && leftImageUrl) {
+          // Use updateProperties for better compatibility
+          leftPlane.setAttribute('material', 'src', leftImageUrl);
+          leftPlane.setAttribute('material', 'shader', 'flat');
+          leftPlane.setAttribute('material', 'transparent', false);
+          console.log('Left diagram applied');
+        } else {
+          console.error('Left plane or image URL missing', { leftPlane: !!leftPlane, leftImageUrl: !!leftImageUrl });
+        }
+        
+        if (rightPlane && rightImageUrl) {
+          // Use updateProperties for better compatibility
+          rightPlane.setAttribute('material', 'src', rightImageUrl);
+          rightPlane.setAttribute('material', 'shader', 'flat');
+          rightPlane.setAttribute('material', 'transparent', false);
+          console.log('Right diagram applied');
+        } else {
+          console.error('Right plane or image URL missing', { rightPlane: !!rightPlane, rightImageUrl: !!rightImageUrl });
+        }
+
+        // Show diagram display in scene after a short delay to ensure materials are loaded
+        setTimeout(() => {
+          const diagramDisplay = document.getElementById('diagram-display');
+          if (diagramDisplay) {
+            diagramDisplay.setAttribute('visible', 'true');
+            console.log('Diagram display set to visible');
+          } else {
+            console.error('Diagram display element not found');
+          }
+        }, 100);
+
+        // Show instruction after 2 seconds
+        setTimeout(() => {
+          document.getElementById('instruction-text').classList.add('show');
+          setTimeout(() => {
+            // Auto-open CLAM interface on first time
+            this.showCLAMInterface();
+          }, 2000);
+        }, 2000);
+      },
+
+      createPieChartImage: function(data) {
+        const canvas = document.getElementById('pie-chart-canvas');
+        if (!canvas) {
+          console.error('Pie chart canvas not found!');
+          return null;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          console.error('Could not get 2D context from canvas!');
+          return null;
+        }
+        
+        const size = 800;
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const radius = 300;
+        
+        console.log('Creating pie chart with data:', data);
+        
+        // Clear canvas with transparent background
+        ctx.clearRect(0, 0, size, size);
+        
+        // Draw outer shadow for depth
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 5;
+        
+        // Draw white background circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius + 15, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.restore();
+        
+        let currentAngle = -Math.PI / 2; // Start from top
+        
+        // First pass: Draw all slices
+        data.forEach((item, index) => {
+          const sliceAngle = (item.value / 100) * 2 * Math.PI;
+          
+          // Draw slice with gradient
+          const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+          gradient.addColorStop(0, this.lightenColor(item.color, 20));
+          gradient.addColorStop(1, item.color);
+          
+          ctx.beginPath();
+          ctx.moveTo(centerX, centerY);
+          ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+          ctx.closePath();
+          ctx.fillStyle = gradient;
+          ctx.fill();
+          
+          // Add thick white border between slices
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 6;
+          ctx.stroke();
+          
+          currentAngle += sliceAngle;
+        });
+        
+        // Draw outer border for entire pie
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#333333';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        // Second pass: Draw labels (no background, smaller text)
+        currentAngle = -Math.PI / 2;
+        data.forEach((item, index) => {
+          const sliceAngle = (item.value / 100) * 2 * Math.PI;
+          const midAngle = currentAngle + sliceAngle / 2;
+          
+          // Only show label if slice is large enough (> 3%)
+          if (item.value > 3) {
+            // Calculate label position
+            const labelRadius = item.value > 20 ? radius * 0.55 : radius * 0.68;
+            const labelX = centerX + Math.cos(midAngle) * labelRadius;
+            const labelY = centerY + Math.sin(midAngle) * labelRadius;
+            
+            ctx.save();
+            
+            // Smaller font size for cleaner look
+            const fontSize = item.value > 20 ? 48 : item.value > 10 ? 42 : 36;
+            const text = item.value + '%';
+            
+            // Set font
+            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+            
+            // Draw text with shadow for contrast
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 2;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, labelX, labelY);
+            
+            ctx.restore();
+          }
+          
+          currentAngle += sliceAngle;
+        });
+        
+        // Convert to data URL
+        const dataUrl = canvas.toDataURL('image/png');
+        console.log('Pie chart created, data URL length:', dataUrl.length);
+        return dataUrl;
+      },
+
+      // Helper function to lighten colors for gradient
+      lightenColor: function(color, percent) {
+        const num = parseInt(color.replace("#",""), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+          (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+          .toString(16).slice(1);
+      },
+
+      showCLAMInterface: function() {
+        const interface = document.getElementById('clam-interface');
+        interface.classList.add('show');
+        
+        // Hide instruction text
+        document.getElementById('instruction-text').classList.remove('show');
+        
+        // Hide open button
+        const openBtn = document.getElementById('open-clam-btn');
+        if (openBtn) {
+          openBtn.classList.remove('show');
+        }
+        
+        // Create statement options
+        this.createStatementOptions();
+      },
+
+      hideCLAMInterface: function() {
+        const interface = document.getElementById('clam-interface');
+        interface.classList.remove('show');
+        
+        // Show open button
+        const openBtn = document.getElementById('open-clam-btn');
+        if (openBtn) {
+          openBtn.classList.add('show');
+        }
+      },
+
+      createStatementOptions: function() {
+        const optionsList = document.getElementById('clam-options-list');
+        optionsList.innerHTML = '';
+
+        const statements = {
+          claim: [
+            { text: 'Keringat menjadi bau karena aktivitas bakteri yang memecah komponen keringat menjadi senyawa berbau.', correct: true },
+            { text: 'Semua keringat selalu berbau meskipun tanpa bakteri.', correct: false }
+          ],
+          evidence: [
+            { text: 'Corynebacterium merupakan bakteri dominan dan berperan besar dalam menghasilkan bau.', correct: true },
+            { text: 'Jumlah bakteri pada semua area tubuh manusia selalu sama.', correct: false }
+          ],
+          reasoning: [
+            { text: 'Bakteri memecah asam lemak dalam keringat menjadi senyawa volatil yang menimbulkan bau menyengat.', correct: true },
+            { text: 'Keringat diproduksi oleh kelenjar keringat tanpa reaksi kimia apa pun.', correct: false }
+          ]
+        };
+
+        // Create draggable statements
+        Object.keys(statements).forEach(category => {
+          statements[category].forEach((statement, index) => {
+            const statementEl = document.createElement('div');
+            statementEl.className = 'clam-statement';
+            statementEl.textContent = statement.text;
+            statementEl.draggable = true;
+            statementEl.dataset.category = category;
+            statementEl.dataset.correct = statement.correct;
+            statementEl.dataset.index = index;
+            
+            statementEl.addEventListener('dragstart', this.handleDragStart.bind(this));
+            statementEl.addEventListener('dragend', this.handleDragEnd.bind(this));
+            
+            optionsList.appendChild(statementEl);
+          });
+        });
+      },
+
+      handleDragStart: function(e) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.outerHTML);
+        e.dataTransfer.setData('text/plain', e.target.dataset.category);
+        e.target.classList.add('dragging');
+      },
+
+      handleDragEnd: function(e) {
+        e.target.classList.remove('dragging');
+      },
+
+      setupCLAMInterface: function() {
+        const dropZones = document.querySelectorAll('.clam-drop-zone');
+        
+        dropZones.forEach(zone => {
+          zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            zone.classList.add('drag-over');
+          });
+
+          zone.addEventListener('dragleave', () => {
+            zone.classList.remove('drag-over');
+          });
+
+          zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            
+            const category = e.dataTransfer.getData('text/plain');
+            const html = e.dataTransfer.getData('text/html');
+            
+            // Check if zone already has an item
+            if (zone.children.length > 0) {
+              // Move existing item back to options
+              const existingItem = zone.firstElementChild;
+              if (existingItem) {
+                existingItem.remove();
+              }
+            }
+            
+            // Create new element from HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const newItem = tempDiv.firstElementChild;
+            
+            // Remove dragging class and make it non-draggable
+            newItem.classList.remove('dragging');
+            newItem.classList.add('in-column');
+            newItem.draggable = false;
+            
+            // Add remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.style.cssText = 'float: right; background: #f87171; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 18px; line-height: 1;';
+            removeBtn.onclick = () => {
+              newItem.remove();
+              zone.classList.remove('has-item');
+              // Re-add to options
+              this.createStatementOptions();
+            };
+            newItem.appendChild(removeBtn);
+            
+            zone.appendChild(newItem);
+            zone.classList.add('has-item');
+            
+            // Remove from options list
+            const optionsList = document.getElementById('clam-options-list');
+            const originalItem = Array.from(optionsList.children).find(
+              el => el.dataset.category === category && 
+                   el.dataset.index === newItem.dataset.index
+            );
+            if (originalItem) {
+              originalItem.remove();
+            }
+          });
+        });
+
+        // Submit button
+        document.getElementById('submit-clam').addEventListener('click', () => {
+          this.validateCLAM();
+        });
+
+        // Close button
+        const closeBtn = document.getElementById('clam-close-btn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            this.hideCLAMInterface();
+          });
+        }
+
+        // Open button
+        const openBtn = document.getElementById('open-clam-btn');
+        if (openBtn) {
+          openBtn.addEventListener('click', () => {
+            this.showCLAMInterface();
+          });
+        }
+      },
+
+      setupDiscussionControls: function() {
+        // Close button
+        const closeBtn = document.getElementById('discussion-close-btn');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => {
+            this.hideDiscussionPanel();
+          });
+        }
+
+        // Open button
+        const openBtn = document.getElementById('open-discussion-btn');
+        if (openBtn) {
+          openBtn.addEventListener('click', () => {
+            this.showDiscussionPanel();
+          });
+        }
+
+        // Open LKPD button
+        const openLkpdBtn = document.getElementById('open-lkpd-btn');
+        if (openLkpdBtn) {
+          openLkpdBtn.addEventListener('click', () => {
+            this.openLKPD();
+          });
+        }
+      },
+
+      validateCLAM: function() {
+        const claimZone = document.getElementById('claim-zone');
+        const evidenceZone = document.getElementById('evidence-zone');
+        const reasoningZone = document.getElementById('reasoning-zone');
+
+        const claimItem = claimZone.querySelector('.clam-statement');
+        const evidenceItem = evidenceZone.querySelector('.clam-statement');
+        const reasoningItem = reasoningZone.querySelector('.clam-statement');
+
+        if (!claimItem || !evidenceItem || !reasoningItem) {
+          this.showFeedback(false, 'Silakan lengkapi semua kolom (Claim, Evidence, dan Reasoning).');
+          return;
+        }
+
+        const claimCorrect = claimItem.dataset.correct === 'true';
+        const evidenceCorrect = evidenceItem.dataset.correct === 'true';
+        const reasoningCorrect = reasoningItem.dataset.correct === 'true';
+
+        if (claimCorrect && evidenceCorrect && reasoningCorrect) {
+          this.showFeedback(true, 'Penjelasan ilmiah tepat. Bau keringat disebabkan oleh aktivitas bakteri, bukan oleh keringat itu sendiri. Klik "Tutup" untuk melanjutkan ke fase diskusi.');
+        } else {
+          this.showFeedback(false, 'Coba perhatikan kembali hubungan antara data bakteri dan penyebab bau keringat. Pastikan semua jawaban (Claim, Evidence, dan Reasoning) benar untuk melanjutkan.');
+        }
+      },
+
+      showFeedback: function(isCorrect, message) {
+        const feedback = document.getElementById('feedback-popup');
+        const title = document.getElementById('feedback-title');
+        const msg = document.getElementById('feedback-message');
+
+        feedback.className = 'feedback-popup show ' + (isCorrect ? 'correct' : 'incorrect');
+        title.textContent = isCorrect ? 'Benar!' : 'Perlu Diperbaiki';
+        title.style.color = isCorrect ? '#4ade80' : '#f87171';
+        msg.textContent = message;
+
+        // Store the correctness state
+        this.clamIsCorrect = isCorrect;
+
+        document.getElementById('feedback-close').onclick = () => {
+          feedback.classList.remove('show');
+          
+          // Hanya lanjut ke fase diskusi jika semua jawaban benar
+          if (isCorrect) {
+            // Tutup CLAM interface juga
+            this.hideCLAMInterface();
+            
+            setTimeout(() => {
+              this.showDiscussionPhase();
+            }, 500);
+          } else {
+            // Jika salah, beri pesan untuk mencoba lagi
+            console.log('Jawaban belum benar, silakan coba lagi');
+          }
+        };
+      },
+
+      showDiscussionPhase: function() {
+        // Tampilkan teks pengantar di diagram
+        const diagramDisplay = document.getElementById('diagram-display');
+        if (diagramDisplay) {
+          const introText = diagramDisplay.querySelector('a-text[value*="Gunakan data"]');
+          if (introText) {
+            introText.setAttribute('visible', 'true');
+          }
+        }
+        
+        // Tampilkan sub driving question baru
+        this.showSubDrivingQuestion();
+        
+        // Setelah 3 detik, tampilkan panel diskusi (auto-open pertama kali)
+        setTimeout(() => {
+          this.showDiscussionPanel();
+        }, 3000);
+      },
+
+      showSubDrivingQuestion: function() {
+        const popup = document.getElementById('driving-question-popup');
+        const headerLabel = popup.querySelector('.header-label');
+        const headerTitle = popup.querySelector('.popup-header h2');
+        const questionText = popup.querySelector('.popup-content p');
+        
+        if (headerLabel) headerLabel.textContent = 'Sub Driving Question';
+        if (headerTitle) headerTitle.textContent = 'Pertanyaan Penuntun';
+        if (questionText) questionText.textContent = 'Apakah deodorant efektif menghambat bakteri?';
+        
+        popup.classList.add('show');
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+          popup.classList.remove('show');
+        }, 3000);
+      },
+
+      showDiscussionPanel: function() {
+        this.currentQuestionIndex = 0;
+        this.discussionQuestions = [
+          {
+            label: 'A. CLAIM',
+            text: 'Apa klaim yang dapat kalian buat berdasarkan data hasil eksperimen tentang penggunaan deodorant?',
+            id: 'discussion-claim'
+          },
+          {
+            label: 'B. EVIDENCE',
+            text: 'Bukti (evidence) apa dari data eksperimen yang mendukung klaim tersebut?',
+            id: 'discussion-evidence'
+          },
+          {
+            label: 'C. REASONING',
+            text: 'Bagaimana hubungan antara penggunaan deodorant dan penurunan koloni bakteri dapat dijelaskan secara ilmiah?',
+            id: 'discussion-reasoning'
+          },
+          {
+            label: 'D. PENGUATAN ARGUMEN',
+            text: 'Penjelasan ilmiah apa yang diperlukan agar argumen kalian kuat dan logis?',
+            id: 'discussion-strengthening'
+          },
+          {
+            label: 'E. ALTERNATIVE EXPLANATION',
+            text: 'Apakah terdapat penjelasan lain (alternative explanation) yang mungkin memengaruhi hasil eksperimen selain deodorant?',
+            id: 'discussion-alternative'
+          }
+        ];
+
+        this.renderDiscussionQuestion();
+        const panel = document.getElementById('discussion-panel');
+        panel.classList.add('show');
+        
+        // Hide open button
+        const openBtn = document.getElementById('open-discussion-btn');
+        if (openBtn) {
+          openBtn.classList.remove('show');
+        }
+        
+        // Update progress
+        document.getElementById('question-total').textContent = this.discussionQuestions.length;
+      },
+
+      hideDiscussionPanel: function() {
+        const panel = document.getElementById('discussion-panel');
+        panel.classList.remove('show');
+        
+        // Show open button
+        const openBtn = document.getElementById('open-discussion-btn');
+        if (openBtn) {
+          openBtn.classList.add('show');
+        }
+      },
+
+      renderDiscussionQuestion: function() {
+        const content = document.getElementById('discussion-content');
+        const question = this.discussionQuestions[this.currentQuestionIndex];
+        
+        content.innerHTML = `
+          <div class="discussion-question active">
+            <div class="question-label">${question.label}</div>
+            <div class="question-text">${question.text}</div>
+            <textarea id="${question.id}" placeholder="Tuliskan jawaban kalian di sini..."></textarea>
+          </div>
+        `;
+        
+        // Update progress
+        document.getElementById('question-progress').textContent = this.currentQuestionIndex + 1;
+        
+        // Update navigation buttons
+        const prevBtn = document.getElementById('discussion-prev');
+        const nextBtn = document.getElementById('discussion-next');
+        
+        prevBtn.disabled = this.currentQuestionIndex === 0;
+        
+        if (this.currentQuestionIndex === this.discussionQuestions.length - 1) {
+          nextBtn.textContent = 'Lanjut ke LKPD';
+        } else {
+          nextBtn.textContent = 'Selanjutnya';
+        }
+      },
+
+      nextQuestion: function() {
+        // Save current answer
+        const currentQuestion = this.discussionQuestions[this.currentQuestionIndex];
+        const textarea = document.getElementById(currentQuestion.id);
+        if (textarea) {
+          currentQuestion.answer = textarea.value;
+        }
+        
+        if (this.currentQuestionIndex < this.discussionQuestions.length - 1) {
+          this.currentQuestionIndex++;
+          this.renderDiscussionQuestion();
+        } else {
+          // Move to LKPD
+          this.showLKPD();
+        }
+      },
+
+      prevQuestion: function() {
+        if (this.currentQuestionIndex > 0) {
+          // Save current answer
+          const currentQuestion = this.discussionQuestions[this.currentQuestionIndex];
+          const textarea = document.getElementById(currentQuestion.id);
+          if (textarea) {
+            currentQuestion.answer = textarea.value;
+          }
+          
+          this.currentQuestionIndex--;
+          this.renderDiscussionQuestion();
+        }
+      },
+
+      showLKPD: function() {
+        // Hide discussion panel
+        document.getElementById('discussion-panel').classList.remove('show');
+        
+        // Check if student info already exists
+        const savedStudentInfo = localStorage.getItem('scene3_student_info');
+        
+        if (savedStudentInfo) {
+          // Student info exists, proceed to LKPD
+          this.proceedToLKPD();
+        } else {
+          // Show student info form first
+          this.showStudentInfoForm();
+        }
+      },
+
+      showStudentInfoForm: function() {
+        const form = document.getElementById('student-info-form');
+        if (form) {
+          form.classList.add('show');
+        }
+      },
+
+      submitStudentInfo: function() {
+        const nameInput = document.getElementById('student-name');
+        const emailInput = document.getElementById('student-email');
+        
+        const name = nameInput ? nameInput.value.trim() : '';
+        const email = emailInput ? emailInput.value.trim() : '';
+        
+        // Validation
+        if (!name || !email) {
+          alert('Silakan lengkapi nama dan email terlebih dahulu.');
+          return;
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert('Format email tidak valid. Silakan masukkan email yang benar.');
+          return;
+        }
+        
+        // Save student info
+        const studentInfo = {
+          name: name,
+          email: email,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('scene3_student_info', JSON.stringify(studentInfo));
+        
+        // Hide form
+        const form = document.getElementById('student-info-form');
+        if (form) {
+          form.classList.remove('show');
+        }
+        
+        // Proceed to LKPD
+        this.proceedToLKPD();
+      },
+
+      proceedToLKPD: function() {
+        // Populate LKPD with answers from discussion
+        if (this.discussionQuestions) {
+          this.discussionQuestions.forEach((q, index) => {
+            const lkpdIds = ['lkpd-claim', 'lkpd-evidence', 'lkpd-reasoning', 'lkpd-strengthening', 'lkpd-alternative'];
+            if (lkpdIds[index] && q.answer) {
+              const textarea = document.getElementById(lkpdIds[index]);
+              if (textarea) {
+                textarea.value = q.answer;
+              }
+            }
+          });
+        }
+        
+        // Show LKPD panel
+        setTimeout(() => {
+          document.getElementById('lkpd-panel').classList.add('show');
+          
+          // Hide open button
+          const openBtn = document.getElementById('open-lkpd-btn');
+          if (openBtn) {
+            openBtn.classList.remove('show');
+          }
+        }, 300);
+      },
+
+      closeLKPD: function() {
+        document.getElementById('lkpd-panel').classList.remove('show');
+        
+        // Show open button after closing
+        const openBtn = document.getElementById('open-lkpd-btn');
+        if (openBtn) {
+          openBtn.classList.add('show');
+        }
+      },
+
+      openLKPD: function() {
+        console.log('openLKPD called');
+        
+        // Check if student info exists
+        const savedStudentInfo = localStorage.getItem('scene3_student_info');
+        
+        if (!savedStudentInfo) {
+          // Show student info form first
+          this.showStudentInfoForm();
+          return;
+        }
+        
+        // Load saved data from localStorage
+        const savedData = localStorage.getItem('scene3_lkpd');
+        console.log('Saved data:', savedData);
+        
+        if (savedData) {
+          try {
+            const lkpdData = JSON.parse(savedData);
+            console.log('Parsed LKPD data:', lkpdData);
+            
+            // Populate textareas with saved data
+            const claimEl = document.getElementById('lkpd-claim');
+            const evidenceEl = document.getElementById('lkpd-evidence');
+            const reasoningEl = document.getElementById('lkpd-reasoning');
+            const strengtheningEl = document.getElementById('lkpd-strengthening');
+            const alternativeEl = document.getElementById('lkpd-alternative');
+            const reflectionEl = document.getElementById('lkpd-reflection');
+            
+            if (claimEl && lkpdData.claim) claimEl.value = lkpdData.claim;
+            if (evidenceEl && lkpdData.evidence) evidenceEl.value = lkpdData.evidence;
+            if (reasoningEl && lkpdData.reasoning) reasoningEl.value = lkpdData.reasoning;
+            if (strengtheningEl && lkpdData.strengthening) strengtheningEl.value = lkpdData.strengthening;
+            if (alternativeEl && lkpdData.alternative) alternativeEl.value = lkpdData.alternative;
+            if (reflectionEl && lkpdData.reflection) reflectionEl.value = lkpdData.reflection;
+          } catch (e) {
+            console.error('Error loading LKPD data:', e);
+          }
+        } else {
+          console.log('No saved LKPD data found');
+        }
+        
+        // Show LKPD panel
+        const lkpdPanel = document.getElementById('lkpd-panel');
+        if (lkpdPanel) {
+          lkpdPanel.classList.add('show');
+          console.log('LKPD panel shown');
+        } else {
+          console.error('LKPD panel element not found');
+        }
+        
+        // Hide open button
+        const openBtn = document.getElementById('open-lkpd-btn');
+        if (openBtn) {
+          openBtn.classList.remove('show');
+          console.log('Open button hidden');
+        } else {
+          console.error('Open LKPD button element not found');
+        }
+      },
+
+      saveLKPD: function() {
+        const lkpdData = {
+          claim: document.getElementById('lkpd-claim').value,
+          evidence: document.getElementById('lkpd-evidence').value,
+          reasoning: document.getElementById('lkpd-reasoning').value,
+          strengthening: document.getElementById('lkpd-strengthening').value,
+          alternative: document.getElementById('lkpd-alternative').value,
+          reflection: document.getElementById('lkpd-reflection').value,
+          timestamp: new Date().toISOString()
+        };
+        
+        // Save to localStorage
+        localStorage.setItem('scene3_lkpd', JSON.stringify(lkpdData));
+        
+        // Close LKPD panel
+        document.getElementById('lkpd-panel').classList.remove('show');
+        
+        // Show open button
+        const openBtn = document.getElementById('open-lkpd-btn');
+        if (openBtn) {
+          openBtn.classList.add('show');
+        }
+        
+        alert('LKPD berhasil disimpan! Klik "Buka LKPD" untuk membukanya kembali.');
+        console.log('LKPD Data:', lkpdData);
+        
+        // Show NEXT button to go to poster phase
+        const nextBtn = document.getElementById('next-to-poster-btn');
+        if (nextBtn) {
+          nextBtn.classList.add('show');
+        }
+      },
+
+      downloadLKPD: function() {
+        // Helper function to escape HTML and preserve line breaks
+        const escapeHtml = (text) => {
+          if (!text) return '';
+          return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/\n/g, '<br>');
+        };
+
+        // Get all LKPD data
+        const claimEl = document.getElementById('lkpd-claim');
+        const evidenceEl = document.getElementById('lkpd-evidence');
+        const reasoningEl = document.getElementById('lkpd-reasoning');
+        const strengtheningEl = document.getElementById('lkpd-strengthening');
+        const alternativeEl = document.getElementById('lkpd-alternative');
+        const reflectionEl = document.getElementById('lkpd-reflection');
+
+        const lkpdData = {
+          claim: claimEl ? claimEl.value : '',
+          evidence: evidenceEl ? evidenceEl.value : '',
+          reasoning: reasoningEl ? reasoningEl.value : '',
+          strengthening: strengtheningEl ? strengtheningEl.value : '',
+          alternative: alternativeEl ? alternativeEl.value : '',
+          reflection: reflectionEl ? reflectionEl.value : ''
+        };
+
+        // Get student info
+        const savedStudentInfo = localStorage.getItem('scene3_student_info');
+        let studentInfo = { name: '', email: '' };
+        if (savedStudentInfo) {
+          try {
+            studentInfo = JSON.parse(savedStudentInfo);
+          } catch (e) {
+            console.error('Error parsing student info:', e);
+          }
+        }
+
+        // Create HTML content for download
+        const htmlContent = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD - BioExplore Scene 3</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            color: #1e40af;
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #3b82f6;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3b82f6;
+            padding-left: 15px;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        .section p {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .empty {
+            color: #999;
+            font-style: italic;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+        @media print {
+            body {
+                margin: 20px;
+            }
+            .section {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>LEMBAR KERJA PESERTA DIDIK (LKPD)</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 30px;">
+        <strong>Mata Pelajaran:</strong> Biologi<br>
+        <strong>Topik:</strong> Konstruksi Penjelasan Ilmiah - Bau Keringat<br>
+        <strong>Nama:</strong> ${studentInfo.name ? escapeHtml(studentInfo.name) : '-'}<br>
+        <strong>Email:</strong> ${studentInfo.email ? escapeHtml(studentInfo.email) : '-'}<br>
+        <strong>Tanggal:</strong> ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+    </p>
+
+    <div class="section">
+        <h2>A. CLAIM</h2>
+        <p>${lkpdData.claim ? escapeHtml(lkpdData.claim) : '<span class="empty">Belum diisi</span>'}</p>
+    </div>
+
+    <div class="section">
+        <h2>B. EVIDENCE</h2>
+        <p>${lkpdData.evidence ? escapeHtml(lkpdData.evidence) : '<span class="empty">Belum diisi</span>'}</p>
+    </div>
+
+    <div class="section">
+        <h2>C. REASONING</h2>
+        <p>${lkpdData.reasoning ? escapeHtml(lkpdData.reasoning) : '<span class="empty">Belum diisi</span>'}</p>
+    </div>
+
+    <div class="section">
+        <h2>D. PENGUATAN ARGUMEN</h2>
+        <p>${lkpdData.strengthening ? escapeHtml(lkpdData.strengthening) : '<span class="empty">Belum diisi</span>'}</p>
+    </div>
+
+    <div class="section">
+        <h2>E. ALTERNATIVE EXPLANATION</h2>
+        <p>${lkpdData.alternative ? escapeHtml(lkpdData.alternative) : '<span class="empty">Belum diisi</span>'}</p>
+    </div>
+
+    <div class="section">
+        <h2>F. REFLEKSI</h2>
+        <p>${lkpdData.reflection ? escapeHtml(lkpdData.reflection) : '<span class="empty">Belum diisi</span>'}</p>
+    </div>
+
+    <div class="footer">
+        <p>Dibuat dengan BioExplore - Virtual Reality Learning Platform</p>
+        <p>Waktu penyimpanan: ${new Date().toLocaleString('id-ID')}</p>
+    </div>
+</body>
+</html>`;
+
+        // Create blob and download
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Create filename with student name
+        const sanitizeFilename = (str) => {
+          return str.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        };
+        const studentName = studentInfo.name ? sanitizeFilename(studentInfo.name) : 'Anonim';
+        const dateStr = new Date().toISOString().split('T')[0];
+        link.download = `LKPD_${studentName}_${dateStr}.html`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        console.log('LKPD downloaded for:', studentInfo.name || 'Anonim');
+      },
+
+      showPosterPhase: function() {
+        // Hide next button
+        const nextBtn = document.getElementById('next-to-poster-btn');
+        if (nextBtn) {
+          nextBtn.classList.remove('show');
+        }
+
+        // Show sub driving question popup
+        this.showSubDrivingQuestionPoster();
+
+        // Initialize poster components
+        setTimeout(() => {
+          this.createBacteriaChart();
+          this.createProcessDiagram();
+          this.showPosterPanel();
+        }, 3500);
+      },
+
+      showSubDrivingQuestionPoster: function() {
+        const popup = document.getElementById('driving-question-popup');
+        if (popup) {
+          const content = popup.querySelector('.popup-content p');
+          if (content) {
+            content.textContent = 'Bagaimana cara menyajikan, menilai, dan mengkomunikasikan hasil temuan ilmiah tentang deodorant, bakteri, dan keringat?';
+          }
+          popup.classList.add('show');
+          setTimeout(() => {
+            popup.classList.remove('show');
+          }, 3000);
+        }
+      },
+
+      createBacteriaChart: function() {
+        const canvas = document.getElementById('bacteria-chart-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Chart data
+        const data = [
+          { label: 'ND (No Deodorant)', value: 100, color: '#ef4444' },
+          { label: 'D (Deodorant)', value: 35, color: '#3b82f6' }
+        ];
+
+        // Margins and spacing
+        const topMargin = 80; // Increased to avoid collision with title
+        const bottomMargin = 100;
+        const leftMargin = 80;
+        const rightMargin = 40;
+        const chartWidth = width - leftMargin - rightMargin;
+        const chartHeight = height - topMargin - bottomMargin;
+
+        const barWidth = 180;
+        const barSpacing = 120;
+        const startX = leftMargin + (chartWidth - (barWidth * 2 + barSpacing)) / 2;
+        const startY = topMargin + chartHeight;
+        const maxValue = 100;
+
+        // Draw grid lines
+        ctx.strokeStyle = '#e5e7eb';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 5; i++) {
+          const y = topMargin + (chartHeight / 5) * i;
+          ctx.beginPath();
+          ctx.moveTo(leftMargin, y);
+          ctx.lineTo(width - rightMargin, y);
+          ctx.stroke();
+          
+          // Draw Y-axis values
+          const value = 100 - (i * 20);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '14px Arial';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${value}%`, leftMargin - 10, y + 5);
+        }
+
+        // Draw bars
+        data.forEach((item, index) => {
+          const x = startX + index * (barWidth + barSpacing);
+          const barHeight = (item.value / maxValue) * chartHeight;
+          const y = startY - barHeight;
+
+          // Draw bar with gradient
+          const gradient = ctx.createLinearGradient(x, y, x, startY);
+          gradient.addColorStop(0, item.color);
+          gradient.addColorStop(1, this.lightenColor(item.color, 20));
+          ctx.fillStyle = gradient;
+          ctx.fillRect(x, y, barWidth, barHeight);
+
+          // Draw bar border
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, barWidth, barHeight);
+
+          // Draw value label on top (with more spacing to avoid collision with title)
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 22px Arial';
+          ctx.textAlign = 'center';
+          // Position label lower if it's 100% to avoid collision with title
+          const labelOffset = item.value === 100 ? 5 : 15;
+          ctx.fillText(`${item.value}%`, x + barWidth / 2, y - labelOffset);
+
+          // Draw label below
+          ctx.fillStyle = '#475569';
+          ctx.font = '15px Arial';
+          ctx.textAlign = 'center';
+          const labelY = startY + 25;
+          ctx.fillText(item.label, x + barWidth / 2, labelY);
+        });
+
+        // Draw title
+        ctx.fillStyle = '#1e40af';
+        ctx.font = 'bold 22px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Perbandingan Koloni Bakteri', width / 2, 35);
+
+        // Draw Y-axis label (rotated)
+        ctx.save();
+        ctx.translate(25, topMargin + chartHeight / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Persentase Koloni Bakteri (%)', 0, 0);
+        ctx.restore();
+
+        // Draw X-axis line
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(leftMargin, startY);
+        ctx.lineTo(width - rightMargin, startY);
+        ctx.stroke();
+      },
+
+      createProcessDiagram: function() {
+        const canvas = document.getElementById('process-diagram-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Process steps
+        const steps = [
+          { text: 'Keringat', color: '#3b82f6', icon: '💧' },
+          { text: 'Aktivitas Bakteri', color: '#ef4444', icon: '🦠' },
+          { text: 'Bau Tubuh', color: '#f59e0b', icon: '👃' }
+        ];
+
+        // Margins to prevent clipping
+        const leftMargin = 40;
+        const rightMargin = 40;
+        const topMargin = 60;
+        const bottomMargin = 40;
+        const availableWidth = width - leftMargin - rightMargin;
+        const availableHeight = height - topMargin - bottomMargin;
+
+        const stepWidth = 180;
+        const stepHeight = 120;
+        const stepSpacing = 80;
+        const arrowLength = 60;
+        
+        // Calculate total width needed
+        const totalWidth = steps.length * stepWidth + (steps.length - 1) * (stepSpacing + arrowLength);
+        const startX = leftMargin + (availableWidth - totalWidth) / 2;
+        const startY = topMargin + (availableHeight - stepHeight) / 2;
+
+        steps.forEach((step, index) => {
+          const x = startX + index * (stepWidth + stepSpacing + arrowLength);
+          const y = startY;
+
+          // Draw step box
+          ctx.fillStyle = step.color;
+          ctx.fillRect(x, y, stepWidth, stepHeight);
+
+          // Draw border
+          ctx.strokeStyle = '#1e293b';
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x, y, stepWidth, stepHeight);
+
+          // Draw icon
+          ctx.font = '48px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(step.icon, x + stepWidth / 2, y + 50);
+
+          // Draw text
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 18px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(step.text, x + stepWidth / 2, y + stepHeight - 20);
+
+          // Draw arrow (except for last step)
+          if (index < steps.length - 1) {
+            const arrowX = x + stepWidth;
+            const arrowY = y + stepHeight / 2;
+
+            // Arrow line
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(arrowX, arrowY);
+            ctx.lineTo(arrowX + arrowLength, arrowY);
+            ctx.stroke();
+
+            // Arrow head
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.moveTo(arrowX + arrowLength, arrowY);
+            ctx.lineTo(arrowX + arrowLength - 15, arrowY - 10);
+            ctx.lineTo(arrowX + arrowLength - 15, arrowY + 10);
+            ctx.closePath();
+            ctx.fill();
+          }
+        });
+
+        // Draw title
+        ctx.fillStyle = '#1e40af';
+        ctx.font = 'bold 22px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Diagram Proses Biologi', width / 2, 35);
+      },
+
+      showPosterPanel: function() {
+        const panel = document.getElementById('poster-panel');
+        if (panel) {
+          panel.classList.add('show');
+        }
+      },
+
+      closePoster: function() {
+        const panel = document.getElementById('poster-panel');
+        if (panel) {
+          panel.classList.remove('show');
+        }
+
+        // Show open button
+        const openBtn = document.getElementById('open-poster-btn');
+        if (openBtn) {
+          openBtn.classList.add('show');
+        }
+      },
+
+      openPoster: function() {
+        // Load saved poster data
+        const savedData = localStorage.getItem('scene3_poster');
+        
+        if (savedData) {
+          try {
+            const posterData = JSON.parse(savedData);
+            const conclusionEl = document.getElementById('poster-conclusion');
+            if (conclusionEl && posterData.conclusion) {
+              conclusionEl.value = posterData.conclusion;
+            }
+          } catch (e) {
+            console.error('Error loading poster data:', e);
+          }
+        }
+
+        // Recreate charts
+        this.createBacteriaChart();
+        this.createProcessDiagram();
+
+        // Show panel
+        this.showPosterPanel();
+
+        // Hide open button
+        const openBtn = document.getElementById('open-poster-btn');
+        if (openBtn) {
+          openBtn.classList.remove('show');
+        }
+      },
+
+      savePoster: function() {
+        const conclusionEl = document.getElementById('poster-conclusion');
+        const conclusion = conclusionEl ? conclusionEl.value : '';
+
+        const posterData = {
+          conclusion: conclusion,
+          timestamp: new Date().toISOString()
+        };
+
+        // Save to localStorage
+        localStorage.setItem('scene3_poster', JSON.stringify(posterData));
+
+        // Close panel
+        this.closePoster();
+
+        alert('Poster berhasil disimpan! Klik "Buka Poster Digital" untuk membukanya kembali.');
+        console.log('Poster Data:', posterData);
+      },
+
+      downloadPoster: function() {
+        // Helper function to escape HTML
+        const escapeHtml = (text) => {
+          if (!text) return '';
+          return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/\n/g, '<br>');
+        };
+
+        // Get poster data
+        const conclusionEl = document.getElementById('poster-conclusion');
+        const conclusion = conclusionEl ? conclusionEl.value : '';
+
+        // Get student info
+        const savedStudentInfo = localStorage.getItem('scene3_student_info');
+        let studentInfo = { name: '', email: '' };
+        if (savedStudentInfo) {
+          try {
+            studentInfo = JSON.parse(savedStudentInfo);
+          } catch (e) {
+            console.error('Error parsing student info:', e);
+          }
+        }
+
+        // Create canvas for full poster
+        const canvas = document.getElementById('poster-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // Clear and set background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+
+        // Draw title
+        ctx.fillStyle = '#1e40af';
+        ctx.font = 'bold 48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Bagaimana Deodoran dan Antiperspiran Mengatasi Bau Tubuh?', width / 2, 80);
+
+        // Draw student info
+        ctx.fillStyle = '#64748b';
+        ctx.font = '18px Arial';
+        ctx.textAlign = 'center';
+        if (studentInfo.name) {
+          ctx.fillText(`Nama: ${studentInfo.name} | Email: ${studentInfo.email}`, width / 2, 120);
+        }
+
+        // Draw bacteria chart (scaled)
+        const chartCanvas = document.getElementById('bacteria-chart-canvas');
+        if (chartCanvas) {
+          ctx.drawImage(chartCanvas, 100, 180, 500, 333);
+        }
+
+        // Draw process diagram (scaled)
+        const diagramCanvas = document.getElementById('process-diagram-canvas');
+        if (diagramCanvas) {
+          ctx.drawImage(diagramCanvas, 50, 600, 600, 257);
+        }
+
+        // Draw conclusion section
+        ctx.fillStyle = '#1e40af';
+        ctx.font = 'bold 32px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('Kesimpulan', 100, 950);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '20px Arial';
+        const conclusionLines = this.wrapText(ctx, conclusion || 'Belum diisi', width - 200, 20);
+        let yPos = 1000;
+        conclusionLines.forEach(line => {
+          ctx.fillText(line, 100, yPos);
+          yPos += 30;
+        });
+
+        // Draw footer
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Dibuat dengan BioExplore - ${new Date().toLocaleDateString('id-ID')}`, width / 2, height - 30);
+
+        // Convert to image
+        const imageData = canvas.toDataURL('image/png');
+
+        // Create HTML content
+        const htmlContent = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poster Digital - BioExplore Scene 3</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .poster-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            width: 100%;
+        }
+        .poster-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .poster-image {
+            width: 100%;
+            height: auto;
+            margin: 20px 0;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .poster-conclusion {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        .poster-conclusion h3 {
+            color: #1e40af;
+            margin-top: 0;
+        }
+        .poster-conclusion p {
+            color: #1e293b;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        .poster-footer {
+            text-align: center;
+            color: #64748b;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .poster-container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster-container">
+        <div class="poster-title">Bagaimana Deodoran dan Antiperspiran Mengatasi Bau Tubuh?</div>
+        <div style="text-align: center; color: #64748b; margin-bottom: 20px;">
+            <strong>Nama:</strong> ${studentInfo.name ? escapeHtml(studentInfo.name) : '-'} | 
+            <strong>Email:</strong> ${studentInfo.email ? escapeHtml(studentInfo.email) : '-'}
+        </div>
+        <img src="${imageData}" alt="Poster Digital" class="poster-image">
+        <div class="poster-conclusion">
+            <h3>Kesimpulan</h3>
+            <p>${conclusion ? escapeHtml(conclusion) : 'Belum diisi'}</p>
+        </div>
+        <div class="poster-footer">
+            <p>Dibuat dengan BioExplore - Virtual Reality Learning Platform</p>
+            <p>Waktu penyimpanan: ${new Date().toLocaleString('id-ID')}</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+        // Create blob and download
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Create filename
+        const sanitizeFilename = (str) => {
+          return str.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        };
+        const studentName = studentInfo.name ? sanitizeFilename(studentInfo.name) : 'Anonim';
+        const dateStr = new Date().toISOString().split('T')[0];
+        link.download = `Poster_${studentName}_${dateStr}.html`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        console.log('Poster downloaded for:', studentInfo.name || 'Anonim');
+      },
+
+      wrapText: function(ctx, text, maxWidth, fontSize) {
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+          const word = words[i];
+          const width = ctx.measureText(currentLine + ' ' + word).width;
+          if (width < maxWidth) {
+            currentLine += ' ' + word;
+          } else {
+            lines.push(currentLine);
+            currentLine = word;
+          }
+        }
+        lines.push(currentLine);
+        return lines;
+      },
+
+      setupMobileControls: function() {
+        const camera = document.querySelector('[camera]');
+        const rig = document.getElementById('rig');
+
+        if (!camera || !rig) {
+          console.error('Camera or rig element not found');
+          return;
+        }
+
+        let joystick = null;
+        const movementSpeed = 0.1;
+        let isMobile = false;
+
+        function initJoystick() {
+          joystick = new JoyStick('joystick', {
+            title: 'joystick',
+            width: 150,
+            height: 150,
+            internalFillColor: 'rgba(255, 255, 255, 0.5)',
+            internalLineWidth: 2,
+            internalStrokeColor: '#FFFFFF',
+            externalLineWidth: 2,
+            externalStrokeColor: 'rgba(255, 255, 255, 0.3)',
+            autoReturnToCenter: true
+          }, function (stickData) {
+            if (stickData.x !== 0 || stickData.y !== 0) {
+              updateCameraMovement(stickData.x, stickData.y);
+            }
+          });
+        }
+
+        function updateCameraMovement(x, y) {
+          if (!camera) return;
+          const rig = document.getElementById('rig');
+          if (!rig) return;
+
+          const cameraEl = camera.object3D;
+          const direction = new THREE.Vector3();
+          cameraEl.getWorldDirection(direction);
+          const forward = new THREE.Vector3(direction.x, 0, direction.z).normalize();
+          const right = new THREE.Vector3();
+          right.crossVectors(new THREE.Vector3(0, 1, 0), forward).normalize();
+
+          const movementSpeed = 0.3;
+          const moveX = x * movementSpeed;
+          const moveZ = y * movementSpeed;
+
+          const movement = new THREE.Vector3();
+          movement.addScaledVector(forward, moveZ);
+          movement.addScaledVector(right, moveX);
+
+          const currentPosition = rig.getAttribute('position');
+          rig.setAttribute('position', {
+            x: currentPosition.x + movement.x,
+            y: currentPosition.y,
+            z: currentPosition.z + movement.z
+          });
+        }
+
+        function checkDeviceType() {
+          const deviceType = localStorage.getItem('deviceType');
+          isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+          if (deviceType === 'mobile' || isMobile) {
+            document.getElementById('mobile-controls').style.display = 'block';
+            initJoystick();
+          } else {
+            document.getElementById('mobile-controls').style.display = 'none';
+          }
+        }
+
+        checkDeviceType();
+      },
+
+      setupSprintControls: function() {
+        const scene = document.querySelector('a-scene');
+        if (!scene) {
+          setTimeout(this.setupSprintControls.bind(this), 100);
+          return;
+        }
+
+        scene.addEventListener('loaded', () => {
+          const rig = document.getElementById('rig');
+          if (!rig) {
+            setTimeout(this.setupSprintControls.bind(this), 100);
+            return;
+          }
+
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Shift' || e.keyCode === 16) {
+              if (rig.components && rig.components['movement-controls']) {
+                rig.setAttribute('movement-controls', 'speed', 0.6);
+              }
+            }
+          });
+
+          document.addEventListener('keyup', (e) => {
+            if (e.key === 'Shift' || e.keyCode === 16) {
+              if (rig.components && rig.components['movement-controls']) {
+                rig.setAttribute('movement-controls', 'speed', 0.3);
+              }
+            }
+          });
+        });
+      }
+    };
+
+    // Make Scene3Controller globally accessible
+    window.Scene3Controller = Scene3Controller;
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      Scene3Controller.init();
+    });
+  </script>
+
+</body>
+
+</html>
