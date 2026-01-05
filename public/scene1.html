@@ -312,7 +312,7 @@
     /* Next Button */
     .next-video-btn {
       position: fixed;
-      bottom: 50px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -347,7 +347,7 @@
     /* Finish Button */
     .finish-btn {
       position: fixed;
-      bottom: 50px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -376,6 +376,41 @@
     }
 
     .finish-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    /* Done Button */
+    .done-btn {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      z-index: 20007;
+      box-shadow: 0 5px 20px rgba(59, 130, 246, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out, transform 0.3s ease;
+    }
+
+    .done-btn.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .done-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+    }
+
+    .done-btn:active {
       transform: translateX(-50%) scale(0.98);
     }
 
@@ -471,6 +506,11 @@
     <div class="question-item">Mengapa keringat sebagian orang berbau?</div>
   </div>
 
+  <!-- Done Button -->
+  <button id="doneBtn" class="done-btn">
+    Continue
+  </button>
+
   <!-- Virtual Gamepad for Mobile -->
   <div id="mobile-controls"
     style="position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; touch-action: none; -webkit-tap-highlight-color: transparent;">
@@ -493,7 +533,7 @@
         audio: false;
         video: false;
     " shadow="type: pcfsoft" gltf-model="meshoptDecoderPath:https://unpkg.com/meshoptimizer@0.19.0/meshopt_decoder.js"
-    raycaster="far: 100; objects: .clickable,[link];" cursor="rayOrigin: mouse">
+    raycaster="far: 100; objects: .clickable, .portal-link;" cursor="rayOrigin: mouse; fuse: false">
     <a-assets>
       <template id="avatar-template">
         <a-entity player-info>
@@ -526,37 +566,16 @@
     </a-assets>
 
     <a-entity id="scene">
-      <!-- School building with collision -->
+      <!-- School building -->
       <a-entity id="school-group" position="0 -11 0">
-        <a-gltf-model src="assets/scene1/sekolah.glb" scale="2 2 2" rotation="0 0 0" class="collidable"></a-gltf-model>
-        <!-- Collision box for school building -->
-        <a-box class="collidable" position="0 8 0" width="12" height="24" depth="12" visible="false"></a-box>
+        <a-gltf-model src="assets/scene1/sekolah.glb" scale="2 2 2" rotation="0 0 0"></a-gltf-model>
       </a-entity>
       <a-plane class="ground" position="0 0 0" rotation="-90 0 0" width="100" height="100" visible="true"></a-plane>
       <a-entity light="type:ambient;intensity:0.5"></a-entity>
 
       <!-- Virtual Lab 3D Model -->
       <a-entity id="virtual-lab" position="16 0 7" rotation="0 90 0">
-        <a-gltf-model src="assets/map/Virtual Lab.glb" scale="1 1 1" class="collidable"></a-gltf-model>
-        <!-- Collision boxes for Virtual Lab (walls, furniture, doors, etc.) -->
-        <!-- Main room collision - adjust based on actual model size -->
-        <a-box class="collidable" position="0 2.5 0" width="20" height="5" depth="20" visible="false"></a-box>
-        <!-- Left wall -->
-        <a-box class="collidable" position="-10 2.5 0" width="0.2" height="5" depth="20" visible="false"></a-box>
-        <!-- Right wall -->
-        <a-box class="collidable" position="10 2.5 0" width="0.2" height="5" depth="20" visible="false"></a-box>
-        <!-- Back wall -->
-        <a-box class="collidable" position="0 2.5 -10" width="20" height="5" depth="0.2" visible="false"></a-box>
-        <!-- Front wall (with door opening) -->
-        <a-box class="collidable" position="-5 2.5 10" width="5" height="5" depth="0.2" visible="false"></a-box>
-        <a-box class="collidable" position="5 2.5 10" width="5" height="5" depth="0.2" visible="false"></a-box>
-        <!-- Table collision -->
-        <a-box class="collidable" position="0 0.4 0" width="4" height="0.8" depth="2" visible="false"></a-box>
-        <!-- Chairs collision (4 chairs around table) -->
-        <a-box class="collidable" position="-2.5 0.4 0" width="0.5" height="1" depth="0.5" visible="false"></a-box>
-        <a-box class="collidable" position="2.5 0.4 0" width="0.5" height="1" depth="0.5" visible="false"></a-box>
-        <a-box class="collidable" position="0 0.4 -1.5" width="0.5" height="1" depth="0.5" visible="false"></a-box>
-        <a-box class="collidable" position="0 0.4 1.5" width="0.5" height="1" depth="0.5" visible="false"></a-box>
+        <a-gltf-model src="assets/map/Virtual Lab.glb" scale="1 1 1"></a-gltf-model>
         
         <!-- Video on white screen (back wall) -->
         <!-- Position relative to virtual-lab entity -->
@@ -606,8 +625,8 @@
           src="#kulit2Image"
           width="2"
           height="2"
-          position="3.4 1.5 -12.4"
-          rotation="0 360 0"
+          position="0.5 1.5 -9"
+          rotation="0 90 0"
           material="side: double; shader: flat; opacity: 0"
           visible="false">
         </a-image>
@@ -615,6 +634,11 @@
         
         <!-- Images for observation (will be added here) -->
         <!-- <a-image id="observationImage1" ... visible="false"></a-image> -->
+      </a-entity>
+
+      <!-- Lab Biologi 3D Model (initially hidden) -->
+      <a-entity id="lab-biologi" position="0 0 0" rotation="0 0 0" visible="false">
+        <a-gltf-model src="assets/map/LabBiologi.compressed.glb" scale="1 1 1"></a-gltf-model>
       </a-entity>
 
 
@@ -672,8 +696,8 @@
       <!-- Portal back to vr.html -->
       <a-text value="Kembali ke Beranda" position="0 1.5 -8" align="center" color="#FFFFFF" font="kelsonsans" width="5"
         look-at="#player"></a-text>
-      <a-link link="on:click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="4 1 -1"
-        rotation="0 0 0" class="clickable" event-set__mouseenter="material.opacity: 0.8"
+      <a-link id="portal-link-scene1" link="on: click" href="vr.html" title="Kembali ke Lobby" image="#thumbForest" position="4 1 -1"
+        rotation="0 0 0" class="portal-link" event-set__mouseenter="material.opacity: 0.8"
         event-set__mouseleave="material.opacity: 0.6">
       </a-link>
     </a-entity>
@@ -1494,11 +1518,11 @@
       setupMobileControls();
 
       // Set default avatar (no selection needed)
-      const rig = document.getElementById('rig');
-      if (rig) {
+        const rig = document.getElementById('rig');
+        if (rig) {
         // Use default male avatar
         const modelUrl = 'https://cdn.glitch.global/c2231c1a-2935-4332-8715-032588334f99/Asian_M_1_Busi.glb?v=16813662';
-        rig.setAttribute('player-info', 'avatarSrc', modelUrl);
+          rig.setAttribute('player-info', 'avatarSrc', modelUrl);
       }
     });
 
@@ -1644,7 +1668,7 @@
         console.error('Video error code:', videoEl.error ? videoEl.error.code : 'unknown');
         console.error('Video src:', videoEl.src);
         console.error('Video currentSrc:', videoEl.currentSrc);
-      });
+    });
     }
 
     // Setup video controls (play/pause, seekbar)
@@ -1838,15 +1862,91 @@
           finishBtn.classList.remove('show');
           
           // Show final question popup
-          setTimeout(() => {
+        setTimeout(() => {
             finalQuestionPopup.classList.add('show');
             
-            // Hide popup after 10 seconds
+            // Hide popup after 7 seconds and show Done button
             setTimeout(() => {
               finalQuestionPopup.classList.remove('show');
               finalQuestionPopup.classList.add('hide');
-            }, 10000);
+              
+              // Show Done button after popup fades out
+              setTimeout(() => {
+                const doneBtn = document.getElementById('doneBtn');
+                if (doneBtn) {
+                  doneBtn.classList.add('show');
+                }
+              }, 800); // Wait for fade out animation
+            }, 7000); // 7 seconds
           }, 500);
+        });
+    }
+
+      // Done Button Handler - Transition to Lab Biologi
+      const doneBtn = document.getElementById('doneBtn');
+      if (doneBtn) {
+        doneBtn.addEventListener('click', function() {
+          // Hide done button
+          doneBtn.classList.remove('show');
+          
+          // Hide all video and observation related elements
+          const videoControls = document.getElementById('videoControls');
+          const nextVideoBtn = document.getElementById('nextVideoBtn');
+          const finishBtn = document.getElementById('finishBtn');
+          const videoEntity = document.querySelector('#whiteScreenVideo');
+          const keringatImage = document.querySelector('#keringatImageEntity');
+          const kulitImage = document.querySelector('#kulitImageEntity');
+          const kulit2Image = document.querySelector('#kulit2ImageEntity');
+          const questionPopup = document.getElementById('questionPopup');
+          const explanationText = document.getElementById('explanationText');
+          const startBtn = document.getElementById('startObservationBtn');
+          const finalQuestionPopup = document.getElementById('finalQuestionPopup');
+          
+          // Hide video controls
+          if (videoControls) {
+            videoControls.classList.remove('show');
+            videoControls.style.display = 'none';
+          }
+          
+          // Hide buttons
+          if (nextVideoBtn) nextVideoBtn.classList.remove('show');
+          if (finishBtn) finishBtn.classList.remove('show');
+          if (startBtn) startBtn.classList.remove('show');
+          
+          // Hide popups
+          if (questionPopup) {
+            questionPopup.classList.remove('show');
+            questionPopup.classList.add('hide');
+          }
+          if (explanationText) {
+            explanationText.classList.remove('show');
+            explanationText.classList.add('hide');
+          }
+          if (finalQuestionPopup) {
+            finalQuestionPopup.classList.remove('show');
+            finalQuestionPopup.classList.add('hide');
+          }
+          
+          // Hide video and images
+          if (videoEntity) videoEntity.setAttribute('visible', 'false');
+          if (keringatImage) keringatImage.setAttribute('visible', 'false');
+          if (kulitImage) kulitImage.setAttribute('visible', 'false');
+          if (kulit2Image) kulit2Image.setAttribute('visible', 'false');
+          
+          // Pause all videos
+          const excretoryVideo = document.querySelector('#excretoryVideo');
+          const bodyOdorVideo = document.querySelector('#bodyOdorVideo');
+          if (excretoryVideo) {
+            excretoryVideo.pause();
+            excretoryVideo.currentTime = 0;
+          }
+          if (bodyOdorVideo) {
+            bodyOdorVideo.pause();
+            bodyOdorVideo.currentTime = 0;
+          }
+          
+          // Redirect to Scene 1 Bab 2 page
+          window.location.href = 'scene1-bab2.html';
         });
       }
     }
@@ -1887,9 +1987,9 @@
             setTimeout(() => {
               explanationText.classList.remove('show');
               explanationText.classList.add('hide');
-              
+
               // Step 5: Show "Mulai Observasi" button
-              setTimeout(() => {
+            setTimeout(() => {
                 startBtn.classList.add('show');
               }, 800); // Wait for fade out animation
             }, 7000);
@@ -1961,7 +2061,7 @@
                 shader: 'flat',
                 opacity: 0
               });
-            }
+          }
             if (kulitImage) {
               kulitImage.setAttribute('material', {
                 side: 'double',
@@ -2081,6 +2181,45 @@
       setupInteractiveFlow();
       animate();
     });
+
+    // Fix: Prevent accidental portal clicks - require explicit click
+    (function() {
+      let portalClickEnabled = false;
+      
+      const portalLink = document.getElementById('portal-link-scene1');
+      if (portalLink) {
+        // Only enable clicks after explicit mouse down on portal
+        portalLink.addEventListener('mousedown', function(e) {
+          portalClickEnabled = true;
+          console.log('Portal click enabled');
+        });
+        
+        portalLink.addEventListener('mouseup', function(e) {
+          if (portalClickEnabled) {
+            // Small delay to ensure click is intentional
+            setTimeout(() => {
+              portalClickEnabled = false;
+            }, 100);
+          }
+        });
+        
+        // Prevent link component from auto-triggering
+        portalLink.addEventListener('click', function(e) {
+          if (!portalClickEnabled) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Portal click prevented - not enabled');
+            return false;
+          }
+          console.log('Portal click allowed');
+        });
+        
+        // Reset on mouse leave
+        portalLink.addEventListener('mouseleave', function() {
+          portalClickEnabled = false;
+        });
+      }
+    })();
   </script>
 </body>
 
