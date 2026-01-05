@@ -144,6 +144,88 @@
     #submitAnswer:hover {
       background: #7bdcff;
     }
+
+    /* Compass Styles */
+    #compass {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10001;
+      width: 120px;
+      height: 120px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #4CC3D9;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(76, 195, 217, 0.5);
+    }
+
+    #compass-inner {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(26, 26, 46, 0.9);
+    }
+
+    #compass-needle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 40px;
+      background: linear-gradient(to top, #ff0000, #ffffff);
+      transform-origin: bottom center;
+      transform: translate(-50%, -100%) rotate(0deg);
+      border-radius: 2px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    .compass-label {
+      position: absolute;
+      color: #4CC3D9;
+      font-size: 12px;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(76, 195, 217, 0.8);
+    }
+
+    #compass-n {
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #compass-s {
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #compass-e {
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #compass-w {
+      left: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    #compass-direction {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #4CC3D9;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(76, 195, 217, 1);
+      margin-top: 15px;
+    }
   </style>
   <script>
     // Device Toggle Functionality
@@ -181,6 +263,18 @@
 </head>
 <body>
 
+    <!-- Compass -->
+    <div id="compass">
+      <div id="compass-inner">
+        <div class="compass-label" id="compass-n">N</div>
+        <div class="compass-label" id="compass-s">S</div>
+        <div class="compass-label" id="compass-e">E</div>
+        <div class="compass-label" id="compass-w">W</div>
+        <div id="compass-needle"></div>
+        <div id="compass-direction">N</div>
+      </div>
+    </div>
+
     <!-- Virtual Gamepad for Mobile -->
     <div id="mobile-controls" style="position: fixed; bottom: 30px; left: 20px; z-index: 1000; display: none; touch-action: none; -webkit-tap-highlight-color: transparent;">
       <!-- Joystick Control -->
@@ -193,7 +287,7 @@
       vr-mode-ui="enabled: false"
       embedded
       style="height: 100vh;"
-      renderer="antialias: false; sortObjects: false; colorManagement: false; physicallyCorrectLights: false; shadowMap: false; precision: mediump">
+      renderer="antialias: false; sortObjects: false; colorManagement: false; physicallyCorrectLights: false; shadowMap: false; precision: lowp; logarithmicDepthBuffer: false; powerPreference: high-performance; preserveDrawingBuffer: false">
       
       
       <!-- Assets - Conditional Loading dengan Optimasi -->
@@ -208,8 +302,8 @@
         <a-asset-item id="thermometer-model" src="assets/asset scene 2/LanzoTherm+3000.glb"></a-asset-item>
         <a-asset-item id="deodorant-model" src="assets/asset scene 2/axe_deodorant.glb"></a-asset-item>
         
-        <!-- Model besar (57MB) - Lazy Load setelah scene ready -->
-        <!-- cotton-jar akan di-load via JavaScript setelah model lain selesai -->
+        <!-- Model besar - Lazy Load setelah scene ready -->
+        <!-- cotton-swab akan di-load via JavaScript setelah model lain selesai -->
         
         <!-- Fallback untuk jika GLB tidak tersedia -->
         <a-mixin id="fallback-box"
@@ -224,41 +318,110 @@
       <a-entity id="environment"></a-entity>
 
       <a-entity id="fallback-environment">
+        <!-- Ground plane -->
         <a-plane
           position="0 0 0"
           rotation="-90 0 0"
           width="20"
           height="20"
-          color="#228B22">
+          color="#228B22"
+          class="collidable"
+          visible="true">
         </a-plane>
         
-        <a-plane class="collidable" position="0 2 -10" width="20" height="4" color="#87CEEB"></a-plane>
-        <a-plane class="collidable" position="-10 2 0" rotation="0 90 0" width="20" height="4" color="#87CEEB"></a-plane>
-        <a-plane class="collidable" position="10 2 0" rotation="0 -90 0" width="20" height="4" color="#87CEEB"></a-plane>
+        <!-- Ceiling untuk mencegah player terbang (jika fly diaktifkan) -->
+        <a-plane
+          position="0 4 0"
+          rotation="90 0 0"
+          width="20"
+          height="20"
+          color="#87CEEB"
+          class="collidable"
+          visible="false">
+        </a-plane>
+        
+        <!-- Boundary walls untuk membatasi area pergerakan (20x20 area) -->
+        <!-- North wall (depan) -->
+        <a-plane 
+          class="collidable" 
+          position="0 2 -10" 
+          width="20" 
+          height="4" 
+          color="#87CEEB"
+          visible="false">
+        </a-plane>
+        
+        <!-- South wall (belakang) -->
+        <a-plane 
+          class="collidable" 
+          position="0 2 10" 
+          width="20" 
+          height="4" 
+          color="#87CEEB"
+          visible="false">
+        </a-plane>
+        
+        <!-- West wall (kiri) -->
+        <a-plane 
+          class="collidable" 
+          position="-10 2 0" 
+          rotation="0 90 0" 
+          width="20" 
+          height="4" 
+          color="#87CEEB"
+          visible="false">
+        </a-plane>
+        
+        <!-- East wall (kanan) -->
+        <a-plane 
+          class="collidable" 
+          position="10 2 0" 
+          rotation="0 -90 0" 
+          width="20" 
+          height="4" 
+          color="#87CEEB"
+          visible="false">
+        </a-plane>
+        
+        <!-- Corner blocks untuk collision yang lebih baik -->
+        <a-box class="collidable" position="-10 2 -10" width="0.5" height="4" depth="0.5" visible="false"></a-box>
+        <a-box class="collidable" position="10 2 -10" width="0.5" height="4" depth="0.5" visible="false"></a-box>
+        <a-box class="collidable" position="-10 2 10" width="0.5" height="4" depth="0.5" visible="false"></a-box>
+        <a-box class="collidable" position="10 2 10" width="0.5" height="4" depth="0.5" visible="false"></a-box>
       </a-entity>
 
       <!-- Laboratory Setup -->
       <a-entity id="laboratory-setup">
         
-        <!-- Meja Laboratorium Utama - Disesuaikan ukurannya lebih kecil -->
+        <!-- Meja Laboratorium Utama - Diposisikan di tengah map -->
         <a-entity
           id="main-desk"
           gltf-model="#desk-model"
-          position="0 0 -3"
-          rotation="0 0 0"
-          scale="0.4 0.4 0.4"
+          position="2 0 -1.5"
+          rotation="0 90 0"
+          scale="0.048 0.048 0.048"
           class="collidable"
           visible="true"
           frustum-culled="true">
+          <!-- Collision box untuk memastikan meja tidak bisa ditembus -->
+          <a-box
+            class="collidable"
+            position="0 0.24 0"
+            width="1.2"
+            height="0.48"
+            depth="0.6"
+            visible="false"
+            material="opacity: 0; transparent: true">
+          </a-box>
         </a-entity>
 
-        <!-- Pembakar Bunsen - Disesuaikan dengan meja yang lebih kecil -->
+        <!-- Pembakar Bunsen - Dikecilkan dan diletakkan di atas meja -->
         <a-entity
           id="bunsen-burner"
           gltf-model="#bunsen-model"
-          position="-0.15 0.3 -3"
+          position="1.85 0.6 -1.5"
           rotation="0 0 0"
-          scale="0.2 0.2 0.2"
+          scale="0.02 0.02 0.02"
           class="clickable lab-equipment"
           data-action="toggle-bunsen"
           frustum-culled="true">
@@ -275,13 +438,13 @@
           </a-text>
         </a-entity>
 
-        <!-- Cawan Petri - Disesuaikan dengan meja yang lebih kecil -->
+        <!-- Cawan Petri - Dikecilkan dan diletakkan di atas meja -->
         <a-entity
           id="petri-dish"
           gltf-model="#petri-model"
-          position="0.1 0.3 -3"
+          position="2.1 0.6 -1.5"
           rotation="0 0 0"
-          scale="0.15 0.15 0.15"
+          scale="0.015 0.015 0.015"
           class="clickable lab-equipment"
           data-action="apply-sample"
           frustum-culled="true">
@@ -298,13 +461,13 @@
           </a-text>
         </a-entity>
 
-        <!-- Termometer - Disesuaikan dengan meja yang lebih kecil -->
+        <!-- Termometer - Dikecilkan dan diletakkan di atas meja -->
         <a-entity
           id="thermometer"
           gltf-model="#thermometer-model"
-          position="0.2 0.3 -3"
+          position="2.2 0.6 -1.5"
           rotation="0 0 0"
-          scale="0.15 0.15 0.15"
+          scale="0.015 0.015 0.015"
           class="clickable lab-equipment"
           data-action="measure-temperature"
           frustum-culled="true">
@@ -332,21 +495,21 @@
           </a-text>
         </a-entity>
 
-        <!-- Toples Kapas - Lazy Load (Model besar 57MB) - Disesuaikan ukurannya lebih kecil -->
+        <!-- Toples Kapas - Lazy Load (Model besar 57MB) - Dikecilkan dan diletakkan di atas meja -->
         <!-- Fallback box sementara, akan diganti setelah model loaded -->
         <a-entity
           id="cotton-jar"
-          position="-0.7 0.2 -2.5"
+          position="1.3 0.6 -1.5"
           rotation="0 0 0"
-          scale="0.3 0.3 0.3"
+          scale="0.03 0.03 0.03"
           class="clickable lab-equipment"
           data-action="take-sample">
           <!-- Fallback box sementara - Disesuaikan dengan scale baru -->
           <a-box
             id="cotton-jar-fallback"
-            width="0.15"
-            height="0.18"
-            depth="0.15"
+            width="0.015"
+            height="0.018"
+            depth="0.015"
             color="#8B7355"
             material="metalness: 0.3; roughness: 0.7">
           </a-box>
@@ -363,13 +526,13 @@
           </a-text>
         </a-entity>
 
-        <!-- Deodoran/Bahan Kimia - Disesuaikan ukurannya lebih kecil -->
+        <!-- Deodoran/Bahan Kimia - Dikecilkan dan diletakkan di atas meja -->
         <a-entity
           id="deodorant"
           gltf-model="#deodorant-model"
-          position="0.7 0.2 -2.5"
+          position="2.7 0.6 -1.5"
           rotation="0 0 0"
-          scale="0.25 0.25 0.25"
+          scale="0.025 0.025 0.025"
           class="clickable lab-equipment"
           data-action="add-deodorant"
           frustum-culled="true">
@@ -434,7 +597,8 @@
       <a-entity
         id="rig"
         position="0 1.6 8"
-        movement-controls="speed: 0.3; constrainToNavMesh: false; fly: false; acceleration: 65">
+        movement-controls="speed: 0.3; constrainToNavMesh: false; fly: false; acceleration: 65"
+        collider="distance: 1.2; enabled: true">
         <a-entity
           id="player"
           class="camera"
@@ -446,17 +610,17 @@
             id="reticle"
             position="0 0 -1"
             geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
-            material="shader: flat; opacity: 0.9; color: #fff; depthTest: false"
+            material="shader: flat; opacity: 1.0; color: #fff; depthTest: false; depthWrite: false; transparent: false"
             cursor="fuse: true; fuseTimeout: 1200"
-            raycaster="objects: .clickable"
+            raycaster="objects: .clickable, #instruction-panel, #btnStartExperiment"
             animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
             animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120">
           </a-entity>
         </a-entity>
       </a-entity>
       
-      <!-- Instruction Panel -->
-      <a-entity id="instruction-panel" position="0 2 -4" rotation="0 0 0">
+      <!-- Instruction Panel - Diposisikan di tengah antara meja dan papan - Selalu terlihat -->
+      <a-entity id="instruction-panel" position="0 2 -5.65" rotation="0 0 0" visible="true" always-visible>
         <!-- Background Panel -->
         <a-box
           width="5"
@@ -464,7 +628,7 @@
           depth="0.1"
           color="#1a1a2e"
           opacity="0.95"
-          material="metalness: 0.7; roughness: 0.3"
+          material="metalness: 0.7; roughness: 0.3; depthTest: true; depthWrite: true"
           class="collidable">
         </a-box>
         
@@ -505,6 +669,7 @@
         <a-box
           id="btnStartExperiment"
           class="clickable"
+          material="depthTest: true; depthWrite: true"
           width="2"
           height="0.5"
           depth="0.1"
@@ -718,21 +883,110 @@
       setupMobileControls();
     });
 
-    // Player collider: Disabled untuk tidak mengganggu movement-controls
-    // Movement-controls sudah memiliki built-in collision handling
+    // Always Visible Component - Memastikan entity selalu terlihat
+    AFRAME.registerComponent('always-visible', {
+      init: function () {
+        // Set visible = true saat init
+        this.el.setAttribute('visible', 'true');
+        this.lastCheck = 0;
+        this.checkInterval = 500; // Check setiap 500ms untuk performa
+      },
+      tick: function (time) {
+        // Throttle check untuk performa
+        if (time - this.lastCheck < this.checkInterval) {
+          return;
+        }
+        this.lastCheck = time;
+        
+        // Pastikan selalu visible
+        if (!this.el.getAttribute('visible')) {
+          this.el.setAttribute('visible', 'true');
+        }
+      }
+    });
+
+    // Player collider: Mencegah player menembus objek .collidable dan boundary walls
+    // Optimized untuk performa - hanya check arah pergerakan
     AFRAME.registerComponent('collider', {
       schema: { 
         distance: { default: 1.2 },
         debug: { default: false },
-        enabled: { default: false } // Disabled by default
+        enabled: { default: true } // Enabled untuk boundary detection
       },
       init: function () {
-        // Nonaktifkan collider - movement-controls akan handle collision
-        return;
+        if (!this.data.enabled) {
+          return;
+        }
+        
+        this.raycaster = new THREE.Raycaster();
+        this.lastSafePosition = new THREE.Vector3();
+        // Hanya check 4 arah utama untuk performa maksimal (diagonal dihapus)
+        this.directions = [
+          new THREE.Vector3(0, 0, -1), // forward
+          new THREE.Vector3(0, 0, 1), // backward
+          new THREE.Vector3(-1, 0, 0), // left
+          new THREE.Vector3(1, 0, 0), // right
+        ];
+        this.lastTick = 0;
+        this.tickInterval = 200; // Update setiap 200ms (5 FPS untuk collision check) - lebih jarang
+        this.collidables = null; // Cache collidables
+        this.el.addEventListener('loaded', () => {
+          this.el.object3D.getWorldPosition(this.lastSafePosition);
+        });
       },
       tick: function (time, delta) {
-        // Nonaktifkan - tidak melakukan collision check
-        return;
+        if (!this.data.enabled) {
+          return;
+        }
+        
+        // Throttle collision checks untuk performa
+        if (time - this.lastTick < this.tickInterval) {
+          return;
+        }
+        this.lastTick = time;
+
+        // Cache collidables (update hanya sekali saat pertama kali atau jika perlu)
+        if (!this.collidables) {
+          const collidableEls = this.el.sceneEl.querySelectorAll('.collidable');
+          if (collidableEls.length === 0) return;
+          
+          this.collidables = [];
+          collidableEls.forEach((el) => {
+            if (el.object3D) {
+              this.collidables.push(el.object3D);
+            }
+          });
+        }
+
+        let collision = false;
+        const currentPosition = new THREE.Vector3();
+        this.el.object3D.getWorldPosition(currentPosition);
+
+        // Check collision di semua arah
+        for (const dir of this.directions) {
+          const worldDir = dir.clone().applyQuaternion(this.el.object3D.quaternion);
+          this.raycaster.set(currentPosition, worldDir);
+          this.raycaster.far = this.data.distance;
+          const intersects = this.raycaster.intersectObjects(this.collidables, false); // false = tidak recursive
+
+          if (intersects.length > 0 && intersects[0].distance < this.data.distance) {
+            // Prevent penetration - kembali ke posisi aman
+            // Gunakan setAttribute untuk kompatibilitas dengan movement-controls
+            const safePos = this.lastSafePosition;
+            this.el.setAttribute('position', {
+              x: safePos.x,
+              y: safePos.y,
+              z: safePos.z
+            });
+            collision = true;
+            break;
+          }
+        }
+
+        if (!collision) {
+          // Update safe position jika tidak ada collision
+          this.el.object3D.getWorldPosition(this.lastSafePosition);
+        }
       },
     });
 
@@ -771,11 +1025,11 @@
     }
 
     function startExperiment() {
-      // Hide instruction panel
-      const instructionPanel = document.getElementById('instruction-panel');
-      if (instructionPanel) {
-        instructionPanel.setAttribute('visible', 'false');
-      }
+      // Keep instruction panel visible - tidak disembunyikan
+      // const instructionPanel = document.getElementById('instruction-panel');
+      // if (instructionPanel) {
+      //   instructionPanel.setAttribute('visible', 'false');
+      // }
 
       // Update state
       experimentState.step = 1;
@@ -961,7 +1215,7 @@
       // Create temporary message entity
       const message = document.createElement('a-text');
       message.setAttribute('value', text);
-      message.setAttribute('position', '0 2.5 -3');
+      message.setAttribute('position', '0 2.5 5');
       message.setAttribute('align', 'center');
       message.setAttribute('color', '#4CC3D9');
       message.setAttribute('width', '6');
@@ -979,7 +1233,7 @@
       }, duration);
     }
 
-    // Lazy Load Cotton Jar (57MB model) - Load setelah model lain selesai
+    // Lazy Load Cotton Swab - Load setelah model lain selesai
     function loadCottonJarLazy() {
       const cottonJar = document.getElementById('cotton-jar');
       if (!cottonJar) return;
@@ -1011,13 +1265,13 @@
           // Update loading text
           const loadingText = document.getElementById('loading-text');
           if (loadingText) {
-            loadingText.setAttribute('value', 'Loading cotton jar (large file)...');
+            loadingText.setAttribute('value', 'Loading cotton swab...');
           }
 
-          // Load cotton jar model
+          // Load cotton swab model
           const cottonAsset = document.createElement('a-asset-item');
           cottonAsset.setAttribute('id', 'cotton-jar-model');
-          cottonAsset.setAttribute('src', 'assets/asset scene 2/cotton+swab+jar.glb');
+          cottonAsset.setAttribute('src', 'assets/asset scene 2/cotton_swab.glb');
           
           const assetsContainer = document.querySelector('a-assets');
           if (assetsContainer) {
@@ -1042,11 +1296,11 @@
                 loadingIndicator.setAttribute('visible', 'false');
               }
               
-              console.log('Cotton jar model loaded successfully!');
+              console.log('Cotton swab model loaded successfully!');
             });
 
             cottonAsset.addEventListener('error', () => {
-              console.warn('Cotton jar model failed to load, using fallback');
+              console.warn('Cotton swab model failed to load, using fallback');
               const loadingIndicator = document.getElementById('loading-indicator');
               if (loadingIndicator) {
                 loadingIndicator.setAttribute('visible', 'false');
@@ -1083,9 +1337,9 @@
             renderer.shadowMap.enabled = false;
           }
           
-          // Reduce pixel ratio untuk performa
+          // Reduce pixel ratio untuk performa - AGGRESSIVE
           if (renderer.setPixelRatio) {
-            const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5); // Max 1.5x
+            const pixelRatio = Math.min(window.devicePixelRatio || 1, 0.75); // Max 0.75x untuk performa maksimal
             renderer.setPixelRatio(pixelRatio);
           }
           
@@ -1093,36 +1347,80 @@
           if (renderer.setPowerPreference) {
             renderer.setPowerPreference('high-performance');
           }
+          
+          // Limit render resolution untuk performa
+          const canvas = renderer.domElement;
+          if (canvas) {
+            const maxWidth = 1280;
+            const maxHeight = 720;
+            const currentWidth = canvas.width;
+            const currentHeight = canvas.height;
+            if (currentWidth > maxWidth || currentHeight > maxHeight) {
+              const scale = Math.min(maxWidth / currentWidth, maxHeight / currentHeight);
+              renderer.setSize(Math.floor(currentWidth * scale), Math.floor(currentHeight * scale), false);
+            }
+          }
         }
       });
 
-      // Reduce texture quality dan optimize models
+      // Reduce texture quality dan optimize models - AGGRESSIVE
       const models = document.querySelectorAll('[gltf-model]');
       models.forEach(model => {
         model.addEventListener('model-loaded', function() {
           const object3D = this.object3D;
           if (object3D) {
+            // Khusus untuk meja - pastikan tidak transparan dan solid
+            const deskEl = document.getElementById('main-desk');
+            const isDesk = this.id === 'main-desk' || (deskEl && (this === deskEl || deskEl.contains(this)));
+            
             object3D.traverse(function(node) {
               if (node.isMesh) {
                 // Disable shadows
                 node.castShadow = false;
                 node.receiveShadow = false;
                 
+                // Disable frustum culling untuk performa (meskipun counter-intuitive, 
+                // tapi untuk model kecil lebih baik disable)
+                node.frustumCulled = true; // Keep enabled untuk model besar
+                
                 // Reduce material complexity
                 if (node.material) {
                   if (Array.isArray(node.material)) {
                     node.material.forEach(mat => {
                       optimizeMaterial(mat);
+                      // Khusus untuk meja - pastikan tidak transparan
+                      if (isDesk) {
+                        mat.transparent = false;
+                        mat.opacity = 1.0;
+                        mat.depthWrite = true;
+                        mat.depthTest = true;
+                      }
                     });
                   } else {
                     optimizeMaterial(node.material);
+                    // Khusus untuk meja - pastikan tidak transparan
+                    if (isDesk) {
+                      node.material.transparent = false;
+                      node.material.opacity = 1.0;
+                      node.material.depthWrite = true;
+                      node.material.depthTest = true;
+                    }
                   }
                 }
                 
                 // Simplify geometry jika memungkinkan
                 if (node.geometry) {
                   node.geometry.computeBoundingSphere();
+                  // Disable dynamic updates
+                  node.geometry.dynamic = false;
+                  node.geometry.verticesNeedUpdate = false;
+                  node.geometry.normalsNeedUpdate = false;
+                  node.geometry.colorsNeedUpdate = false;
+                  node.geometry.uvsNeedUpdate = false;
                 }
+                
+                // Disable matrix auto update untuk performa
+                node.matrixAutoUpdate = true; // Keep true untuk movement
               }
             });
           }
@@ -1130,29 +1428,44 @@
       });
     }
 
-    // Optimize material untuk performa
+    // Optimize material untuk performa - AGGRESSIVE
     function optimizeMaterial(material) {
       if (!material) return;
       
       // Disable features yang tidak perlu
       material.needsUpdate = false;
       
-      // Reduce texture size
+      // Pastikan material tidak transparan - Force opacity = 1.0
+      if (material.transparent === true || (material.opacity !== undefined && material.opacity < 1.0)) {
+        material.transparent = false;
+        material.opacity = 1.0;
+        material.needsUpdate = true;
+      }
+      material.depthWrite = true;
+      material.depthTest = true;
+      
+      // Reduce texture size - AGGRESSIVE
       if (material.map) {
         material.map.generateMipmaps = false;
-        material.map.minFilter = THREE.LinearFilter; // Faster than LinearMipmapLinearFilter
-        material.map.magFilter = THREE.LinearFilter;
+        material.map.minFilter = THREE.NearestFilter; // Fastest filter
+        material.map.magFilter = THREE.NearestFilter; // Fastest filter
       }
       
-      // Simplify shader
+      // Disable semua fitur material yang tidak perlu
+      material.flatShading = true; // Flat shading lebih cepat
       if (material.roughness !== undefined) {
-        material.roughness = Math.max(0.5, material.roughness); // Reduce shader complexity
+        material.roughness = 1.0; // Max roughness untuk performa
       }
+      if (material.metalness !== undefined) {
+        material.metalness = 0; // No metalness untuk performa
+      }
+      material.emissive = new THREE.Color(0x000000); // No emission
+      material.envMap = null; // No environment map
     }
 
-    // Frame rate limiting untuk konsistensi performa
+    // Frame rate limiting untuk konsistensi performa - AGGRESSIVE
     let lastFrameTime = 0;
-    const targetFPS = 30; // Target 30 FPS untuk performa lebih baik
+    const targetFPS = 20; // Target 20 FPS untuk performa maksimal (dikurangi dari 30)
     const frameInterval = 1000 / targetFPS;
 
     function throttleRender() {
@@ -1213,6 +1526,70 @@
       });
     }
 
+    // Compass Update Function
+    function updateCompass() {
+      const camera = document.querySelector('[camera]');
+      const compassNeedle = document.getElementById('compass-needle');
+      const compassDirection = document.getElementById('compass-direction');
+      
+      if (!camera || !compassNeedle || !compassDirection) {
+        return;
+      }
+      
+      // Get camera rotation
+      const rotation = camera.getAttribute('rotation');
+      const yaw = rotation.y || 0;
+      
+      // Convert yaw to compass direction (0 = North, 90 = East, 180 = South, 270 = West)
+      // A-Frame: 0 degrees = looking at negative Z (North), 90 = looking at positive X (East)
+      const compassAngle = -yaw; // Negative karena A-Frame rotation berbeda
+      
+      // Update needle rotation
+      compassNeedle.style.transform = `translate(-50%, -100%) rotate(${compassAngle}deg)`;
+      
+      // Determine direction
+      let direction = 'N';
+      let angle = (yaw + 360) % 360;
+      
+      if (angle >= 337.5 || angle < 22.5) {
+        direction = 'N';
+      } else if (angle >= 22.5 && angle < 67.5) {
+        direction = 'NE';
+      } else if (angle >= 67.5 && angle < 112.5) {
+        direction = 'E';
+      } else if (angle >= 112.5 && angle < 157.5) {
+        direction = 'SE';
+      } else if (angle >= 157.5 && angle < 202.5) {
+        direction = 'S';
+      } else if (angle >= 202.5 && angle < 247.5) {
+        direction = 'SW';
+      } else if (angle >= 247.5 && angle < 292.5) {
+        direction = 'W';
+      } else if (angle >= 292.5 && angle < 337.5) {
+        direction = 'NW';
+      }
+      
+      compassDirection.textContent = direction;
+    }
+    
+    // Initialize compass update loop
+    function initCompass() {
+      const scene = document.querySelector('a-scene');
+      if (!scene) {
+        setTimeout(initCompass, 100);
+        return;
+      }
+      
+      if (scene.hasLoaded) {
+        // Update compass every frame
+        setInterval(updateCompass, 100); // Update setiap 100ms untuk performa
+      } else {
+        scene.addEventListener('loaded', () => {
+          setInterval(updateCompass, 100);
+        });
+      }
+    }
+
     // Initialize experiment flow after DOM loaded
     document.addEventListener('DOMContentLoaded', () => {
       // Optimize rendering first
@@ -1247,7 +1624,7 @@
         });
       }
       
-      // Start lazy loading cotton jar
+      // Start lazy loading cotton swab
       setTimeout(() => {
         loadCottonJarLazy();
       }, 500);
@@ -1256,6 +1633,9 @@
       setTimeout(() => {
         initExperimentFlow();
       }, 1000);
+      
+      // Initialize compass
+      initCompass();
     });
 
     // Hide loading indicator when scene is ready
@@ -1280,7 +1660,7 @@
               // Only hide if cotton jar hasn't started loading yet
               const loadingText = document.getElementById('loading-text');
               if (loadingText) {
-                loadingText.setAttribute('value', 'Loading cotton jar...');
+                loadingText.setAttribute('value', 'Loading cotton swab...');
               }
             }
           }
