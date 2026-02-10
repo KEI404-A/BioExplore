@@ -141,8 +141,244 @@
       transition: background 0.3s;
     }
 
-    #submitAnswer:hover {
+    #submitAnswer:hover:not(:disabled) {
       background: #7bdcff;
+    }
+
+    #submitAnswer:disabled {
+      background: #666666;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    #quiz-progress {
+      margin: 20px 0;
+      padding: 10px;
+      background: rgba(76, 195, 217, 0.1);
+      border-radius: 5px;
+      text-align: center;
+      color: #4CC3D9;
+    }
+
+    #quiz-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    #quiz-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    #resetQuiz {
+      background: #666666;
+      color: white;
+    }
+
+    #resetQuiz:hover {
+      background: #888888;
+    }
+
+    #quiz-results {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(76, 195, 217, 0.1);
+      border-radius: 5px;
+      color: #ffffff;
+    }
+
+    #quiz-results h4 {
+      color: #4CC3D9;
+      margin-bottom: 15px;
+    }
+
+    #quiz-results p {
+      margin: 10px 0;
+    }
+
+    #quiz-results button {
+      background: #4CC3D9;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    #quiz-results button:hover {
+      background: #7bdcff;
+    }
+
+    /* Data Visualization Styles */
+    .data-visualization {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(76, 195, 217, 0.1);
+      border-radius: 8px;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      margin: 15px 0;
+      background: rgba(13, 21, 32, 0.5);
+      border-radius: 5px;
+      padding: 10px;
+    }
+
+    .chart-bar {
+      display: inline-block;
+      background: linear-gradient(to top, #4CC3D9, #7bdcff);
+      margin: 0 5px;
+      border-radius: 3px 3px 0 0;
+      transition: height 0.5s ease-out;
+      position: relative;
+      min-width: 30px;
+    }
+
+    .chart-bar:hover {
+      opacity: 0.8;
+      transform: scaleY(1.1);
+      transform-origin: bottom;
+    }
+
+    .chart-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffffff;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .chart-value {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #4CC3D9;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .chart-legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+    }
+
+    /* Accessibility Styles */
+    .keyboard-focused {
+      outline: 3px solid #ffff00 !important;
+      outline-offset: 2px;
+    }
+
+    .lab-equipment:focus {
+      outline: 3px solid #ffff00 !important;
+      outline-offset: 2px;
+    }
+
+    /* Help/Tutorial Popup Styles */
+    .help-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 26, 46, 0.98);
+      border: 2px solid #4CC3D9;
+      border-radius: 15px;
+      padding: 30px;
+      z-index: 10001;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      display: none;
+    }
+
+    .help-popup h3 {
+      color: #4CC3D9;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .help-section {
+      margin-bottom: 25px;
+      color: #ffffff;
+    }
+
+    .help-section h4 {
+      color: #4CC3D9;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .help-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .help-section li {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .help-section li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #4CC3D9;
+    }
+
+    .help-section code {
+      background: rgba(76, 195, 217, 0.2);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #7bdcff;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: rgba(26, 26, 46, 0.95);
+      border: 1px solid #4CC3D9;
+      border-radius: 5px;
+      padding: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      max-width: 200px;
+      z-index: 10002;
+      pointer-events: none;
+      display: none;
     }
 
     /* Compass Styles */
@@ -294,13 +530,19 @@
       <a-assets timeout="30000">
         <img id="thumbScene1" crossorigin="anonymous" src="https://cdn.aframe.io/link-traversal/thumbs/forest.png" />
         
+        <!-- Audio Assets untuk Sound Effects -->
+        <!-- Note: Audio files akan dibuat secara programmatic untuk menghindari dependency file eksternal -->
+        
         <!-- GLB Models untuk Scene 2 - Prioritas Loading -->
+        <!-- Model Room - Load pertama untuk environment utama -->
+        <a-asset-item id="lab-room-model" src="assets/asset scene 2/room.glb"></a-asset-item>
+        
         <!-- Model kecil di-load dulu -->
         <a-asset-item id="desk-model" src="assets/asset scene 2/Desk.glb"></a-asset-item>
         <a-asset-item id="bunsen-model" src="assets/asset scene 2/bunsen+burner.glb"></a-asset-item>
         <a-asset-item id="petri-model" src="assets/asset scene 2/Petri+dish.glb"></a-asset-item>
         <a-asset-item id="thermometer-model" src="assets/asset scene 2/LanzoTherm+3000.glb"></a-asset-item>
-        <a-asset-item id="deodorant-model" src="assets/asset scene 2/axe_deodorant.glb"></a-asset-item>
+        <a-asset-item id="deodorant-model" src="assets/alat/desodorante_-_deodorant.glb"></a-asset-item>
         
         <!-- Model besar - Lazy Load setelah scene ready -->
         <!-- cotton-swab akan di-load via JavaScript setelah model lain selesai -->
@@ -317,8 +559,99 @@
 
       <a-entity id="environment"></a-entity>
 
-      <a-entity id="fallback-environment">
-        <!-- Ground plane -->
+      <!-- Lab Room Model - Ruangan laboratorium sebagai environment utama -->
+      <!-- Model ini menjadi ruangan tempat spawn dan menjalankan game -->
+      <!-- Scale diperbesar agar ruangan lebih luas, diputar 180 derajat -->
+      <a-entity
+        id="lab-room"
+        gltf-model="#lab-room-model"
+        position="0 0 0"
+        rotation="0 180 0"
+        scale="2 2 2"
+        visible="true"
+        shadow="receive: false">
+      </a-entity>
+
+      <!-- Collision Walls untuk Room - Tidak terlihat tapi solid -->
+      <!-- Menggunakan a-box untuk collision yang lebih reliable -->
+      <a-entity id="room-collision-walls">
+        <!-- Lantai collision - Mencegah player jatuh -->
+        <a-box
+          class="collidable"
+          position="0 -0.1 0"
+          width="30"
+          height="0.2"
+          depth="30"
+          visible="false"
+          material="opacity: 0; transparent: true; side: double">
+        </a-box>
+        
+        <!-- Ceiling collision - Mencegah player terbang -->
+        <a-box
+          class="collidable"
+          position="0 5 0"
+          width="30"
+          height="0.2"
+          depth="30"
+          visible="false"
+          material="opacity: 0; transparent: true; side: double">
+        </a-box>
+        
+        <!-- Dinding Utara (depan) - Z negatif -->
+        <a-box
+          class="collidable"
+          position="0 2.5 -8"
+          width="30"
+          height="5"
+          depth="0.2"
+          visible="false"
+          material="opacity: 0; transparent: true; side: double">
+        </a-box>
+        
+        <!-- Dinding Selatan (belakang) - Z positif -->
+        <a-box
+          class="collidable"
+          position="0 2.5 8"
+          width="30"
+          height="5"
+          depth="0.2"
+          visible="false"
+          material="opacity: 0; transparent: true; side: double">
+        </a-box>
+        
+        <!-- Dinding Barat (kiri) - X negatif -->
+        <a-box
+          class="collidable"
+          position="-8 2.5 0"
+          width="0.2"
+          height="5"
+          depth="30"
+          visible="false"
+          material="opacity: 0; transparent: true; side: double">
+        </a-box>
+        
+        <!-- Dinding Timur (kanan) - X positif -->
+        <a-box
+          class="collidable"
+          position="8 2.5 0"
+          width="0.2"
+          height="5"
+          depth="30"
+          visible="false"
+          material="opacity: 0; transparent: true; side: double">
+        </a-box>
+        
+        <!-- Corner blocks untuk collision yang lebih baik di sudut -->
+        <a-box class="collidable" position="-8 2.5 -8" width="0.5" height="5" depth="0.5" visible="false" material="opacity: 0; transparent: true"></a-box>
+        <a-box class="collidable" position="8 2.5 -8" width="0.5" height="5" depth="0.5" visible="false" material="opacity: 0; transparent: true"></a-box>
+        <a-box class="collidable" position="-8 2.5 8" width="0.5" height="5" depth="0.5" visible="false" material="opacity: 0; transparent: true"></a-box>
+        <a-box class="collidable" position="8 2.5 8" width="0.5" height="5" depth="0.5" visible="false" material="opacity: 0; transparent: true"></a-box>
+      </a-entity>
+
+      <!-- Fallback environment - Backup jika model lab gagal load -->
+      <!-- Disembunyikan karena model lab room sudah memiliki lantai dan dinding -->
+      <a-entity id="fallback-environment" visible="false">
+        <!-- Ground plane - Fallback jika model lab gagal load -->
         <a-plane
           position="0 0 0"
           rotation="-90 0 0"
@@ -326,7 +659,7 @@
           height="20"
           color="#228B22"
           class="collidable"
-          visible="true">
+          visible="false">
         </a-plane>
         
         <!-- Ceiling untuk mencegah player terbang (jika fly diaktifkan) -->
@@ -393,17 +726,18 @@
       <!-- Laboratory Setup -->
       <a-entity id="laboratory-setup">
         
-        <!-- Meja Laboratorium Utama - Diposisikan di tengah map -->
+        <!-- Meja Laboratorium Utama - Diposisikan di kanan, dimajukan ke depan -->
         <a-entity
           id="main-desk"
           gltf-model="#desk-model"
-          position="2 0 -1.5"
+          position="2 0 -1"
           rotation="0 90 0"
           scale="0.048 0.048 0.048"
           class="collidable"
           visible="true"
           frustum-culled="true">
           <!-- Collision box untuk memastikan meja tidak bisa ditembus -->
+          <!-- Permukaan meja setelah scale 0.048: tinggi meja ~0.024, jadi permukaan di sekitar y=0.024 -->
           <a-box
             class="collidable"
             position="0 0.24 0"
@@ -415,40 +749,52 @@
           </a-box>
         </a-entity>
 
-        <!-- Pembakar Bunsen - Dikecilkan dan diletakkan di atas meja -->
+        <!-- Asset Laboratorium - Tertata rapi di atas meja -->
+        <!-- Peralatan diatur dari kiri ke kanan: Cotton Swab -> Petri Dish -> Bunsen Burner -> Thermometer -> Deodorant -->
+        
+        <!-- Toples Kapas - Posisi paling kiri meja -->
         <a-entity
-          id="bunsen-burner"
-          gltf-model="#bunsen-model"
-          position="1.85 0.6 -1.5"
+          id="cotton-jar"
+          position="-1.2 1.05 -1.2"
           rotation="0 0 0"
-          scale="0.02 0.02 0.02"
+          scale="0.03 0.03 0.03"
           class="clickable lab-equipment"
-          data-action="toggle-bunsen"
-          frustum-culled="true">
-          <!-- Label - Disesuaikan posisi untuk ukuran baru -->
-        <a-text
-            value="Bunsen Burner"
-            position="0 0.15 0"
-          align="center"
+          data-action="take-sample"
+          visible="true">
+          <!-- Fallback box sementara - Terlihat sampai model GLB dimuat -->
+          <a-box
+            id="cotton-jar-fallback"
+            width="0.15"
+            height="0.18"
+            depth="0.15"
+            color="#8B7355"
+            material="metalness: 0.3; roughness: 0.7"
+            visible="true">
+          </a-box>
+          <!-- Label -->
+          <a-text
+            value="Cotton Swab"
+            position="0 0.2 0"
+            align="center"
             color="#fff"
             width="1.5"
             visible="false"
-            id="bunsen-label"
+            id="cotton-label"
             material="depthTest: false; transparent: true">
-        </a-text>
+          </a-text>
         </a-entity>
 
-        <!-- Cawan Petri - Dikecilkan dan diletakkan di atas meja -->
+        <!-- Cawan Petri - Posisi tengah-kiri meja -->
         <a-entity
           id="petri-dish"
           gltf-model="#petri-model"
-          position="2.1 0.6 -1.5"
+          position="-0.7 1.05 -1.2"
           rotation="0 0 0"
           scale="0.015 0.015 0.015"
           class="clickable lab-equipment"
           data-action="apply-sample"
           frustum-culled="true">
-          <!-- Label - Disesuaikan posisi untuk ukuran baru -->
+          <!-- Label -->
         <a-text
             value="Petri Dish"
             position="0 0.15 0"
@@ -461,17 +807,41 @@
         </a-text>
         </a-entity>
 
-        <!-- Termometer - Dikecilkan dan diletakkan di atas meja -->
+        <!-- Pembakar Bunsen - Posisi tengah meja -->
+        <a-entity
+          id="bunsen-burner"
+          gltf-model="#bunsen-model"
+          position="-0.2 1.05 -1.2"
+          rotation="0 0 0"
+          scale="0.03 0.03 0.03"
+          class="clickable lab-equipment"
+          data-action="toggle-bunsen"
+          frustum-culled="true"
+          visible="true">
+          <!-- Label -->
+        <a-text
+            value="Bunsen Burner"
+            position="0 0.15 0"
+          align="center"
+            color="#fff"
+            width="1.5"
+            visible="false"
+            id="bunsen-label"
+            material="depthTest: false; transparent: true">
+        </a-text>
+        </a-entity>
+
+        <!-- Termometer - Posisi tengah-kanan meja -->
         <a-entity
           id="thermometer"
           gltf-model="#thermometer-model"
-          position="2.2 0.6 -1.5"
+          position="0.3 1.05 -1.2"
           rotation="0 0 0"
-          scale="0.015 0.015 0.015"
+          scale="0.027 0.027 0.027"
           class="clickable lab-equipment"
           data-action="measure-temperature"
           frustum-culled="true">
-          <!-- Label - Disesuaikan posisi untuk ukuran baru -->
+          <!-- Label -->
           <a-text
             value="Thermometer"
             position="0 0.15 0"
@@ -482,7 +852,7 @@
             id="thermometer-label"
             material="depthTest: false; transparent: true">
           </a-text>
-          <!-- Temperature Display - Disesuaikan posisi -->
+          <!-- Temperature Display -->
           <a-text
             id="temperature-display"
             value="Suhu: --°C"
@@ -495,48 +865,17 @@
           </a-text>
           </a-entity>
 
-        <!-- Toples Kapas - Lazy Load (Model besar 57MB) - Dikecilkan dan diletakkan di atas meja -->
-        <!-- Fallback box sementara, akan diganti setelah model loaded -->
-          <a-entity
-          id="cotton-jar"
-          position="1.3 0.6 -1.5"
-          rotation="0 0 0"
-          scale="0.03 0.03 0.03"
-          class="clickable lab-equipment"
-          data-action="take-sample">
-          <!-- Fallback box sementara - Disesuaikan dengan scale baru -->
-        <a-box
-            id="cotton-jar-fallback"
-            width="0.15"
-            height="0.18"
-            depth="0.15"
-            color="#8B7355"
-            material="metalness: 0.3; roughness: 0.7">
-        </a-box>
-          <!-- Label - Disesuaikan posisi untuk ukuran baru -->
-        <a-text
-            value="Cotton Swab"
-            position="0 0.2 0"
-          align="center"
-            color="#fff"
-            width="1.5"
-            visible="false"
-            id="cotton-label"
-            material="depthTest: false; transparent: true">
-        </a-text>
-        </a-entity>
-
-        <!-- Deodoran/Bahan Kimia - Dikecilkan dan diletakkan di atas meja -->
+        <!-- Deodoran/Bahan Kimia - Posisi paling kanan meja -->
         <a-entity
           id="deodorant"
           gltf-model="#deodorant-model"
-          position="2.7 0.6 -1.5"
-          rotation="0 0 0"
-          scale="0.025 0.025 0.025"
+          position="0.8 1.05 -1.2"
+          rotation="0 180 0"
+          scale="0.050 0.050 0.050"
           class="clickable lab-equipment"
           data-action="add-deodorant"
           frustum-culled="true">
-          <!-- Label - Disesuaikan posisi untuk ukuran baru -->
+          <!-- Label -->
         <a-text
             value="Deodorant"
             position="0 0.2 0"
@@ -551,9 +890,154 @@
 
         </a-entity>
 
-      <!-- Portal Kembali ke Menu -->
+      <!-- Control Panel - Tombol kontrol mengambang di depan meja -->
+      <a-entity id="control-panel" position="-2 1.2 0.5" rotation="0 0 0">
+
+        <!-- Baris 1: Tombol Save dan Load -->
+        <a-box
+          id="btnSaveProgress"
+          class="clickable"
+          width="1.2"
+          height="0.3"
+          depth="0.05"
+          position="-1.5 0.15 0.05"
+          color="#4CC3D9"
+          material="metalness: 0.5; roughness: 0.5">
+        </a-box>
+        <a-text
+          value="SAVE"
+          position="-1.5 0.15 0.06"
+          align="center"
+          color="#ffffff"
+          width="1.5"
+          material="depthTest: false; transparent: true"
+          font="mono">
+        </a-text>
+
+        <a-box
+          id="btnLoadProgress"
+          class="clickable"
+          width="1.2"
+          height="0.3"
+          depth="0.05"
+          position="-0.3 0.15 0.05"
+          color="#7bdcff"
+          material="metalness: 0.5; roughness: 0.5">
+        </a-box>
+        <a-text
+          value="LOAD"
+          position="-0.3 0.15 0.06"
+          align="center"
+          color="#ffffff"
+          width="1.5"
+          material="depthTest: false; transparent: true"
+          font="mono">
+        </a-text>
+
+        <a-box
+          id="btnResetExperiment"
+          class="clickable"
+          width="1.2"
+          height="0.3"
+          depth="0.05"
+          position="0.9 0.15 0.05"
+          color="#ff4444"
+          material="metalness: 0.5; roughness: 0.5">
+        </a-box>
+        <a-text
+          value="RESET"
+          position="0.9 0.15 0.06"
+          align="center"
+          color="#ffffff"
+          width="1.8"
+          material="depthTest: false; transparent: true">
+        </a-text>
+
+        <!-- Baris 2: Tombol Settings, Achievements, Help -->
+        <a-box
+          id="btnSettings"
+          class="clickable"
+          width="0.9"
+          height="0.3"
+          depth="0.05"
+          position="-1.4 -0.2 0.05"
+          color="#27ae60"
+          material="metalness: 0.5; roughness: 0.5">
+        </a-box>
+        <a-text
+          value="⚙️"
+          position="-1.4 -0.2 0.06"
+          align="center"
+          color="#ffffff"
+          width="1.5"
+          material="depthTest: false; transparent: true">
+        </a-text>
+
+        <a-box
+          id="btnAchievements"
+          class="clickable"
+          width="0.9"
+          height="0.3"
+          depth="0.05"
+          position="-0.4 -0.2 0.05"
+          color="#ffd700"
+          material="metalness: 0.5; roughness: 0.5">
+        </a-box>
+        <a-text
+          value="🏆"
+          position="-0.4 -0.2 0.06"
+          align="center"
+          color="#ffffff"
+          width="1.5"
+          material="depthTest: false; transparent: true">
+        </a-text>
+
+        <a-box
+          id="btnHelp"
+          class="clickable"
+          width="1.1"
+          height="0.3"
+          depth="0.05"
+          position="0.7 -0.2 0.05"
+          color="#4CC3D9"
+          material="metalness: 0.5; roughness: 0.5">
+        </a-box>
+        <a-text
+          value="BANTUAN"
+          position="0.7 -0.2 0.06"
+          align="center"
+          color="#ffffff"
+          width="1.8"
+          material="depthTest: false; transparent: true">
+        </a-text>
+
+        <!-- Tombol Mulai Eksperimen - Lebih besar dan menonjol -->
+        <a-box
+          id="btnStartExperiment"
+          class="clickable"
+          width="2"
+          height="0.4"
+          depth="0.08"
+          position="0 -0.55 0.05"
+          color="#4CC3D9"
+          material="metalness: 0.8; roughness: 0.2"
+          event-set__mouseenter="scale:1.1 1.1 1.1; color:#7bdcff"
+          event-set__mouseleave="scale:1 1 1; color:#4CC3D9">
+        </a-box>
+        <a-text
+          value="MULAI EKSPERIMEN"
+          position="0 -0.55 0.09"
+          align="center"
+          color="#ffffff"
+          width="3"
+          material="depthTest: false; transparent: true">
+        </a-text>
+        
+      </a-entity>
+
+      <!-- Portal Kembali ke Menu - Diposisikan di dalam ruangan lab -->
       <a-link
-        position="0 1.6 6"
+        position="0 1.6 5"
         rotation="0 180 0"
         link="on: click"
         href="vr.html"
@@ -564,13 +1048,26 @@
         event-set__mouseleave="material.opacity: 0.6">
       </a-link>
 
-      <!-- Sky dan pencahayaan - Minimal untuk performa -->
-      <a-sky color="#87CEEB"></a-sky>
-      <!-- Hanya ambient dan directional light untuk performa maksimal -->
-      <a-light type="ambient" color="#404040" intensity="0.7"></a-light>
+      <!-- Sky - Disembunyikan karena ruangan indoor sudah memiliki ceiling -->
+      <a-sky color="#1a1a2e" visible="false"></a-sky>
+      <!-- Lighting untuk ruangan indoor - Ditingkatkan agar lebih terang -->
+      <a-light type="ambient" color="#ffffff" intensity="1.2"></a-light>
       <a-light type="directional" 
-               position="5 10 5" 
-               intensity="0.9">
+               position="5 8 5" 
+               intensity="1.0"
+               cast-shadow="false">
+      </a-light>
+      <!-- Tambahan point light untuk ruangan indoor yang lebih terang -->
+      <a-light type="point" 
+               position="0 4 0" 
+               intensity="0.8"
+               distance="30">
+      </a-light>
+      <!-- Tambahan point light di area meja untuk pencahayaan yang lebih baik -->
+      <a-light type="point" 
+               position="3 3 -5" 
+               intensity="0.6"
+               distance="15">
       </a-light>
       
       <!-- Loading Indicator -->
@@ -593,12 +1090,12 @@
         </a-text>
       </a-entity>
 
-      <!-- Kamera dengan movement controls seperti di vr.html - Support sprint -->
+      <!-- Kamera dengan movement controls - Spawn di dalam ruangan lab -->
       <a-entity
         id="rig"
-        position="0 1.6 8"
+        position="0 1.6 3"
         movement-controls="speed: 0.3; constrainToNavMesh: false; fly: false; acceleration: 65"
-        collider="distance: 1.2; enabled: true">
+        collider="distance: 1.5; enabled: true; debug: false">
         <a-entity
           id="player"
           class="camera"
@@ -610,7 +1107,7 @@
             id="reticle"
             position="0 0 -1"
             geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
-            material="shader: flat; opacity: 1.0; color: #fff; depthTest: false; depthWrite: false; transparent: false"
+            material="shader: flat; opacity: 1.0; color: #fff; depthTest: false; depthWrite: false; transparent: true; fog: false"
             cursor="fuse: true; fuseTimeout: 1200"
             raycaster="objects: .clickable, #instruction-panel, #btnStartExperiment"
             animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
@@ -619,8 +1116,9 @@
         </a-entity>
       </a-entity>
       
-      <!-- Instruction Panel -->
-      <a-entity id="instruction-panel" position="0 2 -4" rotation="0 0 0">
+      <!-- Instruction Panel - Diposisikan di dalam ruangan lab -->
+      <!-- Instruction Panel - Diposisikan di tengah ruangan, di belakang meja -->
+      <a-entity id="instruction-panel" position="0 2.5 -4" rotation="0 0 0">
         <!-- Background Panel -->
           <a-box 
           width="5"
@@ -665,27 +1163,91 @@
           material="depthTest: false; transparent: true">
               </a-text>
 
-        <!-- Start Button -->
-              <a-box
-          id="btnStartExperiment"
-          class="clickable"
-          width="2"
-          height="0.5"
-          depth="0.1"
-          position="0 -1.1 0.06"
-          color="#4CC3D9"
-          material="metalness: 0.8; roughness: 0.2"
-          event-set__mouseenter="scale:1.1 1.1 1.1; color:#7bdcff"
-          event-set__mouseleave="scale:1 1 1; color:#4CC3D9">
-              </a-box>
-              <a-text
-          value="MULAI EKSPERIMEN"
-          position="0 -1.1 0.11"
-                align="center"
-                color="#ffffff"
+        <!-- Progress Tracking - Detailed checklist -->
+        <a-entity id="progress-tracker" position="0 -0.8 0.06" visible="false">
+          <!-- Progress Title -->
+          <a-text
+            value="PROGRESS"
+            position="0 0.3 0"
+            align="center"
+            color="#4CC3D9"
             width="3"
-          material="depthTest: false; transparent: true">
-              </a-text>
+            material="depthTest: false; transparent: true">
+          </a-text>
+          
+          <!-- Progress Steps -->
+          <a-text
+            id="progress-step-1"
+            value="☐ Ambil Sampel"
+            position="-1.5 0.1 0"
+            align="left"
+            color="#888888"
+            width="3"
+            material="depthTest: false; transparent: true">
+          </a-text>
+          
+          <a-text
+            id="progress-step-2"
+            value="☐ Oleskan Sampel"
+            position="-1.5 -0.1 0"
+            align="left"
+            color="#888888"
+            width="3"
+            material="depthTest: false; transparent: true">
+          </a-text>
+          
+          <a-text
+            id="progress-step-3"
+            value="☐ Tambahkan Deodoran"
+            position="-1.5 -0.3 0"
+            align="left"
+            color="#888888"
+            width="3"
+            material="depthTest: false; transparent: true">
+          </a-text>
+          
+          <a-text
+            id="progress-step-4"
+            value="☐ Ukur Suhu"
+            position="-1.5 -0.5 0"
+            align="left"
+            color="#888888"
+            width="3"
+            material="depthTest: false; transparent: true">
+          </a-text>
+          
+          <!-- Progress Bar -->
+          <a-box
+            id="progress-bar-bg"
+            width="3"
+            height="0.1"
+            depth="0.02"
+            position="0 -0.7 0"
+            color="#333333"
+            material="opacity: 0.7">
+          </a-box>
+          
+          <a-box
+            id="progress-bar-fill"
+            width="0"
+            height="0.08"
+            depth="0.03"
+            position="-1.5 -0.7 0.01"
+            color="#4CC3D9"
+            material="opacity: 0.9">
+          </a-box>
+          
+          <a-text
+            id="progress-percentage"
+            value="0%"
+            position="1.7 -0.7 0.01"
+            align="center"
+            color="#4CC3D9"
+            width="1"
+            material="depthTest: false; transparent: true">
+          </a-text>
+        </a-entity>
+
             </a-entity>
 
       <!-- Observation Results (Initially Hidden) -->
@@ -731,6 +1293,87 @@
           line-height="50"
           material="depthTest: false; transparent: true">
               </a-text>
+              
+        <!-- Data Visualization Container (HTML overlay) -->
+        <div id="data-viz-container" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; max-width: 90%; background: rgba(26, 26, 46, 0.95); border: 2px solid #4CC3D9; border-radius: 10px; padding: 20px; z-index: 9999; display: none; color: white;">
+          <h3 style="color: #4CC3D9; text-align: center; margin-bottom: 15px;">Visualisasi Data Eksperimen</h3>
+          
+          <!-- Temperature Chart -->
+          <div class="data-visualization">
+            <h4 style="color: #4CC3D9; margin-bottom: 10px;">Suhu (°C)</h4>
+            <div class="chart-container" id="temperature-chart">
+              <div id="temp-bars"></div>
+            </div>
+          </div>
+          
+          <!-- Growth Comparison Chart -->
+          <div class="data-visualization">
+            <h4 style="color: #4CC3D9; margin-bottom: 10px;">Perbandingan Pertumbuhan Bakteri</h4>
+            <div class="chart-container" id="growth-chart">
+              <div id="growth-bars"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: #ff4444;"></div>
+                <span>Sebelum Treatment</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: #4CC3D9;"></div>
+                <span>Sesudah Treatment</span>
+              </div>
+            </div>
+          </div>
+          
+          <button onclick="closeDataViz()" style="background: #4CC3D9; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold;">
+            Tutup
+          </button>
+        </div>
+        
+        <!-- Export Button -->
+        <a-box
+          id="btnExportData"
+          class="clickable"
+          width="1.8"
+          height="0.4"
+          depth="0.05"
+          position="0 -1.5 -4.95"
+          color="#4CC3D9"
+          material="metalness: 0.5; roughness: 0.5"
+          visible="false">
+        </a-box>
+        <a-text
+          value="EXPORT DATA"
+          position="0 -1.5 -4.9"
+          align="center"
+          color="#ffffff"
+          width="2"
+          material="depthTest: false; transparent: true"
+          id="btnExportData-text"
+          visible="false">
+        </a-text>
+        
+        <!-- View Chart Button -->
+        <a-box
+          id="btnViewChart"
+          class="clickable"
+          width="1.8"
+          height="0.4"
+          depth="0.05"
+          position="0 -2 -4.95"
+          color="#7bdcff"
+          material="metalness: 0.5; roughness: 0.5"
+          visible="false">
+        </a-box>
+        <a-text
+          value="LIHAT GRAFIK"
+          position="0 -2 -4.9"
+          align="center"
+          color="#ffffff"
+          width="2"
+          material="depthTest: false; transparent: true"
+          id="btnViewChart-text"
+          visible="false">
+              </a-text>
             </a-entity>
 
   </a-scene>
@@ -744,8 +1387,489 @@
       deodorantAdded: false,
       bunsenOn: false,
       temperature: null,
-      observationComplete: false
+      observationComplete: false,
+      startTime: null,
+      endTime: null,
+      attempts: 0
     };
+
+    // Statistics System - Track experiment statistics
+    const statisticsSystem = {
+      storageKey: 'bioexplore_statistics',
+      stats: {
+        totalExperiments: 0,
+        completedExperiments: 0,
+        averageTime: 0,
+        totalTime: 0,
+        bestTime: null,
+        quizScores: [],
+        averageQuizScore: 0,
+        achievementsUnlocked: 0,
+        lastExperimentDate: null
+      },
+      
+      init: function() {
+        const saved = localStorage.getItem(this.storageKey);
+        if (saved) {
+          try {
+            this.stats = { ...this.stats, ...JSON.parse(saved) };
+          } catch (e) {
+            console.error('Failed to load statistics:', e);
+          }
+        }
+      },
+      
+      recordExperiment: function(completed, duration, quizScore) {
+        this.stats.totalExperiments++;
+        this.stats.lastExperimentDate = new Date().toISOString();
+        
+        if (completed) {
+          this.stats.completedExperiments++;
+          this.stats.totalTime += duration;
+          this.stats.averageTime = this.stats.totalTime / this.stats.completedExperiments;
+          
+          if (!this.stats.bestTime || duration < this.stats.bestTime) {
+            this.stats.bestTime = duration;
+          }
+        }
+        
+        if (quizScore !== null && quizScore !== undefined) {
+          this.stats.quizScores.push(quizScore);
+          const sum = this.stats.quizScores.reduce((a, b) => a + b, 0);
+          this.stats.averageQuizScore = sum / this.stats.quizScores.length;
+        }
+        
+        // Update achievements count
+        this.stats.achievementsUnlocked = achievementSystem.getUnlockedCount();
+        
+        this.save();
+      },
+      
+      save: function() {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(this.stats));
+        } catch (e) {
+          console.error('Failed to save statistics:', e);
+        }
+      },
+      
+      getStats: function() {
+        return { ...this.stats };
+      },
+      
+      reset: function() {
+        this.stats = {
+          totalExperiments: 0,
+          completedExperiments: 0,
+          averageTime: 0,
+          totalTime: 0,
+          bestTime: null,
+          quizScores: [],
+          averageQuizScore: 0,
+          achievementsUnlocked: 0,
+          lastExperimentDate: null
+        };
+        this.save();
+      }
+    };
+
+    // Initialize statistics system
+    statisticsSystem.init();
+
+    // Settings System - User preferences dan kustomisasi
+    const settingsSystem = {
+      storageKey: 'bioexplore_settings',
+      settings: {
+        soundEnabled: true,
+        animationSpeed: 1.0,
+        uiScale: 1.0,
+        showLabels: true,
+        autoSave: true,
+        theme: 'default'
+      },
+      
+      init: function() {
+        const saved = localStorage.getItem(this.storageKey);
+        if (saved) {
+          try {
+            this.settings = { ...this.settings, ...JSON.parse(saved) };
+            this.apply();
+          } catch (e) {
+            console.error('Failed to load settings:', e);
+          }
+        }
+      },
+      
+      save: function() {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(this.settings));
+          this.apply();
+          showMessage('Settings disimpan!', 2000);
+        } catch (e) {
+          console.error('Failed to save settings:', e);
+        }
+      },
+      
+      apply: function() {
+        // Apply sound settings
+        soundSystem.enabled = this.settings.soundEnabled;
+        
+        // Apply animation speed
+        document.documentElement.style.setProperty('--animation-speed', this.settings.animationSpeed);
+        
+        // Apply UI scale
+        const instructionPanel = document.getElementById('instruction-panel');
+        if (instructionPanel) {
+          instructionPanel.setAttribute('scale', `${this.settings.uiScale} ${this.settings.uiScale} ${this.settings.uiScale}`);
+        }
+        
+        // Apply labels visibility
+        document.querySelectorAll('[id$="-label"]').forEach(label => {
+          label.setAttribute('visible', this.settings.showLabels);
+        });
+      },
+      
+      shouldAutoSave: function() {
+        return this.settings.autoSave;
+      },
+      
+      get: function() {
+        return { ...this.settings };
+      },
+      
+      set: function(key, value) {
+        this.settings[key] = value;
+        this.save();
+      },
+      
+      reset: function() {
+        this.settings = {
+          soundEnabled: true,
+          animationSpeed: 1.0,
+          uiScale: 1.0,
+          showLabels: true,
+          autoSave: true,
+          theme: 'default'
+        };
+        this.save();
+      }
+    };
+
+    // Initialize settings system
+    settingsSystem.init();
+
+    // Save/Load System - Save progress ke localStorage
+    const saveLoadSystem = {
+      storageKey: 'bioexplore_experiment_progress',
+      
+      save: function() {
+        try {
+          const saveData = {
+            state: { ...experimentState },
+            timestamp: new Date().toISOString(),
+            version: '1.0'
+          };
+          
+          localStorage.setItem(this.storageKey, JSON.stringify(saveData));
+          console.log('✓ Progress saved to localStorage');
+          soundSystem.playSound('success');
+          showMessage('Progress berhasil disimpan!', 2000);
+          return true;
+        } catch (e) {
+          console.error('✗ Failed to save progress:', e);
+          showMessage('Gagal menyimpan progress. Pastikan localStorage tersedia.', 3000);
+          return false;
+        }
+      },
+      
+      load: function() {
+        try {
+          const savedData = localStorage.getItem(this.storageKey);
+          if (!savedData) {
+            console.log('No saved progress found');
+            return false;
+          }
+          
+          const data = JSON.parse(savedData);
+          
+          // Restore state
+          Object.assign(experimentState, data.state);
+          
+          console.log('✓ Progress loaded from localStorage');
+          showMessage('Progress berhasil dimuat!', 2000);
+          
+          // Restore visual state
+          this.restoreVisualState();
+          
+          return true;
+        } catch (e) {
+          console.error('✗ Failed to load progress:', e);
+          showMessage('Gagal memuat progress. Data mungkin korup.', 3000);
+          return false;
+        }
+      },
+      
+      restoreVisualState: function() {
+        // Restore progress tracker
+        if (experimentState.step > 0) {
+          const progressTracker = document.getElementById('progress-tracker');
+          if (progressTracker) {
+            progressTracker.setAttribute('visible', 'true');
+          }
+          updateProgress();
+        }
+        
+        // Restore bunsen flame
+        if (experimentState.bunsenOn) {
+          const bunsenBurner = document.getElementById('bunsen-burner');
+          if (bunsenBurner) {
+            toggleBunsen(bunsenBurner);
+          }
+        }
+        
+        // Restore temperature display
+        if (experimentState.temperature !== null) {
+          const thermometer = document.getElementById('thermometer');
+          if (thermometer) {
+            const tempDisplay = thermometer.querySelector('#temperature-display');
+            if (tempDisplay) {
+              tempDisplay.setAttribute('value', `Suhu: ${experimentState.temperature}°C`);
+              tempDisplay.setAttribute('visible', 'true');
+            }
+          }
+        }
+        
+        // Restore observation results if complete
+        if (experimentState.observationComplete) {
+          const observationResults = document.getElementById('observation-results');
+          if (observationResults) {
+            observationResults.setAttribute('visible', 'true');
+            
+            // Show export and chart buttons
+            const exportBtn = document.getElementById('btnExportData');
+            const exportText = document.getElementById('btnExportData-text');
+            const chartBtn = document.getElementById('btnViewChart');
+            const chartText = document.getElementById('btnViewChart-text');
+            
+            if (exportBtn) exportBtn.setAttribute('visible', 'true');
+            if (exportText) exportText.setAttribute('visible', 'true');
+            if (chartBtn) chartBtn.setAttribute('visible', 'true');
+            if (chartText) chartText.setAttribute('visible', 'true');
+          }
+        }
+      },
+      
+      clear: function() {
+        try {
+          localStorage.removeItem(this.storageKey);
+          console.log('✓ Saved progress cleared');
+          showMessage('Progress yang disimpan telah dihapus.', 2000);
+          return true;
+        } catch (e) {
+          console.error('✗ Failed to clear progress:', e);
+          return false;
+        }
+      },
+      
+      hasSave: function() {
+        return localStorage.getItem(this.storageKey) !== null;
+      }
+    };
+
+    // Achievement System - Badge/achievement untuk milestones
+    const achievementSystem = {
+      storageKey: 'bioexplore_achievements',
+      achievements: {
+        'first_sample': { id: 'first_sample', name: 'Pertama Kali', desc: 'Ambil sampel pertama kali', icon: '🧪', unlocked: false },
+        'sample_master': { id: 'sample_master', name: 'Master Sampel', desc: 'Ambil dan oleskan sampel', icon: '🔬', unlocked: false },
+        'treatment_expert': { id: 'treatment_expert', name: 'Ahli Treatment', desc: 'Tambahkan deodoran untuk treatment', icon: '💊', unlocked: false },
+        'temperature_pro': { id: 'temperature_pro', name: 'Pro Thermometer', desc: 'Ukur suhu dengan akurat', icon: '🌡️', unlocked: false },
+        'complete_experiment': { id: 'complete_experiment', name: 'Eksperimen Sempurna', desc: 'Selesaikan seluruh eksperimen', icon: '⭐', unlocked: false },
+        'speed_demon': { id: 'speed_demon', name: 'Speed Demon', desc: 'Selesaikan eksperimen dalam 5 menit', icon: '⚡', unlocked: false },
+        'perfect_score': { id: 'perfect_score', name: 'Skor Sempurna', desc: 'Dapatkan skor 100% pada kuis', icon: '🏆', unlocked: false },
+        'persistent': { id: 'persistent', name: 'Gigih', desc: 'Coba eksperimen 5 kali', icon: '💪', unlocked: false }
+      },
+      
+      init: function() {
+        // Load achievements from localStorage
+        const saved = localStorage.getItem(this.storageKey);
+        if (saved) {
+          try {
+            const savedAchievements = JSON.parse(saved);
+            Object.keys(savedAchievements).forEach(key => {
+              if (this.achievements[key]) {
+                this.achievements[key].unlocked = savedAchievements[key].unlocked;
+              }
+            });
+          } catch (e) {
+            console.error('Failed to load achievements:', e);
+          }
+        }
+      },
+      
+      check: function(achievementId) {
+        const achievement = this.achievements[achievementId];
+        if (!achievement || achievement.unlocked) {
+          return false;
+        }
+        
+        achievement.unlocked = true;
+        this.save();
+        this.showNotification(achievement);
+        return true;
+      },
+      
+      checkMilestones: function() {
+        // Check first_sample
+        if (experimentState.sampleTaken && !this.achievements['first_sample'].unlocked) {
+          this.check('first_sample');
+        }
+        
+        // Check sample_master
+        if (experimentState.sampleTaken && experimentState.sampleApplied && !this.achievements['sample_master'].unlocked) {
+          this.check('sample_master');
+        }
+        
+        // Check treatment_expert
+        if (experimentState.deodorantAdded && !this.achievements['treatment_expert'].unlocked) {
+          this.check('treatment_expert');
+        }
+        
+        // Check temperature_pro
+        if (experimentState.temperature !== null && !this.achievements['temperature_pro'].unlocked) {
+          this.check('temperature_pro');
+        }
+        
+        // Check complete_experiment
+        if (experimentState.observationComplete && !this.achievements['complete_experiment'].unlocked) {
+          this.check('complete_experiment');
+        }
+        
+        // Check speed_demon (if completed in less than 5 minutes)
+        if (experimentState.observationComplete && experimentState.startTime) {
+          const duration = (new Date() - new Date(experimentState.startTime)) / 1000 / 60; // minutes
+          if (duration < 5 && !this.achievements['speed_demon'].unlocked) {
+            this.check('speed_demon');
+          }
+        }
+        
+        // Check persistent
+        experimentState.attempts = (experimentState.attempts || 0) + 1;
+        if (experimentState.attempts >= 5 && !this.achievements['persistent'].unlocked) {
+          this.check('persistent');
+        }
+      },
+      
+      checkQuizScore: function(score, total) {
+        if (score === total && total > 0 && !this.achievements['perfect_score'].unlocked) {
+          this.check('perfect_score');
+        }
+      },
+      
+      showNotification: function(achievement) {
+        // Create achievement notification
+        const notification = document.createElement('div');
+        notification.id = 'achievement-notification';
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+          border: 2px solid #4CC3D9;
+          border-radius: 10px;
+          padding: 20px;
+          z-index: 10003;
+          min-width: 300px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          animation: slideInRight 0.5s ease-out;
+          color: white;
+        `;
+        
+        notification.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="font-size: 48px;">${achievement.icon}</div>
+            <div>
+              <div style="color: #4CC3D9; font-weight: bold; font-size: 18px; margin-bottom: 5px;">
+                Achievement Unlocked!
+              </div>
+              <div style="font-size: 16px; font-weight: bold; margin-bottom: 3px;">
+                ${achievement.name}
+              </div>
+              <div style="font-size: 14px; color: #cccccc;">
+                ${achievement.desc}
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Add animation CSS if not exists
+        if (!document.getElementById('achievement-animations')) {
+          const style = document.createElement('style');
+          style.id = 'achievement-animations';
+          style.textContent = `
+            @keyframes slideInRight {
+              from {
+                transform: translateX(400px);
+                opacity: 0;
+              }
+              to {
+                transform: translateX(0);
+                opacity: 1;
+              }
+            }
+            @keyframes slideOutRight {
+              from {
+                transform: translateX(0);
+                opacity: 1;
+              }
+              to {
+                transform: translateX(400px);
+                opacity: 0;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Play sound
+        soundSystem.playSound('success');
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+          notification.style.animation = 'slideOutRight 0.5s ease-out';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 500);
+        }, 5000);
+      },
+      
+      save: function() {
+        try {
+          const toSave = {};
+          Object.keys(this.achievements).forEach(key => {
+            toSave[key] = { unlocked: this.achievements[key].unlocked };
+          });
+          localStorage.setItem(this.storageKey, JSON.stringify(toSave));
+        } catch (e) {
+          console.error('Failed to save achievements:', e);
+        }
+      },
+      
+      getUnlockedCount: function() {
+        return Object.values(this.achievements).filter(a => a.unlocked).length;
+      },
+      
+      getAllAchievements: function() {
+        return this.achievements;
+      }
+    };
+
+    // Initialize achievement system
+    achievementSystem.init();
 
       // Flag untuk cek apakah model berhasil dimuat
       let modelsLoaded = false;
@@ -905,12 +2029,12 @@
     });
 
     // Player collider: Mencegah player menembus objek .collidable dan boundary walls
-    // Optimized untuk performa - hanya check arah pergerakan
+    // Improved version dengan deteksi yang lebih akurat
     AFRAME.registerComponent('collider', {
       schema: { 
-        distance: { default: 1.2 },
+        distance: { default: 1.5 },
         debug: { default: false },
-        enabled: { default: true } // Enabled untuk boundary detection
+        enabled: { default: true }
       },
       init: function () {
         if (!this.data.enabled) {
@@ -919,75 +2043,245 @@
         
         this.raycaster = new THREE.Raycaster();
         this.lastSafePosition = new THREE.Vector3();
-        // Hanya check 4 arah utama untuk performa maksimal (diagonal dihapus)
+        // Check 8 arah untuk deteksi yang lebih baik
         this.directions = [
           new THREE.Vector3(0, 0, -1), // forward
           new THREE.Vector3(0, 0, 1), // backward
           new THREE.Vector3(-1, 0, 0), // left
           new THREE.Vector3(1, 0, 0), // right
+          new THREE.Vector3(-0.707, 0, -0.707), // forward-left
+          new THREE.Vector3(0.707, 0, -0.707), // forward-right
+          new THREE.Vector3(-0.707, 0, 0.707), // backward-left
+          new THREE.Vector3(0.707, 0, 0.707), // backward-right
         ];
         this.lastTick = 0;
-        this.tickInterval = 200; // Update setiap 200ms (5 FPS untuk collision check) - lebih jarang
-        this.collidables = null; // Cache collidables
+        this.tickInterval = 50; // Update lebih sering (20 FPS) untuk respons yang lebih baik
+        this.collidables = null;
+        this.collidableMeshes = []; // Store actual meshes, not just object3D
+        
         this.el.addEventListener('loaded', () => {
           this.el.object3D.getWorldPosition(this.lastSafePosition);
         });
+        
+        // Refresh collidables saat scene berubah
+        this.el.sceneEl.addEventListener('child-attached', () => {
+          this.collidables = null;
+          this.collidableMeshes = [];
+        });
       },
+      
+      updateCollidables: function() {
+        if (this.collidables && this.collidables.length > 0) {
+          return; // Already cached
+        }
+        
+        const collidableEls = this.el.sceneEl.querySelectorAll('.collidable');
+        if (collidableEls.length === 0) {
+          console.warn('No collidable objects found');
+          return;
+        }
+          
+          this.collidables = [];
+        this.collidableMeshes = [];
+        
+          collidableEls.forEach((el) => {
+            if (el.object3D) {
+            // Add the object3D itself
+              this.collidables.push(el.object3D);
+            
+            // Also traverse and add all meshes recursively
+            el.object3D.traverse((child) => {
+              if (child.isMesh || child.type === 'Mesh') {
+                this.collidableMeshes.push(child);
+            }
+          });
+        }
+        });
+        
+        console.log(`✓ Collider: Found ${collidableEls.length} collidable objects, ${this.collidableMeshes.length} meshes`);
+      },
+      
       tick: function (time, delta) {
         if (!this.data.enabled) {
           return;
         }
         
-        // Throttle collision checks untuk performa
+        // Throttle collision checks
         if (time - this.lastTick < this.tickInterval) {
           return;
         }
         this.lastTick = time;
 
-        // Cache collidables (update hanya sekali saat pertama kali atau jika perlu)
-        if (!this.collidables) {
-          const collidableEls = this.el.sceneEl.querySelectorAll('.collidable');
-          if (collidableEls.length === 0) return;
-          
-          this.collidables = [];
-          collidableEls.forEach((el) => {
-            if (el.object3D) {
-              this.collidables.push(el.object3D);
-            }
-          });
+        // Update collidables cache
+        this.updateCollidables();
+        
+        if (!this.collidables || this.collidables.length === 0) {
+          return;
         }
 
-        let collision = false;
         const currentPosition = new THREE.Vector3();
         this.el.object3D.getWorldPosition(currentPosition);
+        
+        let collision = false;
+        let minDistance = Infinity;
+        let collisionDirection = null;
 
         // Check collision di semua arah
         for (const dir of this.directions) {
           const worldDir = dir.clone().applyQuaternion(this.el.object3D.quaternion);
           this.raycaster.set(currentPosition, worldDir);
           this.raycaster.far = this.data.distance;
-          const intersects = this.raycaster.intersectObjects(this.collidables, false); // false = tidak recursive
+          
+          // Check both object3D and meshes
+          const intersects = this.raycaster.intersectObjects(this.collidables, true); // true = recursive
+          const meshIntersects = this.raycaster.intersectObjects(this.collidableMeshes, false);
 
-          if (intersects.length > 0 && intersects[0].distance < this.data.distance) {
-            // Prevent penetration - kembali ke posisi aman
-            // Gunakan setAttribute untuk kompatibilitas dengan movement-controls
-            const safePos = this.lastSafePosition;
-            this.el.setAttribute('position', {
-              x: safePos.x,
-              y: safePos.y,
-              z: safePos.z
-            });
+          // Combine results
+          const allIntersects = [...intersects, ...meshIntersects];
+          
+          if (allIntersects.length > 0) {
+            const closest = allIntersects[0];
+            if (closest.distance < this.data.distance && closest.distance < minDistance) {
+              minDistance = closest.distance;
+              collisionDirection = worldDir;
             collision = true;
-            break;
+            }
           }
         }
 
-        if (!collision) {
+        // Boundary check - langsung batasi posisi player
+        const maxX = 7.5;
+        const minX = -7.5;
+        const maxZ = 7.5;
+        const minZ = -7.5;
+        const minY = 0.5;
+        const maxY = 4.5;
+        
+        let needsCorrection = false;
+        let correctedPos = currentPosition.clone();
+        
+        // Check boundaries
+        if (currentPosition.x > maxX) {
+          correctedPos.x = maxX;
+          needsCorrection = true;
+        } else if (currentPosition.x < minX) {
+          correctedPos.x = minX;
+          needsCorrection = true;
+        }
+        
+        if (currentPosition.z > maxZ) {
+          correctedPos.z = maxZ;
+          needsCorrection = true;
+        } else if (currentPosition.z < minZ) {
+          correctedPos.z = minZ;
+          needsCorrection = true;
+        }
+        
+        if (currentPosition.y < minY) {
+          correctedPos.y = minY;
+          needsCorrection = true;
+        } else if (currentPosition.y > maxY) {
+          correctedPos.y = maxY;
+          needsCorrection = true;
+        }
+        
+        if (collision || needsCorrection) {
+          // Prevent penetration - push back from collision or boundary
+          if (collision) {
+            const pushBack = collisionDirection.clone().multiplyScalar(this.data.distance - minDistance + 0.1);
+            correctedPos = this.lastSafePosition.clone().add(pushBack);
+          }
+          
+          // Apply boundary limits
+          correctedPos.x = Math.max(minX, Math.min(maxX, correctedPos.x));
+          correctedPos.z = Math.max(minZ, Math.min(maxZ, correctedPos.z));
+          correctedPos.y = Math.max(minY, Math.min(maxY, correctedPos.y));
+          
+          this.el.setAttribute('position', {
+            x: correctedPos.x,
+            y: correctedPos.y,
+            z: correctedPos.z
+          });
+          
+          if (this.data.debug) {
+            console.log('Collision/boundary detected, correcting position');
+          }
+        } else {
           // Update safe position jika tidak ada collision
           this.el.object3D.getWorldPosition(this.lastSafePosition);
         }
       },
     });
+
+    // Sound Effects System - Web Audio API untuk audio feedback
+    const soundSystem = {
+      audioContext: null,
+      enabled: true,
+      
+      init: function() {
+        try {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+          console.warn('Web Audio API not supported, sound effects disabled');
+          this.enabled = false;
+        }
+      },
+      
+      playSound: function(type, options = {}) {
+        if (!this.enabled || !this.audioContext) return;
+        
+        const ctx = this.audioContext;
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        // Sound presets
+        const sounds = {
+          success: { freq: 800, duration: 200, type: 'sine' },
+          error: { freq: 300, duration: 300, type: 'sawtooth' },
+          click: { freq: 600, duration: 100, type: 'sine' },
+          pickup: { freq: 500, duration: 150, type: 'sine' },
+          drop: { freq: 400, duration: 200, type: 'sine' },
+          flame: { freq: 200, duration: 100, type: 'sawtooth' },
+          measurement: { freq: 700, duration: 500, type: 'sine' },
+          notification: { freq: 600, duration: 300, type: 'sine' }
+        };
+        
+        const sound = sounds[type] || sounds.click;
+        
+        oscillator.frequency.value = options.frequency || sound.freq;
+        oscillator.type = options.type || sound.type;
+        
+        const duration = (options.duration || sound.duration) / 1000;
+        const now = ctx.currentTime;
+        
+        gainNode.gain.setValueAtTime(0.1, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+      },
+      
+      playSequence: function(sequence, delay = 100) {
+        sequence.forEach((sound, index) => {
+          setTimeout(() => {
+            this.playSound(sound.type, sound.options);
+          }, index * delay);
+        });
+      }
+    };
+
+    // Initialize sound system
+    soundSystem.init();
+    
+    // Enable sound on user interaction (browser autoplay policy)
+    document.addEventListener('click', function() {
+      if (soundSystem.audioContext && soundSystem.audioContext.state === 'suspended') {
+        soundSystem.audioContext.resume();
+      }
+    }, { once: true });
 
     // Experiment Flow Management
     function initExperimentFlow() {
@@ -995,13 +2289,99 @@
       const startBtn = document.getElementById('btnStartExperiment');
       if (startBtn) {
         startBtn.addEventListener('click', function() {
+          soundSystem.playSound('click');
           startExperiment();
+        });
+      }
+
+      // Save Progress Button
+      const saveBtn = document.getElementById('btnSaveProgress');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+          saveLoadSystem.save();
+        });
+      }
+
+      // Load Progress Button
+      const loadBtn = document.getElementById('btnLoadProgress');
+      if (loadBtn) {
+        loadBtn.addEventListener('click', function() {
+          if (saveLoadSystem.hasSave()) {
+            const confirmed = confirm('Memuat progress akan mengganti progress saat ini. Lanjutkan?');
+            if (confirmed) {
+              saveLoadSystem.load();
+            }
+          } else {
+            showMessage('Tidak ada progress yang disimpan.', 2000);
+          }
+        });
+      }
+
+      // Reset Experiment Button
+      const resetBtn = document.getElementById('btnResetExperiment');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+          soundSystem.playSound('click');
+          resetExperiment();
+        });
+      }
+
+      // Achievements Button
+      const achievementsBtn = document.getElementById('btnAchievements');
+      if (achievementsBtn) {
+        achievementsBtn.addEventListener('click', function() {
+          soundSystem.playSound('click');
+          showAchievements();
+        });
+      }
+
+      // Statistics Button
+      const statisticsBtn = document.getElementById('btnStatistics');
+      if (statisticsBtn) {
+        statisticsBtn.addEventListener('click', function() {
+          soundSystem.playSound('click');
+          showStatistics();
+        });
+      }
+
+      // Settings Button
+      const settingsBtn = document.getElementById('btnSettings');
+      if (settingsBtn) {
+        settingsBtn.addEventListener('click', function() {
+          soundSystem.playSound('click');
+          showSettings();
+        });
+      }
+
+      // Help/Tutorial Button
+      const helpBtn = document.getElementById('btnHelp');
+      if (helpBtn) {
+        helpBtn.addEventListener('click', function() {
+          soundSystem.playSound('click');
+          showHelp();
+        });
+      }
+
+      // Export Data Button
+      const exportBtn = document.getElementById('btnExportData');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+          exportExperimentData();
+        });
+      }
+
+      // View Chart Button
+      const chartBtn = document.getElementById('btnViewChart');
+      if (chartBtn) {
+        chartBtn.addEventListener('click', function() {
+          showDataVisualization();
         });
       }
 
       // Equipment Click Handlers
       document.querySelectorAll('.lab-equipment').forEach(equipment => {
         equipment.addEventListener('click', function() {
+          soundSystem.playSound('click');
           const action = this.getAttribute('data-action');
           handleEquipmentAction(action, this);
         });
@@ -1030,12 +2410,227 @@
       //   instructionPanel.setAttribute('visible', 'false');
       // }
 
+      // Record start time for speed_demon achievement
+      experimentState.startTime = new Date().toISOString();
+
+      // Show progress tracker
+      const progressTracker = document.getElementById('progress-tracker');
+      if (progressTracker) {
+        progressTracker.setAttribute('visible', 'true');
+      }
+
       // Update state
       experimentState.step = 1;
+      
+      // Update progress
+      updateProgress();
+      
+      // Check achievements
+      achievementSystem.checkMilestones();
       
       // Show feedback
       console.log('Eksperimen dimulai!');
       showMessage('Ambil sampel menggunakan cotton swab', 3000);
+    }
+
+    // Reset Function - Simple reset dengan confirmation
+    function resetExperiment() {
+      // Confirmation dialog
+      const confirmed = confirm('Apakah Anda yakin ingin mereset eksperimen? Semua progress akan hilang.');
+      if (!confirmed) {
+        return;
+      }
+
+      // Reset experiment state
+      experimentState.step = 0;
+      experimentState.sampleTaken = false;
+      experimentState.sampleApplied = false;
+      experimentState.deodorantAdded = false;
+      experimentState.bunsenOn = false;
+      experimentState.temperature = null;
+      experimentState.observationComplete = false;
+
+      // Hide progress tracker
+      const progressTracker = document.getElementById('progress-tracker');
+      if (progressTracker) {
+        progressTracker.setAttribute('visible', 'false');
+      }
+
+      // Hide observation results
+      const observationResults = document.getElementById('observation-results');
+      if (observationResults) {
+        observationResults.setAttribute('visible', 'false');
+      }
+
+      // Hide final question popup
+      const finalQuestionPopup = document.getElementById('final-question-popup');
+      if (finalQuestionPopup) {
+        finalQuestionPopup.style.display = 'none';
+      }
+
+      // Remove bunsen flame
+      const bunsenBurner = document.getElementById('bunsen-burner');
+      if (bunsenBurner) {
+        const flameContainer = bunsenBurner.querySelector('#bunsen-flame');
+        if (flameContainer) {
+          flameContainer.remove();
+        }
+      }
+
+      // Remove temperature display
+      const thermometer = document.getElementById('thermometer');
+      if (thermometer) {
+        const tempDisplay = thermometer.querySelector('#temperature-display');
+        if (tempDisplay) {
+          tempDisplay.setAttribute('visible', 'false');
+        }
+      }
+
+      // Remove visual effects from petri dish
+      const petriDish = document.getElementById('petri-dish');
+      if (petriDish) {
+        // Remove sample indicator
+        const sampleIndicator = petriDish.querySelector('#sample-indicator');
+        if (sampleIndicator) {
+          sampleIndicator.remove();
+        }
+        // Remove glow effects
+        const glowRings = petriDish.querySelectorAll('a-ring');
+        glowRings.forEach(ring => {
+          if (ring.id !== 'petri-glow-base') { // Keep base glow if exists
+            ring.remove();
+          }
+        });
+      }
+
+      // Reset deodorant position
+      const deodorant = document.getElementById('deodorant');
+      if (deodorant) {
+        deodorant.setAttribute('position', '1.5 0.5 -2.5');
+      }
+
+      // Clear message queue
+      messageQueue.messages = [];
+      messageQueue.isProcessing = false;
+      const currentMsg = document.getElementById('temp-message');
+      if (currentMsg) {
+        currentMsg.remove();
+      }
+      const skipBtn = document.getElementById('message-skip-btn');
+      if (skipBtn) {
+        skipBtn.remove();
+      }
+
+      // Update progress (will reset all checkmarks)
+      updateProgress();
+
+      // Show reset confirmation message
+      showMessage('Eksperimen telah direset. Klik "MULAI EKSPERIMEN" untuk memulai lagi.', 3000);
+
+      console.log('Eksperimen direset!');
+    }
+
+    // Progress Tracking Function - Detailed dengan checklist dan progress bar
+    function updateProgress() {
+      const totalSteps = 4;
+      let completedSteps = 0;
+      
+      // Update checklist
+      const step1 = document.getElementById('progress-step-1');
+      const step2 = document.getElementById('progress-step-2');
+      const step3 = document.getElementById('progress-step-3');
+      const step4 = document.getElementById('progress-step-4');
+      
+      // Step 1: Take Sample
+      if (experimentState.sampleTaken) {
+        if (step1) {
+          step1.setAttribute('value', '✓ Ambil Sampel');
+          step1.setAttribute('color', '#4CC3D9');
+        }
+        completedSteps++;
+      } else {
+        if (step1) {
+          step1.setAttribute('value', '☐ Ambil Sampel');
+          step1.setAttribute('color', '#888888');
+        }
+      }
+      
+      // Step 2: Apply Sample
+      if (experimentState.sampleApplied) {
+        if (step2) {
+          step2.setAttribute('value', '✓ Oleskan Sampel');
+          step2.setAttribute('color', '#4CC3D9');
+        }
+        completedSteps++;
+      } else {
+        if (step2) {
+          step2.setAttribute('value', '☐ Oleskan Sampel');
+          step2.setAttribute('color', '#888888');
+        }
+      }
+      
+      // Step 3: Add Deodorant
+      if (experimentState.deodorantAdded) {
+        if (step3) {
+          step3.setAttribute('value', '✓ Tambahkan Deodoran');
+          step3.setAttribute('color', '#4CC3D9');
+        }
+        completedSteps++;
+      } else {
+        if (step3) {
+          step3.setAttribute('value', '☐ Tambahkan Deodoran');
+          step3.setAttribute('color', '#888888');
+        }
+      }
+      
+      // Step 4: Measure Temperature
+      if (experimentState.temperature !== null) {
+        if (step4) {
+          step4.setAttribute('value', '✓ Ukur Suhu');
+          step4.setAttribute('color', '#4CC3D9');
+        }
+        completedSteps++;
+      } else {
+        if (step4) {
+          step4.setAttribute('value', '☐ Ukur Suhu');
+          step4.setAttribute('color', '#888888');
+        }
+      }
+      
+      // Update progress bar
+      const progressPercentage = (completedSteps / totalSteps) * 100;
+      const progressBarFill = document.getElementById('progress-bar-fill');
+      const progressPercentageText = document.getElementById('progress-percentage');
+      
+      if (progressBarFill) {
+        const barWidth = (progressPercentage / 100) * 3; // 3 is the width of progress bar bg
+        progressBarFill.setAttribute('width', barWidth);
+        progressBarFill.setAttribute('position', {
+          x: -1.5 + (barWidth / 2),
+          y: -0.7,
+          z: 0.01
+        });
+        progressBarFill.setAttribute('animation', `property: width; to: ${barWidth}; dur: 500; easing: easeOut`);
+      }
+      
+      if (progressPercentageText) {
+        progressPercentageText.setAttribute('value', `${Math.round(progressPercentage)}%`);
+      }
+      
+      // Animate completed steps
+      if (completedSteps > 0) {
+        const completedStepElements = [step1, step2, step3, step4].slice(0, completedSteps);
+        completedStepElements.forEach((el, index) => {
+          if (el && experimentState.step > index) {
+            setTimeout(() => {
+              el.setAttribute('animation__check', 'property: scale; from: 1 1 1; to: 1.2 1.2 1.2; dur: 200; easing: easeOut');
+              setTimeout(() => {
+                el.setAttribute('animation__check', 'property: scale; to: 1 1 1; dur: 200; easing: easeIn');
+              }, 200);
+            }, index * 100);
+          }
+        });
+      }
     }
 
     function handleEquipmentAction(action, element) {
@@ -1062,6 +2657,7 @@
 
     function takeSample(element) {
       if (experimentState.sampleTaken) {
+        soundSystem.playSound('error');
         showMessage('Sampel sudah diambil!', 2000);
         return;
       }
@@ -1069,22 +2665,110 @@
       experimentState.sampleTaken = true;
       experimentState.step = 2;
       
-      // Visual feedback
-      element.setAttribute('animation', 'property: scale; to: 0.9 0.9 0.9; dur: 200; easing: easeInOut');
+      // Sound effect
+      soundSystem.playSound('pickup');
+      
+      // Update progress
+      updateProgress();
+      
+      // Auto-save if enabled
+      if (settingsSystem.shouldAutoSave()) {
+        saveLoadSystem.save();
+      }
+      
+      // Check achievements
+      achievementSystem.checkMilestones();
+      
+      // Advanced animations - Smooth transitions dengan micro-interactions
+      // Multi-layer scale animation dengan bounce
+      element.setAttribute('animation__scale1', 'property: scale; from: 1 1 1; to: 0.85 0.85 0.85; dur: 150; easing: easeInQuad');
+      element.setAttribute('animation__rotate', 'property: rotation; to: 0 5 0; dur: 150; easing: easeInQuad');
+      
         setTimeout(() => {
-        element.setAttribute('animation', 'property: scale; to: 0.8 0.8 0.8; dur: 200; easing: easeInOut');
-          }, 200);
+        element.setAttribute('animation__scale2', 'property: scale; from: 0.85 0.85 0.85; to: 1.1 1.1 1.1; dur: 200; easing: easeOutBounce');
+        element.setAttribute('animation__rotate', 'property: rotation; to: 0 0 0; dur: 200; easing: easeOutBounce');
+      }, 150);
+      
+      setTimeout(() => {
+        element.setAttribute('animation__scale3', 'property: scale; to: 1 1 1; dur: 150; easing: easeInOutQuad');
+      }, 350);
+      
+      // Smooth glow pulse
+      const glowPulse = document.createElement('a-ring');
+      glowPulse.setAttribute('geometry', 'primitive: ring; radiusInner: 0.3; radiusOuter: 0.4');
+      glowPulse.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 2; transparent: true; opacity: 0.8; side: double');
+      glowPulse.setAttribute('rotation', '-90 0 0');
+      glowPulse.setAttribute('position', '0 -0.05 0');
+      glowPulse.setAttribute('animation__pulse', 'property: scale; from: 0.5 0.5 0.5; to: 1.5 1.5 1.5; dur: 400; easing: easeOutQuad');
+      glowPulse.setAttribute('animation__fade', 'property: material.opacity; from: 0.8; to: 0; dur: 400; easing: easeOutQuad');
+      element.appendChild(glowPulse);
+      
+      setTimeout(() => {
+        if (glowPulse.parentNode) {
+          glowPulse.remove();
+        }
+      }, 400);
+      
+      // Particle effect - Create sparkles around cotton swab
+      const particleContainer = document.createElement('a-entity');
+      particleContainer.setAttribute('id', 'sample-particles');
+      particleContainer.setAttribute('position', element.getAttribute('position'));
+      
+      // Create multiple sparkle particles
+      for (let i = 0; i < 8; i++) {
+        const particle = document.createElement('a-sphere');
+        const angle = (i / 8) * Math.PI * 2;
+        const radius = 0.15;
+        particle.setAttribute('geometry', 'primitive: sphere; radius: 0.01');
+        particle.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 2; transparent: true; opacity: 0.8');
+        particle.setAttribute('position', {
+          x: Math.cos(angle) * radius,
+          y: Math.random() * 0.1,
+          z: Math.sin(angle) * radius
+        });
+        particle.setAttribute('animation__float', `property: position; to: ${Math.cos(angle) * radius * 2} ${0.2 + Math.random() * 0.1} ${Math.sin(angle) * radius * 2}; dur: 800; easing: easeOut`);
+        particle.setAttribute('animation__fade', 'property: material.opacity; to: 0; dur: 800; easing: easeOut');
+        particleContainer.appendChild(particle);
+      }
+      
+      const scene = document.querySelector('a-scene');
+      scene.appendChild(particleContainer);
+      
+      // Remove particles after animation
+      setTimeout(() => {
+        if (particleContainer.parentNode) {
+          particleContainer.remove();
+        }
+      }, 1000);
+      
+      // Highlight effect - Add glow ring
+      const glowRing = document.createElement('a-ring');
+      glowRing.setAttribute('geometry', 'primitive: ring; radiusInner: 0.25; radiusOuter: 0.3');
+      glowRing.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 1; transparent: true; opacity: 0.6; side: double');
+      glowRing.setAttribute('rotation', '-90 0 0');
+      glowRing.setAttribute('position', '0 -0.05 0');
+      glowRing.setAttribute('animation__pulse', 'property: scale; to: 1.5 1.5 1.5; dur: 500; loop: true; dir: alternate; easing: easeInOutSine');
+      element.appendChild(glowRing);
+      
+      // Remove glow after 2 seconds
+      setTimeout(() => {
+        if (glowRing.parentNode) {
+          glowRing.remove();
+        }
+      }, 2000);
       
       showMessage('Sampel berhasil diambil! Sekarang oleskan ke cawan petri.', 3000);
     }
 
     function applySample(element) {
       if (!experimentState.sampleTaken) {
+        soundSystem.playSound('error');
         showMessage('Ambil sampel terlebih dahulu!', 2000);
         return;
       }
 
       if (experimentState.sampleApplied) {
+        soundSystem.playSound('error');
         showMessage('Sampel sudah dioleskan!', 2000);
         return;
       }
@@ -1092,22 +2776,107 @@
       experimentState.sampleApplied = true;
       experimentState.step = 3;
       
-      // Visual feedback
-      element.setAttribute('animation', 'property: rotation; to: 0 0 5; dur: 300; easing: easeInOut');
+      // Sound effect
+      soundSystem.playSound('drop');
+      
+      // Update progress
+      updateProgress();
+      
+      // Auto-save if enabled
+      if (settingsSystem.shouldAutoSave()) {
+        saveLoadSystem.save();
+      }
+      
+      // Advanced animations - Smooth transitions dengan micro-interactions
+      // Rotation animation dengan bounce effect
+      element.setAttribute('animation__rotate', 'property: rotation; to: 0 0 5; dur: 200; easing: easeOutQuad');
+      element.setAttribute('animation__scale', 'property: scale; from: 1 1 1; to: 1.05 1.05 1.05; dur: 200; easing: easeOutQuad');
+      
           setTimeout(() => {
-        element.setAttribute('animation', 'property: rotation; to: 0 0 0; dur: 300; easing: easeInOut');
-      }, 300);
+        element.setAttribute('animation__rotate', 'property: rotation; to: 0 0 0; dur: 300; easing: easeInOutBack');
+        element.setAttribute('animation__scale', 'property: scale; to: 1 1 1; dur: 300; easing: easeInOutBack');
+      }, 200);
+      
+      // Smooth position transition
+      const currentPos = element.getAttribute('position');
+      element.setAttribute('animation__float', `property: position; to: ${currentPos.x} ${parseFloat(currentPos.y) + 0.02} ${currentPos.z}; dur: 200; easing: easeOutQuad`);
+      setTimeout(() => {
+        element.setAttribute('animation__float', `property: position; to: ${currentPos.x} ${currentPos.y} ${currentPos.z}; dur: 300; easing: easeInOutQuad`);
+      }, 200);
+      
+      // Visual transfer effect - Create visual connection between cotton swab and petri dish
+      const cottonSwab = document.getElementById('cotton-jar');
+      const petriDish = element;
+      
+      if (cottonSwab && petriDish) {
+        // Get positions
+        const cottonPos = cottonSwab.getAttribute('position');
+        const petriPos = petriDish.getAttribute('position');
+        
+        // Create transfer line/particle trail
+        const transferLine = document.createElement('a-entity');
+        transferLine.setAttribute('id', 'sample-transfer');
+        
+        // Create animated particles along the path
+        for (let i = 0; i < 5; i++) {
+          const particle = document.createElement('a-sphere');
+          particle.setAttribute('geometry', 'primitive: sphere; radius: 0.02');
+          particle.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 2; transparent: true; opacity: 0.8');
+          
+          // Calculate position along path
+          const t = i / 4;
+          const x = cottonPos.x + (petriPos.x - cottonPos.x) * t;
+          const y = cottonPos.y + (petriPos.y - cottonPos.y) * t + 0.1;
+          const z = cottonPos.z + (petriPos.z - cottonPos.z) * t;
+          
+          particle.setAttribute('position', { x: x, y: y, z: z });
+          const delay = i * 100;
+          particle.setAttribute('animation__move', `property: position; to: ${petriPos.x} ${petriPos.y + 0.1} ${petriPos.z}; dur: 600; delay: ${delay}; easing: easeInOut`);
+          particle.setAttribute('animation__fade', `property: material.opacity; to: 0; dur: 600; delay: ${delay}; easing: easeOut`);
+          transferLine.appendChild(particle);
+        }
+        
+        const scene = document.querySelector('a-scene');
+        scene.appendChild(transferLine);
+        
+        // Remove transfer effect after animation
+        setTimeout(() => {
+          if (transferLine.parentNode) {
+            transferLine.remove();
+          }
+        }, 1000);
+      }
+      
+      // Visual feedback on petri dish - Show sample has been applied
+      const sampleIndicator = document.createElement('a-circle');
+      sampleIndicator.setAttribute('geometry', 'primitive: circle; radius: 0.3');
+      sampleIndicator.setAttribute('material', 'color: #4CC3D9; transparent: true; opacity: 0.3; side: double');
+      sampleIndicator.setAttribute('rotation', '-90 0 0');
+      sampleIndicator.setAttribute('position', '0 0.01 0');
+      sampleIndicator.setAttribute('animation__fadein', 'property: material.opacity; from: 0; to: 0.3; dur: 500; easing: easeOut');
+      element.appendChild(sampleIndicator);
+      
+      // Add glow effect to petri dish
+      const petriGlow = document.createElement('a-ring');
+      petriGlow.setAttribute('geometry', 'primitive: ring; radiusInner: 0.35; radiusOuter: 0.4');
+      petriGlow.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 1; transparent: true; opacity: 0.5; side: double');
+      petriGlow.setAttribute('rotation', '-90 0 0');
+      petriGlow.setAttribute('position', '0 0.02 0');
+      petriGlow.setAttribute('animation__pulse', 'property: scale; to: 1.2 1.2 1.2; dur: 800; loop: true; dir: alternate; easing: easeInOutSine');
+      element.appendChild(petriGlow);
       
       showMessage('Sampel berhasil dioleskan! Tambahkan deodoran untuk treatment.', 3000);
     }
 
     function addDeodorant(element) {
       if (!experimentState.sampleApplied) {
+        soundSystem.playSound('error');
         showMessage('Oleskan sampel terlebih dahulu!', 2000);
         return;
       }
 
       if (experimentState.deodorantAdded) {
+        soundSystem.playSound('error');
         showMessage('Deodoran sudah ditambahkan!', 2000);
         return;
       }
@@ -1115,11 +2884,61 @@
       experimentState.deodorantAdded = true;
       experimentState.step = 4;
       
-      // Visual feedback
-      element.setAttribute('animation', 'property: position; to: 1.3 0.5 -2.5; dur: 500; easing: easeInOut');
+      // Sound effect
+      soundSystem.playSound('drop');
+      
+      // Update progress
+      updateProgress();
+      
+      // Auto-save if enabled
+      if (settingsSystem.shouldAutoSave()) {
+        saveLoadSystem.save();
+      }
+      
+      // Check achievements
+      achievementSystem.checkMilestones();
+      
+      // Advanced animations - Smooth transitions dengan micro-interactions
+      // Smooth position animation dengan arc motion
+      const currentPos = element.getAttribute('position');
+      const targetX = 1.3;
+      const targetY = 0.5;
+      const targetZ = -2.5;
+      
+      // Arc motion - move up then down
+      element.setAttribute('animation__move1', `property: position; to: ${targetX} ${parseFloat(targetY) + 0.2} ${targetZ}; dur: 300; easing: easeOutQuad`);
+      element.setAttribute('animation__rotate', 'property: rotation; to: 0 15 0; dur: 300; easing: easeOutQuad');
+      
       setTimeout(() => {
-        element.setAttribute('animation', 'property: position; to: 1.5 0.5 -2.5; dur: 500; easing: easeInOut');
-      }, 500);
+        element.setAttribute('animation__move2', `property: position; to: ${targetX} ${targetY} ${targetZ}; dur: 300; easing: easeInQuad`);
+        element.setAttribute('animation__rotate', 'property: rotation; to: 0 0 0; dur: 300; easing: easeInQuad');
+      }, 300);
+      
+      setTimeout(() => {
+        element.setAttribute('animation__move3', `property: position; to: 1.5 ${targetY} ${targetZ}; dur: 400; easing: easeInOutBack`);
+      }, 600);
+      
+      // Particle trail effect
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('a-sphere');
+          particle.setAttribute('geometry', 'primitive: sphere; radius: 0.02');
+          particle.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 2; transparent: true; opacity: 0.8');
+          particle.setAttribute('position', currentPos);
+          particle.setAttribute('animation__move', `property: position; to: ${targetX} ${targetY} ${targetZ}; dur: 600; easing: easeOutQuad`);
+          particle.setAttribute('animation__fade', 'property: material.opacity; to: 0; dur: 600; easing: easeOutQuad');
+          particle.setAttribute('animation__scale', 'property: scale; to: 0 0 0; dur: 600; easing: easeOutQuad');
+          
+          const scene = document.querySelector('a-scene');
+          scene.appendChild(particle);
+          
+          setTimeout(() => {
+            if (particle.parentNode) {
+              particle.remove();
+            }
+          }, 600);
+        }, i * 50);
+      }
       
       showMessage('Deodoran berhasil ditambahkan! Ukur suhu untuk melanjutkan.', 3000);
       
@@ -1134,37 +2953,150 @@
     function toggleBunsen(element) {
       experimentState.bunsenOn = !experimentState.bunsenOn;
       
-      // Visual feedback - add flame effect (simple)
+      // Enhanced flame effect dengan multiple layers dan animation
       if (experimentState.bunsenOn) {
-        // Add flame entity
-        const flame = document.createElement('a-entity');
-        flame.setAttribute('geometry', 'primitive: cylinder; radius: 0.05; height: 0.15');
-        flame.setAttribute('material', 'color: #ff6600; emissive: #ff3300; emissiveIntensity: 1');
-        flame.setAttribute('position', '0 0.1 0');
-        element.appendChild(flame);
+        // Sound effect
+        soundSystem.playSound('flame');
+        
+        // Remove existing flame jika ada
+        const existingFlame = element.querySelector('#bunsen-flame');
+        if (existingFlame) {
+          existingFlame.remove();
+        }
+        
+        // Create flame container
+        const flameContainer = document.createElement('a-entity');
+        flameContainer.setAttribute('id', 'bunsen-flame');
+        flameContainer.setAttribute('position', '0 0.1 0');
+        
+        // Outer flame (besar, lebih transparan)
+        const outerFlame = document.createElement('a-cylinder');
+        outerFlame.setAttribute('geometry', 'primitive: cylinder; radius: 0.06; height: 0.2');
+        outerFlame.setAttribute('material', 'color: #ff3300; emissive: #ff6600; emissiveIntensity: 2; transparent: true; opacity: 0.6');
+        outerFlame.setAttribute('animation__flicker', 'property: scale; to: 1.2 1.3 1.2; dur: 300; loop: true; dir: alternate; easing: easeInOutSine');
+        flameContainer.appendChild(outerFlame);
+        
+        // Middle flame (sedang)
+        const middleFlame = document.createElement('a-cylinder');
+        middleFlame.setAttribute('geometry', 'primitive: cylinder; radius: 0.045; height: 0.18');
+        middleFlame.setAttribute('material', 'color: #ff6600; emissive: #ff9900; emissiveIntensity: 2.5; transparent: true; opacity: 0.8');
+        middleFlame.setAttribute('position', '0 0.01 0');
+        middleFlame.setAttribute('animation__flicker', 'property: scale; to: 1.15 1.25 1.15; dur: 250; loop: true; dir: alternate; easing: easeInOutSine');
+        flameContainer.appendChild(middleFlame);
+        
+        // Inner flame (kecil, paling terang)
+        const innerFlame = document.createElement('a-cylinder');
+        innerFlame.setAttribute('geometry', 'primitive: cylinder; radius: 0.03; height: 0.15');
+        innerFlame.setAttribute('material', 'color: #ffff00; emissive: #ffcc00; emissiveIntensity: 3; transparent: true; opacity: 0.9');
+        innerFlame.setAttribute('position', '0 0.02 0');
+        innerFlame.setAttribute('animation__flicker', 'property: scale; to: 1.1 1.2 1.1; dur: 200; loop: true; dir: alternate; easing: easeInOutSine');
+        flameContainer.appendChild(innerFlame);
+        
+        // Add point light untuk efek pencahayaan
+        const flameLight = document.createElement('a-light');
+        flameLight.setAttribute('type', 'point');
+        flameLight.setAttribute('color', '#ff6600');
+        flameLight.setAttribute('intensity', '0.5');
+        flameLight.setAttribute('distance', '2');
+        flameLight.setAttribute('position', '0 0.1 0');
+        flameLight.setAttribute('animation__pulse', 'property: intensity; to: 0.8; dur: 500; loop: true; dir: alternate; easing: easeInOutSine');
+        flameContainer.appendChild(flameLight);
+        
+        element.appendChild(flameContainer);
         showMessage('Bunsen burner dinyalakan!', 2000);
         } else {
-        // Remove flame
-        const flame = element.querySelector('[geometry="primitive: cylinder"]');
-        if (flame) {
-          flame.remove();
+        // Remove flame container
+        const flameContainer = element.querySelector('#bunsen-flame');
+        if (flameContainer) {
+          flameContainer.remove();
         }
         showMessage('Bunsen burner dimatikan!', 2000);
       }
     }
 
     function measureTemperature(element) {
+      // Check if already measured
+      if (experimentState.temperature !== null) {
+        soundSystem.playSound('notification');
+        showMessage(`Suhu sudah terukur: ${experimentState.temperature}°C`, 2000);
+        return;
+      }
+
+      // Realistic measurement dengan delay dan animation
+      showMessage('Mengukur suhu... Tunggu sebentar...', 2000);
+      
+      // Disable interaction selama pengukuran
+      element.setAttribute('class', '');
+      
+      // Animation: thermometer shake/move
+      element.setAttribute('animation__measure', 'property: rotation; to: 0 0 2; dur: 500; loop: true; dir: alternate; easing: easeInOut');
+      
+      // Simulate measurement delay (2-3 seconds)
+      const measurementDelay = 2000 + Math.random() * 1000;
+      
+      setTimeout(() => {
       // Generate random temperature between 35-40°C
       experimentState.temperature = (35 + Math.random() * 5).toFixed(1);
       
-      // Show temperature display
-      const tempDisplay = element.querySelector('#temperature-display');
-      if (tempDisplay) {
+        // Sound effect - measurement complete
+        soundSystem.playSound('measurement');
+        
+        // Stop shake animation
+        element.removeAttribute('animation__measure');
+        element.setAttribute('rotation', '0 0 0');
+        
+        // Re-enable interaction
+        element.setAttribute('class', 'clickable');
+        
+        // Update progress
+        updateProgress();
+        
+        // Auto-save if enabled
+        if (settingsSystem.shouldAutoSave()) {
+          saveLoadSystem.save();
+        }
+        
+        // Show temperature display dengan animation
+        let tempDisplay = element.querySelector('#temperature-display');
+        if (!tempDisplay) {
+          // Create temperature display if doesn't exist
+          tempDisplay = document.createElement('a-text');
+          tempDisplay.setAttribute('id', 'temperature-display');
+          tempDisplay.setAttribute('position', '0 0.3 0');
+          tempDisplay.setAttribute('align', 'center');
+          tempDisplay.setAttribute('width', '2');
+          tempDisplay.setAttribute('material', 'depthTest: false; transparent: true');
+          element.appendChild(tempDisplay);
+        }
+        
+        // Animate temperature display
         tempDisplay.setAttribute('value', `Suhu: ${experimentState.temperature}°C`);
+        tempDisplay.setAttribute('color', '#4CC3D9');
         tempDisplay.setAttribute('visible', 'true');
-      }
-      
-      showMessage(`Suhu terukur: ${experimentState.temperature}°C`, 2000);
+        tempDisplay.setAttribute('animation__fadein', 'property: material.opacity; from: 0; to: 1; dur: 500; easing: easeOut');
+        tempDisplay.setAttribute('animation__scale', 'property: scale; from: 0.5 0.5 0.5; to: 1 1 1; dur: 500; easing: easeOut');
+        
+        // Visual feedback: thermometer glow
+        const tempGlow = document.createElement('a-ring');
+        tempGlow.setAttribute('geometry', 'primitive: ring; radiusInner: 0.15; radiusOuter: 0.2');
+        tempGlow.setAttribute('material', 'color: #4CC3D9; emissive: #4CC3D9; emissiveIntensity: 1; transparent: true; opacity: 0.6; side: double');
+        tempGlow.setAttribute('rotation', '-90 0 0');
+        tempGlow.setAttribute('position', '0 0.1 0');
+        tempGlow.setAttribute('animation__pulse', 'property: scale; to: 1.5 1.5 1.5; dur: 1000; loop: true; dir: alternate; easing: easeInOutSine');
+        element.appendChild(tempGlow);
+        
+        // Remove glow after 3 seconds
+        setTimeout(() => {
+          if (tempGlow.parentNode) {
+            tempGlow.remove();
+          }
+        }, 3000);
+        
+        // Update progress
+        updateProgress();
+        
+        // Show success message
+        showMessage(`Suhu berhasil diukur: ${experimentState.temperature}°C`, 3000);
       
       // If all steps complete, show observation
       if (experimentState.sampleTaken && experimentState.sampleApplied && experimentState.deodorantAdded) {
@@ -1172,6 +3104,7 @@
           showObservationResults();
         }, 2000);
       }
+      }, measurementDelay);
     }
 
     function showObservationResults() {
@@ -1180,9 +3113,34 @@
       experimentState.observationComplete = true;
       experimentState.step = 5;
       
+      // Record end time for speed_demon achievement
+      experimentState.endTime = new Date().toISOString();
+      
+      // Calculate duration and record statistics
+      if (experimentState.startTime) {
+        const start = new Date(experimentState.startTime);
+        const end = new Date(experimentState.endTime);
+        const duration = (end - start) / 1000; // seconds
+        statisticsSystem.recordExperiment(true, duration, null);
+      }
+      
+      // Check achievements
+      achievementSystem.checkMilestones();
+      
       const observationResults = document.getElementById('observation-results');
       if (observationResults) {
         observationResults.setAttribute('visible', 'true');
+        
+        // Show export and chart buttons
+        const exportBtn = document.getElementById('btnExportData');
+        const exportText = document.getElementById('btnExportData-text');
+        const chartBtn = document.getElementById('btnViewChart');
+        const chartText = document.getElementById('btnViewChart-text');
+        
+        if (exportBtn) exportBtn.setAttribute('visible', 'true');
+        if (exportText) exportText.setAttribute('visible', 'true');
+        if (chartBtn) chartBtn.setAttribute('visible', 'true');
+        if (chartText) chartText.setAttribute('visible', 'true');
         
         // Update data
         const dataText = document.getElementById('experiment-data');
@@ -1195,6 +3153,9 @@
         }
       }
       
+      // Sound effect
+      soundSystem.playSound('success');
+      
       showMessage('Hasil observasi tersedia!', 3000);
       
       // Show final question after delay
@@ -1203,39 +3164,651 @@
       }, 5000);
     }
 
+    // Data Visualization Functions
+    function showDataVisualization() {
+      const vizContainer = document.getElementById('data-viz-container');
+      if (!vizContainer) return;
+      
+      vizContainer.style.display = 'block';
+      soundSystem.playSound('click');
+      
+      // Generate temperature chart
+      generateTemperatureChart();
+      
+      // Generate growth comparison chart
+      generateGrowthChart();
+    }
+
+    function generateTemperatureChart() {
+      const tempBars = document.getElementById('temp-bars');
+      if (!tempBars) return;
+      
+      tempBars.innerHTML = '';
+      
+      // Simulate temperature readings over time
+      const temperatures = [];
+      const baseTemp = parseFloat(experimentState.temperature) || 37;
+      
+      for (let i = 0; i < 6; i++) {
+        temperatures.push(baseTemp + (Math.random() * 2 - 1));
+      }
+      
+      const maxTemp = Math.max(...temperatures);
+      const minTemp = Math.min(...temperatures);
+      const range = maxTemp - minTemp || 1;
+      
+      temperatures.forEach((temp, index) => {
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        const height = ((temp - minTemp) / range) * 150 + 20; // 20-170px
+        bar.style.height = height + 'px';
+        bar.style.width = '50px';
+        bar.style.marginLeft = '10px';
+        
+        const value = document.createElement('div');
+        value.className = 'chart-value';
+        value.textContent = temp.toFixed(1) + '°C';
+        bar.appendChild(value);
+        
+        const label = document.createElement('div');
+        label.className = 'chart-label';
+        label.textContent = `T${index + 1}`;
+        bar.appendChild(label);
+        
+        // Animate bar
+        bar.style.height = '0px';
+        setTimeout(() => {
+          bar.style.height = height + 'px';
+        }, index * 100);
+        
+        tempBars.appendChild(bar);
+      });
+    }
+
+    function generateGrowthChart() {
+      const growthBars = document.getElementById('growth-bars');
+      if (!growthBars) return;
+      
+      growthBars.innerHTML = '';
+      
+      // Simulate bacterial growth data
+      const beforeTreatment = 85 + Math.random() * 10; // 85-95%
+      const afterTreatment = 30 + Math.random() * 15; // 30-45%
+      
+      // Before treatment bar
+      const beforeBar = document.createElement('div');
+      beforeBar.className = 'chart-bar';
+      beforeBar.style.height = (beforeTreatment / 100) * 150 + 'px';
+      beforeBar.style.width = '80px';
+      beforeBar.style.background = 'linear-gradient(to top, #ff4444, #ff6666)';
+      beforeBar.style.marginRight = '20px';
+      
+      const beforeValue = document.createElement('div');
+      beforeValue.className = 'chart-value';
+      beforeValue.textContent = beforeTreatment.toFixed(1) + '%';
+      beforeBar.appendChild(beforeValue);
+      
+      const beforeLabel = document.createElement('div');
+      beforeLabel.className = 'chart-label';
+      beforeLabel.textContent = 'Sebelum';
+      beforeBar.appendChild(beforeLabel);
+      
+      // After treatment bar
+      const afterBar = document.createElement('div');
+      afterBar.className = 'chart-bar';
+      afterBar.style.height = (afterTreatment / 100) * 150 + 'px';
+      afterBar.style.width = '80px';
+      afterBar.style.background = 'linear-gradient(to top, #4CC3D9, #7bdcff)';
+      
+      const afterValue = document.createElement('div');
+      afterValue.className = 'chart-value';
+      afterValue.textContent = afterTreatment.toFixed(1) + '%';
+      afterBar.appendChild(afterValue);
+      
+      const afterLabel = document.createElement('div');
+      afterLabel.className = 'chart-label';
+      afterLabel.textContent = 'Sesudah';
+      afterBar.appendChild(afterLabel);
+      
+      // Animate bars
+      beforeBar.style.height = '0px';
+      afterBar.style.height = '0px';
+      
+      setTimeout(() => {
+        beforeBar.style.height = (beforeTreatment / 100) * 150 + 'px';
+      }, 100);
+      
+      setTimeout(() => {
+        afterBar.style.height = (afterTreatment / 100) * 150 + 'px';
+      }, 300);
+      
+      growthBars.appendChild(beforeBar);
+      growthBars.appendChild(afterBar);
+    }
+
+    function closeDataViz() {
+      const vizContainer = document.getElementById('data-viz-container');
+      if (vizContainer) {
+        vizContainer.style.display = 'none';
+        soundSystem.playSound('click');
+      }
+    }
+
+    // Export Results Function
+    function exportExperimentData() {
+      const data = {
+        experiment: 'Eksperimen Biologi - Pengaruh Deodoran pada Bakteri',
+        date: new Date().toLocaleString('id-ID'),
+        steps: {
+          sampleTaken: experimentState.sampleTaken,
+          sampleApplied: experimentState.sampleApplied,
+          deodorantAdded: experimentState.deodorantAdded,
+          temperature: experimentState.temperature,
+          bunsenOn: experimentState.bunsenOn
+        },
+        results: {
+          temperature: experimentState.temperature + '°C',
+          observationTime: '24 jam',
+          conclusion: 'Pertumbuhan bakteri berkurang setelah treatment deodoran'
+        },
+        progress: {
+          completed: experimentState.sampleTaken && experimentState.sampleApplied && 
+                     experimentState.deodorantAdded && experimentState.temperature !== null
+        }
+      };
+      
+      // Convert to JSON
+      const jsonData = JSON.stringify(data, null, 2);
+      
+      // Create download link
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `experiment-data-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      soundSystem.playSound('success');
+      showMessage('Data berhasil diekspor!', 2000);
+    }
+
     function showFinalQuestion() {
       const popup = document.getElementById('finalQuestionPopup');
       if (popup) {
         popup.style.display = 'block';
+        // Reset quiz state when showing
+        if (typeof resetQuiz === 'function') {
+          setTimeout(() => {
+            resetQuiz();
+          }, 100);
+        }
       }
     }
 
+    // Help/Tutorial System Functions
+    function showHelp() {
+      const helpPopup = document.getElementById('helpPopup');
+      if (helpPopup) {
+        helpPopup.style.display = 'block';
+      }
+    }
+
+    function closeHelp() {
+      const helpPopup = document.getElementById('helpPopup');
+      if (helpPopup) {
+        helpPopup.style.display = 'none';
+        soundSystem.playSound('click');
+      }
+    }
+
+    // Achievement System Functions
+    function showAchievements() {
+      const achievements = achievementSystem.getAllAchievements();
+      const unlockedCount = achievementSystem.getUnlockedCount();
+      const totalCount = Object.keys(achievements).length;
+      
+      // Create or update achievements popup
+      let popup = document.getElementById('achievements-popup');
+      if (!popup) {
+        popup = document.createElement('div');
+        popup.id = 'achievements-popup';
+        popup.className = 'help-popup';
+        popup.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(26, 26, 46, 0.98);
+          border: 2px solid #ffd700;
+          border-radius: 15px;
+          padding: 30px;
+          z-index: 10001;
+          max-width: 600px;
+          width: 90%;
+          max-height: 80vh;
+          overflow-y: auto;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+          display: none;
+        `;
+        document.body.appendChild(popup);
+      }
+      
+      let html = `
+        <h3 style="color: #ffd700; text-align: center; margin-bottom: 10px;">🏆 Achievements</h3>
+        <p style="text-align: center; color: #ffffff; margin-bottom: 20px;">
+          ${unlockedCount}/${totalCount} Unlocked
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+      `;
+      
+      Object.values(achievements).forEach(achievement => {
+        const opacity = achievement.unlocked ? '1' : '0.4';
+        const borderColor = achievement.unlocked ? '#ffd700' : '#666666';
+        html += `
+          <div style="
+            background: rgba(13, 21, 32, 0.8);
+            border: 2px solid ${borderColor};
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            opacity: ${opacity};
+          ">
+            <div style="font-size: 36px; margin-bottom: 10px;">${achievement.icon}</div>
+            <div style="color: ${achievement.unlocked ? '#ffd700' : '#888888'}; font-weight: bold; margin-bottom: 5px;">
+              ${achievement.name}
+            </div>
+            <div style="color: #cccccc; font-size: 12px;">
+              ${achievement.desc}
+            </div>
+            ${achievement.unlocked ? '<div style="color: #4CC3D9; font-size: 11px; margin-top: 5px;">✓ Unlocked</div>' : '<div style="color: #666666; font-size: 11px; margin-top: 5px;">🔒 Locked</div>'}
+          </div>
+        `;
+      });
+      
+      html += `
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <button onclick="closeAchievements()" style="background: #ffd700; color: #1a1a2e; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+            Tutup
+          </button>
+        </div>
+      `;
+      
+      popup.innerHTML = html;
+      popup.style.display = 'block';
+    }
+
+    function closeAchievements() {
+      const popup = document.getElementById('achievements-popup');
+      if (popup) {
+        popup.style.display = 'none';
+        soundSystem.playSound('click');
+      }
+    }
+
+    // Message Queue System - Enhanced dengan queue dan skip functionality
+    const messageQueue = {
+      messages: [],
+      currentMessage: null,
+      isProcessing: false
+    };
+
     function showMessage(text, duration) {
-      // Create temporary message entity
+      // Add message to queue
+      messageQueue.messages.push({ text: text, duration: duration || 3000 });
+      
+      // Process queue if not already processing
+      if (!messageQueue.isProcessing) {
+        processMessageQueue();
+      }
+    }
+
+    function processMessageQueue() {
+      if (messageQueue.messages.length === 0) {
+        messageQueue.isProcessing = false;
+        return;
+      }
+
+      messageQueue.isProcessing = true;
+      const messageData = messageQueue.messages.shift();
+      
+      // Remove existing message if any
+      const existingMsg = document.getElementById('temp-message');
+      if (existingMsg) {
+        existingMsg.remove();
+      }
+      
+      // Remove skip button if exists
+      const existingSkip = document.getElementById('message-skip-btn');
+      if (existingSkip) {
+        existingSkip.remove();
+      }
+      
+      // Create message entity
       const message = document.createElement('a-text');
-      message.setAttribute('value', text);
+      message.setAttribute('value', messageData.text);
       message.setAttribute('position', '0 2.5 5');
       message.setAttribute('align', 'center');
       message.setAttribute('color', '#4CC3D9');
       message.setAttribute('width', '6');
       message.setAttribute('material', 'depthTest: false; transparent: true');
       message.setAttribute('id', 'temp-message');
+      message.setAttribute('animation__fadein', 'property: material.opacity; from: 0; to: 1; dur: 300; easing: easeOut');
+      
+      // Create skip button (only if there are more messages in queue)
+      if (messageQueue.messages.length > 0) {
+        const skipBtn = document.createElement('a-text');
+        skipBtn.setAttribute('value', '[Tekan SPACE untuk skip]');
+        skipBtn.setAttribute('position', '0 2.2 5');
+        skipBtn.setAttribute('align', 'center');
+        skipBtn.setAttribute('color', '#888888');
+        skipBtn.setAttribute('width', '4');
+        skipBtn.setAttribute('material', 'depthTest: false; transparent: true');
+        skipBtn.setAttribute('id', 'message-skip-btn');
+        skipBtn.setAttribute('font', 'mono');
+        
+        const scene = document.querySelector('a-scene');
+        scene.appendChild(skipBtn);
+      }
       
       const scene = document.querySelector('a-scene');
       scene.appendChild(message);
       
+      // Auto-remove after duration
         setTimeout(() => {
-        const msg = document.getElementById('temp-message');
-        if (msg) {
-          msg.remove();
+        if (message.parentNode) {
+          message.setAttribute('animation__fadeout', 'property: material.opacity; to: 0; dur: 300; easing: easeIn');
+          setTimeout(() => {
+            if (message.parentNode) {
+              message.remove();
+            }
+            // Remove skip button
+            const skipBtn = document.getElementById('message-skip-btn');
+            if (skipBtn) {
+              skipBtn.remove();
+            }
+            // Process next message
+            processMessageQueue();
+          }, 300);
+        } else {
+          processMessageQueue();
         }
-      }, duration);
+      }, messageData.duration);
     }
 
-    // Lazy Load Cotton Swab - Load setelah model lain selesai
+    // Skip message function - triggered by spacebar
+    function skipCurrentMessage() {
+      const currentMsg = document.getElementById('temp-message');
+      if (currentMsg && messageQueue.isProcessing) {
+        currentMsg.remove();
+        const skipBtn = document.getElementById('message-skip-btn');
+        if (skipBtn) {
+          skipBtn.remove();
+        }
+        // Process next message immediately
+        processMessageQueue();
+      }
+    }
+
+    // Keyboard shortcut for skip (Spacebar)
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && messageQueue.isProcessing) {
+        // Only skip if not typing in input
+        if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          skipCurrentMessage();
+        }
+      }
+    });
+
+    // Accessibility Features - Keyboard navigation dan screen reader support
+    const accessibility = {
+      // Keyboard navigation untuk equipment
+      initKeyboardNavigation: function() {
+        // Tab navigation untuk equipment
+        let currentFocusIndex = 0;
+        const equipment = document.querySelectorAll('.lab-equipment');
+        
+        document.addEventListener('keydown', (e) => {
+          // Tab untuk navigate equipment
+          if (e.key === 'Tab' && !e.shiftKey) {
+            e.preventDefault();
+            if (equipment.length > 0) {
+              currentFocusIndex = (currentFocusIndex + 1) % equipment.length;
+              this.focusEquipment(equipment[currentFocusIndex]);
+            }
+          } else if (e.key === 'Tab' && e.shiftKey) {
+            e.preventDefault();
+            if (equipment.length > 0) {
+              currentFocusIndex = (currentFocusIndex - 1 + equipment.length) % equipment.length;
+              this.focusEquipment(equipment[currentFocusIndex]);
+            }
+          }
+          
+          // Enter/Space untuk activate focused equipment
+          if ((e.key === 'Enter' || e.key === ' ') && document.activeElement.classList.contains('lab-equipment')) {
+            e.preventDefault();
+            const action = document.activeElement.getAttribute('data-action');
+            if (action) {
+              handleEquipmentAction(action, document.activeElement);
+            }
+          }
+          
+          // H untuk help
+          if (e.key === 'h' || e.key === 'H') {
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+              e.preventDefault();
+              showHelp();
+            }
+          }
+          
+          // R untuk reset
+          if (e.key === 'r' || e.key === 'R') {
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+              e.preventDefault();
+              resetExperiment();
+            }
+          }
+          
+          // E untuk export (jika observation results visible)
+          if ((e.key === 'e' || e.key === 'E') && experimentState.observationComplete) {
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+              e.preventDefault();
+              exportExperimentData();
+            }
+          }
+          
+          // C untuk chart (jika observation results visible)
+          if ((e.key === 'c' || e.key === 'C') && experimentState.observationComplete) {
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+              e.preventDefault();
+              showDataVisualization();
+            }
+          }
+        });
+      },
+      
+      focusEquipment: function(equipment) {
+        // Remove previous focus
+        document.querySelectorAll('.lab-equipment').forEach(el => {
+          el.classList.remove('keyboard-focused');
+          el.removeAttribute('tabindex');
+        });
+        
+        // Add focus to current equipment
+        if (equipment) {
+          equipment.classList.add('keyboard-focused');
+          equipment.setAttribute('tabindex', '0');
+          equipment.focus();
+          
+          // Announce to screen reader
+          const action = equipment.getAttribute('data-action');
+          const label = equipment.getAttribute('data-label') || 'Equipment';
+          this.announceToScreenReader(`${label} focused. Press Enter to interact.`);
+          
+          // Visual focus indicator
+          const focusRing = document.createElement('a-ring');
+          focusRing.setAttribute('id', 'keyboard-focus-ring');
+          focusRing.setAttribute('geometry', 'primitive: ring; radiusInner: 0.5; radiusOuter: 0.6');
+          focusRing.setAttribute('material', 'color: #ffff00; emissive: #ffff00; emissiveIntensity: 1; transparent: true; opacity: 0.6; side: double');
+          focusRing.setAttribute('rotation', '-90 0 0');
+          focusRing.setAttribute('position', '0 0.1 0');
+          focusRing.setAttribute('animation__pulse', 'property: scale; to: 1.2 1.2 1.2; dur: 1000; loop: true; dir: alternate; easing: easeInOutSine');
+          
+          // Remove existing focus ring
+          const existingRing = equipment.querySelector('#keyboard-focus-ring');
+          if (existingRing) {
+            existingRing.remove();
+          }
+          
+          equipment.appendChild(focusRing);
+        }
+      },
+      
+      announceToScreenReader: function(message) {
+        // Create aria-live region untuk screen reader
+        let liveRegion = document.getElementById('aria-live-region');
+        if (!liveRegion) {
+          liveRegion = document.createElement('div');
+          liveRegion.id = 'aria-live-region';
+          liveRegion.setAttribute('role', 'status');
+          liveRegion.setAttribute('aria-live', 'polite');
+          liveRegion.setAttribute('aria-atomic', 'true');
+          liveRegion.style.position = 'absolute';
+          liveRegion.style.left = '-10000px';
+          liveRegion.style.width = '1px';
+          liveRegion.style.height = '1px';
+          liveRegion.style.overflow = 'hidden';
+          document.body.appendChild(liveRegion);
+        }
+        
+        liveRegion.textContent = message;
+        
+        // Clear after announcement
+        setTimeout(() => {
+          liveRegion.textContent = '';
+        }, 1000);
+      },
+      
+      init: function() {
+        this.initKeyboardNavigation();
+        
+        // Add ARIA labels to equipment
+        document.querySelectorAll('.lab-equipment').forEach(equipment => {
+          const action = equipment.getAttribute('data-action');
+          const label = this.getActionLabel(action);
+          equipment.setAttribute('role', 'button');
+          equipment.setAttribute('aria-label', label);
+          equipment.setAttribute('data-label', label);
+        });
+        
+        // Add ARIA labels to buttons
+        const startBtn = document.getElementById('btnStartExperiment');
+        if (startBtn) {
+          startBtn.setAttribute('role', 'button');
+          startBtn.setAttribute('aria-label', 'Mulai eksperimen');
+        }
+        
+        const resetBtn = document.getElementById('btnResetExperiment');
+        if (resetBtn) {
+          resetBtn.setAttribute('role', 'button');
+          resetBtn.setAttribute('aria-label', 'Reset eksperimen');
+        }
+        
+        const helpBtn = document.getElementById('btnHelp');
+        if (helpBtn) {
+          helpBtn.setAttribute('role', 'button');
+          helpBtn.setAttribute('aria-label', 'Bantuan dan panduan');
+        }
+        
+        // Announce page load
+        this.announceToScreenReader('Virtual Biology Lab loaded. Use Tab to navigate equipment, Enter to interact.');
+      },
+      
+      getActionLabel: function(action) {
+        const labels = {
+          'take-sample': 'Ambil sampel menggunakan cotton swab',
+          'apply-sample': 'Oleskan sampel ke cawan petri',
+          'add-deodorant': 'Tambahkan deodoran',
+          'toggle-bunsen': 'Nyalakan atau matikan bunsen burner',
+          'measure-temperature': 'Ukur suhu menggunakan thermometer'
+        };
+        return labels[action] || 'Equipment';
+      }
+    };
+
+    // Initialize accessibility features
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        accessibility.init();
+      }, 1000);
+    });
+
+    // Performance Optimization - Enhanced Lazy Loading dengan error handling
+    function optimizeAssetLoading() {
+      // Preload critical assets first
+      const criticalAssets = [
+        'lab-room-model',
+        'desk-model',
+        'petri-model'
+      ];
+      
+      criticalAssets.forEach(assetId => {
+        const asset = document.getElementById(assetId);
+        if (asset) {
+          asset.setAttribute('preload', 'auto');
+        }
+      });
+      
+      // Lazy load non-critical assets
+      const lazyAssets = [
+        'bunsen-model',
+        'thermometer-model',
+        'deodorant-model'
+      ];
+      
+      lazyAssets.forEach(assetId => {
+        const asset = document.getElementById(assetId);
+        if (asset) {
+          asset.setAttribute('preload', 'none');
+        }
+      });
+    }
+
+    // Error Handling - Enhanced error messages dan fallback mechanisms
+    function handleAssetError(assetId, error) {
+      console.error(`✗ Asset ${assetId} failed to load:`, error);
+      
+      // Show user-friendly error message
+      showMessage(`Asset ${assetId} gagal dimuat. Menggunakan fallback...`, 3000);
+      
+      // Try to use fallback geometry
+      const entity = document.getElementById(assetId.replace('-model', ''));
+      if (entity) {
+        const fallbackBox = document.createElement('a-box');
+        fallbackBox.setAttribute('geometry', 'primitive: box; width: 1; height: 1; depth: 1');
+        fallbackBox.setAttribute('material', 'color: #8B4513');
+        fallbackBox.setAttribute('position', entity.getAttribute('position'));
+        entity.appendChild(fallbackBox);
+        console.log(`✓ Fallback geometry created for ${assetId}`);
+      }
+    }
+
+    // Lazy Load Cotton Swab - Load setelah model lain selesai dengan error handling
     function loadCottonJarLazy() {
       const cottonJar = document.getElementById('cotton-jar');
-      if (!cottonJar) return;
+      if (!cottonJar) {
+        console.warn('⚠ Cotton jar entity not found!');
+        handleAssetError('cotton-jar-model', 'Entity not found');
+        return;
+      }
+      
+      // Ensure cotton jar is visible
+      cottonJar.setAttribute('visible', 'true');
+      console.log('✓ Cotton jar entity found, starting lazy load...');
 
       // Check jika model kecil sudah loaded
       const checkModelsLoaded = () => {
@@ -1270,7 +3843,18 @@
           // Load cotton swab model
           const cottonAsset = document.createElement('a-asset-item');
           cottonAsset.setAttribute('id', 'cotton-jar-model');
-          cottonAsset.setAttribute('src', 'assets/asset scene 2/cotton_swab.glb');
+          cottonAsset.setAttribute('src', 'assets/asset scene 2/cotton_swabs.glb');
+          
+          // Error handling for cotton asset
+          cottonAsset.addEventListener('error', (evt) => {
+            console.error('✗ Cotton swab asset failed to load:', evt.detail);
+            handleAssetError('cotton-jar-model', evt.detail);
+            // Keep fallback visible
+            const fallback = cottonJar.querySelector('#cotton-jar-fallback');
+            if (fallback) {
+              fallback.setAttribute('visible', 'true');
+            }
+          });
           
           const assetsContainer = document.querySelector('a-assets');
           if (assetsContainer) {
@@ -1278,15 +3862,33 @@
             
             // Wait for cotton jar to load
             cottonAsset.addEventListener('loaded', () => {
+              console.log('✓ Cotton swab asset loaded, creating model entity...');
+              
               // Replace fallback with actual model
               const fallback = cottonJar.querySelector('#cotton-jar-fallback');
               if (fallback) {
-                fallback.remove();
+                fallback.setAttribute('visible', 'false');
+                console.log('✓ Fallback box hidden');
               }
               
               const gltfModel = document.createElement('a-entity');
               gltfModel.setAttribute('gltf-model', '#cotton-jar-model');
-              // Scale sudah diatur di parent entity (0.5 0.5 0.5)
+              gltfModel.setAttribute('visible', 'true');
+              gltfModel.setAttribute('frustum-culled', 'true');
+              
+              // Wait for model to actually load
+              gltfModel.addEventListener('model-loaded', () => {
+                console.log('✓ Cotton swab GLB model rendered successfully!');
+              });
+              
+              gltfModel.addEventListener('error', (e) => {
+                console.error('✗ Error loading cotton swab GLB model:', e);
+                // Show fallback again if model fails
+                if (fallback) {
+                  fallback.setAttribute('visible', 'true');
+                }
+              });
+              
               cottonJar.appendChild(gltfModel);
               
               // Hide loading indicator
@@ -1294,15 +3896,19 @@
               if (loadingIndicator) {
                 loadingIndicator.setAttribute('visible', 'false');
               }
-              
-              console.log('Cotton swab model loaded successfully!');
             });
 
-            cottonAsset.addEventListener('error', () => {
-              console.warn('Cotton swab model failed to load, using fallback');
+            cottonAsset.addEventListener('error', (e) => {
+              console.error('✗ Cotton swab asset failed to load:', e);
+              console.warn('Using fallback box - cotton swab will still be visible');
               const loadingIndicator = document.getElementById('loading-indicator');
               if (loadingIndicator) {
                 loadingIndicator.setAttribute('visible', 'false');
+              }
+              // Ensure fallback is visible
+              const fallback = cottonJar.querySelector('#cotton-jar-fallback');
+              if (fallback) {
+                fallback.setAttribute('visible', 'true');
               }
             });
           }
@@ -1367,6 +3973,17 @@
       models.forEach(model => {
         model.addEventListener('model-loaded', function() {
           const object3D = this.object3D;
+          
+          // Log untuk debugging bunsen burner
+          if (this.id === 'bunsen-burner' || this.closest('#bunsen-burner')) {
+            console.log('✓ Bunsen burner model loaded successfully!');
+            const bunsenEntity = this.id === 'bunsen-burner' ? this : this.closest('#bunsen-burner');
+            if (bunsenEntity) {
+              bunsenEntity.setAttribute('visible', 'true');
+              console.log('✓ Bunsen burner entity set to visible');
+            }
+          }
+          
           if (object3D) {
             // Khusus untuk meja - pastikan tidak transparan dan solid
             const deskEl = document.getElementById('main-desk');
@@ -1589,8 +4206,88 @@
       }
     }
 
+    // Check dan handle lab room model loading
+    function checkLabRoomModel() {
+      const scene = document.querySelector('a-scene');
+      if (!scene) {
+        setTimeout(checkLabRoomModel, 100);
+        return;
+      }
+
+      const labRoom = document.getElementById('lab-room');
+      if (!labRoom) {
+        console.error('Lab room entity not found!');
+        return;
+      }
+
+      // Check asset loading
+      const assets = document.querySelector('a-assets');
+      const labRoomAsset = assets ? assets.querySelector('#lab-room-model') : null;
+      
+      if (labRoomAsset) {
+        // Event listener untuk model loaded
+        labRoom.addEventListener('model-loaded', () => {
+          console.log('✓ Lab room model loaded successfully!');
+          const model = labRoom.getObject3D('mesh');
+          if (model) {
+            console.log('  Model object3D found');
+            // Traverse untuk optimize semua mesh
+            model.traverse((node) => {
+              if (node.isMesh) {
+                node.frustumCulled = true;
+                node.castShadow = false;
+                node.receiveShadow = false;
+                node.visible = true;
+              }
+            });
+            // Check bounding box untuk debug
+            const box = new THREE.Box3().setFromObject(model);
+            const size = box.getSize(new THREE.Vector3());
+            console.log('  Model size:', size);
+            console.log('  Model center:', box.getCenter(new THREE.Vector3()));
+          }
+        });
+
+        // Event listener untuk model error
+        labRoom.addEventListener('error', (evt) => {
+          console.error('✗ Lab room model failed to load:', evt.detail);
+          // Fallback: show fallback environment
+          const fallbackEnv = document.getElementById('fallback-environment');
+          if (fallbackEnv) {
+            fallbackEnv.setAttribute('visible', 'true');
+            console.log('  Fallback environment activated');
+          }
+        });
+
+        // Check jika asset sudah loaded
+        if (labRoomAsset.hasLoaded) {
+          console.log('✓ Lab room asset already loaded');
+        } else {
+          console.log('⏳ Waiting for lab room model to load...');
+          labRoomAsset.addEventListener('loaded', () => {
+            console.log('✓ Lab room asset loaded');
+          });
+          labRoomAsset.addEventListener('error', () => {
+            console.error('✗ Lab room asset failed to load');
+            const fallbackEnv = document.getElementById('fallback-environment');
+            if (fallbackEnv) {
+              fallbackEnv.setAttribute('visible', 'true');
+            }
+          });
+        }
+      } else {
+        console.error('✗ Lab room asset not found in assets!');
+      }
+    }
+
     // Initialize experiment flow after DOM loaded
     document.addEventListener('DOMContentLoaded', () => {
+      // Check lab room model loading
+      checkLabRoomModel();
+      
+      // Optimize asset loading
+      optimizeAssetLoading();
+      
       // Optimize rendering first
       optimizeRendering();
       
@@ -1628,10 +4325,170 @@
         loadCottonJarLazy();
       }, 500);
       
+      // Setup bunsen burner visibility
+      function setupBunsenBurner() {
+        const bunsen = document.getElementById('bunsen-burner');
+        if (!bunsen) {
+          setTimeout(setupBunsenBurner, 100);
+          return;
+        }
+        
+        // Ensure bunsen burner is visible
+        bunsen.setAttribute('visible', 'true');
+        console.log('✓ Bunsen burner entity found, ensuring visibility...');
+        
+        // Listen for model loaded event
+        bunsen.addEventListener('model-loaded', function() {
+          console.log('✓ Bunsen burner model loaded successfully!');
+          bunsen.setAttribute('visible', 'true');
+          
+          // Verify model is actually rendered
+          const object3D = bunsen.object3D;
+          if (object3D) {
+            let hasMesh = false;
+            object3D.traverse(function(node) {
+              if (node.isMesh) {
+                hasMesh = true;
+                node.visible = true;
+              }
+            });
+            if (hasMesh) {
+              console.log('✓ Bunsen burner mesh found and visible');
+            } else {
+              console.warn('⚠ Bunsen burner model loaded but no mesh found');
+            }
+          }
+        });
+        
+        // Also check if already loaded
+        if (bunsen.hasLoaded) {
+          bunsen.setAttribute('visible', 'true');
+          const object3D = bunsen.object3D;
+          if (object3D) {
+            object3D.traverse(function(node) {
+              if (node.isMesh) {
+                node.visible = true;
+              }
+            });
+          }
+        }
+      }
+      
+      // Setup bunsen burner after scene loads
+      if (scene && scene.hasLoaded) {
+        setTimeout(setupBunsenBurner, 500);
+      } else {
+        scene.addEventListener('loaded', () => {
+          setTimeout(setupBunsenBurner, 500);
+        });
+      }
+      
       // Initialize experiment flow
           setTimeout(() => {
         initExperimentFlow();
       }, 1000);
+      
+      // Ensure reticle is always visible on top of all objects
+      function setupReticleAlwaysOnTop() {
+        const reticle = document.getElementById('reticle');
+        if (!reticle) {
+          setTimeout(setupReticleAlwaysOnTop, 100);
+          return;
+        }
+        
+        // Wait for reticle to be fully loaded
+        reticle.addEventListener('loaded', function() {
+          const mesh = reticle.getObject3D('mesh');
+          if (mesh && mesh.material) {
+            // Set material properties to always render on top
+            mesh.material.depthTest = false;
+            mesh.material.depthWrite = false;
+            mesh.material.transparent = true;
+            mesh.material.fog = false;
+            // Set high render order to render last (on top)
+            mesh.renderOrder = 9999;
+            
+            // Also set on the mesh itself
+            mesh.renderOrder = 9999;
+            
+            console.log('✓ Reticle configured to always be visible on top');
+          }
+        });
+        
+        // Also try immediately if already loaded
+        if (reticle.hasLoaded) {
+          const mesh = reticle.getObject3D('mesh');
+          if (mesh && mesh.material) {
+            mesh.material.depthTest = false;
+            mesh.material.depthWrite = false;
+            mesh.material.transparent = true;
+            mesh.material.fog = false;
+            mesh.renderOrder = 9999;
+            mesh.renderOrder = 9999;
+          }
+        }
+      }
+      
+      // Setup reticle after scene loads (using existing scene variable)
+      if (scene && scene.hasLoaded) {
+        setTimeout(setupReticleAlwaysOnTop, 500);
+      } else {
+        scene.addEventListener('loaded', () => {
+          setTimeout(setupReticleAlwaysOnTop, 500);
+        });
+      }
+      
+      // Verify collision walls are set up correctly
+      function verifyCollisionWalls() {
+        const collisionWalls = document.getElementById('room-collision-walls');
+        if (collisionWalls) {
+          const collidables = collisionWalls.querySelectorAll('.collidable');
+          console.log(`✓ Room collision walls found: ${collidables.length} collidable objects`);
+          
+          // Verify each collidable has geometry
+          collidables.forEach((el, index) => {
+            el.addEventListener('loaded', () => {
+              const mesh = el.getObject3D('mesh');
+              if (mesh) {
+                console.log(`✓ Collision wall ${index + 1} has mesh geometry`);
+              } else {
+                console.warn(`⚠ Collision wall ${index + 1} missing mesh`);
+              }
+            });
+            
+            // Force load if not loaded
+            if (!el.hasLoaded) {
+              el.emit('loaded');
+            }
+          });
+          
+          // Force collider to refresh cache
+          const rig = document.getElementById('rig');
+          if (rig && rig.components && rig.components.collider) {
+            // Reset cache multiple times to ensure detection
+            rig.components.collider.collidables = null;
+            rig.components.collider.collidableMeshes = [];
+            
+            // Force update after a delay
+            setTimeout(() => {
+              rig.components.collider.collidables = null;
+              rig.components.collider.collidableMeshes = [];
+              console.log('✓ Collider cache reset - collision walls will be detected');
+            }, 500);
+          }
+        } else {
+          console.warn('⚠ Room collision walls not found');
+        }
+      }
+      
+      // Verify collision walls after scene loads
+      if (scene && scene.hasLoaded) {
+        setTimeout(verifyCollisionWalls, 1000);
+      } else {
+        scene.addEventListener('loaded', () => {
+          setTimeout(verifyCollisionWalls, 1000);
+        });
+      }
     });
 
     // Hide loading indicator when scene is ready
@@ -1671,39 +4528,284 @@
 
   </script>
 
-  <!-- Final Question Popup -->
+  <!-- Help/Tutorial Popup -->
+  <div id="helpPopup" class="help-popup">
+    <h3>Panduan Eksperimen</h3>
+    
+    <div class="help-section">
+      <h4>🎮 Kontrol</h4>
+      <ul>
+        <li><strong>Desktop:</strong> Gunakan <code>WASD</code> atau <code>Arrow Keys</code> untuk bergerak</li>
+        <li><strong>Mouse:</strong> Geser mouse untuk melihat sekeliling</li>
+        <li><strong>Mobile:</strong> Gunakan joystick di pojok kiri bawah</li>
+        <li><strong>Interaksi:</strong> Klik pada objek yang bisa diinteraksi</li>
+        <li><strong>Reticle:</strong> Lingkaran putih di tengah adalah pointer untuk interaksi</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h4>🔬 Langkah-langkah Eksperimen</h4>
+      <ul>
+        <li><strong>1. Ambil Sampel:</strong> Klik pada cotton swab untuk mengambil sampel bakteri</li>
+        <li><strong>2. Oleskan Sampel:</strong> Klik pada cawan petri untuk mengoleskan sampel</li>
+        <li><strong>3. Tambahkan Deodoran:</strong> Klik pada deodoran untuk menambahkan treatment</li>
+        <li><strong>4. Ukur Suhu:</strong> Klik pada thermometer untuk mengukur suhu (tunggu 2-3 detik)</li>
+        <li><strong>5. Amati Hasil:</strong> Setelah semua langkah selesai, hasil observasi akan muncul</li>
+        <li><strong>6. Kuis:</strong> Jawab pertanyaan evaluasi untuk menyelesaikan eksperimen</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h4>💡 Tips</h4>
+      <ul>
+        <li>Ikuti urutan langkah yang benar untuk hasil terbaik</li>
+        <li>Progress tracker akan menampilkan langkah yang sudah selesai</li>
+        <li>Gunakan tombol <strong>RESET</strong> untuk memulai ulang eksperimen</li>
+        <li>Tekan <code>SPACE</code> untuk skip pesan yang sedang ditampilkan</li>
+        <li>Pastikan semua langkah selesai sebelum melihat hasil observasi</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h4>❓ Troubleshooting</h4>
+      <ul>
+        <li>Jika objek tidak terlihat, coba refresh halaman</li>
+        <li>Pastikan browser mendukung WebGL untuk pengalaman terbaik</li>
+        <li>Jika suara tidak muncul, klik di mana saja untuk mengaktifkan audio</li>
+        <li>Gunakan browser modern (Chrome, Firefox, Edge) untuk performa optimal</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button onclick="closeHelp()" style="background: #4CC3D9; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- Final Question Popup - Comprehensive Quiz -->
   <div id="finalQuestionPopup" class="final-question-popup">
-    <h3>Pertanyaan Evaluasi</h3>
-    <div class="question-item">
-      <p>1. Apa yang terjadi pada bakteri setelah diberi deodoran?</p>
+    <h3>Kuis Evaluasi Eksperimen</h3>
+    <div id="quiz-container">
+      <!-- Question 1: Multiple Choice -->
+      <div class="question-item" id="question-1">
+        <p><strong>1. Apa yang terjadi pada bakteri setelah diberi deodoran?</strong></p>
       <label><input type="radio" name="q1" value="a"> A. Bakteri mati</label>
       <label><input type="radio" name="q1" value="b"> B. Bakteri berkembang</label>
-      <label><input type="radio" name="q1" value="c"> C. Bakteri tidak berubah</label>
+        <label><input type="radio" name="q1" value="c"> C. Pertumbuhan bakteri berkurang</label>
+        <label><input type="radio" name="q1" value="d"> D. Bakteri tidak berubah</label>
     </div>
-    <div class="question-item">
-      <p>2. Mengapa deodoran dapat mempengaruhi pertumbuhan bakteri?</p>
-      <textarea id="answer2" rows="3" placeholder="Jawab di sini..."></textarea>
+      
+      <!-- Question 2: Multiple Choice -->
+      <div class="question-item" id="question-2">
+        <p><strong>2. Mengapa deodoran dapat mempengaruhi pertumbuhan bakteri?</strong></p>
+        <label><input type="radio" name="q2" value="a"> A. Deodoran mengandung nutrisi untuk bakteri</label>
+        <label><input type="radio" name="q2" value="b"> B. Deodoran mengandung bahan antibakteri</label>
+        <label><input type="radio" name="q2" value="c"> C. Deodoran meningkatkan suhu</label>
+        <label><input type="radio" name="q2" value="d"> D. Deodoran tidak mempengaruhi bakteri</label>
     </div>
-    <button id="submitAnswer" onclick="submitAnswers()">Submit</button>
+      
+      <!-- Question 3: Multiple Choice -->
+      <div class="question-item" id="question-3">
+        <p><strong>3. Apa fungsi cotton swab dalam eksperimen ini?</strong></p>
+        <label><input type="radio" name="q3" value="a"> A. Mengukur suhu</label>
+        <label><input type="radio" name="q3" value="b"> B. Mengambil sampel bakteri</label>
+        <label><input type="radio" name="q3" value="c"> C. Membunuh bakteri</label>
+        <label><input type="radio" name="q3" value="d"> D. Menghangatkan cawan petri</label>
+      </div>
+      
+      <!-- Question 4: Multiple Choice -->
+      <div class="question-item" id="question-4">
+        <p><strong>4. Apa fungsi cawan petri dalam eksperimen ini?</strong></p>
+        <label><input type="radio" name="q4" value="a"> A. Tempat menyimpan deodoran</label>
+        <label><input type="radio" name="q4" value="b"> B. Tempat menumbuhkan dan mengamati bakteri</label>
+        <label><input type="radio" name="q4" value="c"> C. Alat untuk mengukur suhu</label>
+        <label><input type="radio" name="q4" value="d"> D. Alat untuk mengambil sampel</label>
+      </div>
+      
+      <!-- Question 5: Open-ended -->
+      <div class="question-item" id="question-5">
+        <p><strong>5. Jelaskan mengapa pengukuran suhu penting dalam eksperimen ini?</strong></p>
+        <textarea id="answer5" rows="4" placeholder="Jawab di sini..."></textarea>
+      </div>
+      
+      <!-- Question 6: Open-ended -->
+      <div class="question-item" id="question-6">
+        <p><strong>6. Berdasarkan hasil eksperimen, apa kesimpulan yang dapat diambil?</strong></p>
+        <textarea id="answer6" rows="4" placeholder="Jawab di sini..."></textarea>
+      </div>
+    </div>
+    
+    <div id="quiz-progress">
+      <p>Progress: <span id="answered-count">0</span>/6 pertanyaan terjawab</p>
+    </div>
+    
+    <div id="quiz-buttons">
+      <button id="submitAnswer" onclick="submitAnswers()" disabled>Submit Jawaban</button>
+      <button id="resetQuiz" onclick="resetQuiz()">Reset</button>
+    </div>
+    
+    <div id="quiz-results" style="display: none;">
+      <h4>Hasil Kuis</h4>
+      <p>Skor: <span id="quiz-score">0</span>/4 (Pertanyaan pilihan ganda)</p>
+      <p id="quiz-feedback"></p>
+      <button onclick="closeQuiz()">Tutup</button>
+    </div>
   </div>
 
   <script>
-    function submitAnswers() {
-      const q1 = document.querySelector('input[name="q1"]:checked');
-      const q2 = document.getElementById('answer2').value;
+    // Quiz answers (correct answers)
+    const correctAnswers = {
+      q1: 'c', // Pertumbuhan bakteri berkurang
+      q2: 'b', // Deodoran mengandung bahan antibakteri
+      q3: 'b', // Mengambil sampel bakteri
+      q4: 'b'  // Tempat menumbuhkan dan mengamati bakteri
+    };
+
+    // Track quiz state
+    let quizState = {
+      answered: 0,
+      totalQuestions: 6
+    };
+
+    // Update progress and enable submit button
+    function updateQuizProgress() {
+      let answered = 0;
       
-      if (!q1 || !q2) {
-        alert('Silakan jawab semua pertanyaan!');
+      // Check multiple choice questions
+      for (let i = 1; i <= 4; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected) answered++;
+      }
+      
+      // Check open-ended questions
+      const answer5 = document.getElementById('answer5').value.trim();
+      const answer6 = document.getElementById('answer6').value.trim();
+      if (answer5) answered++;
+      if (answer6) answered++;
+      
+      quizState.answered = answered;
+      document.getElementById('answered-count').textContent = answered;
+      
+      // Enable submit button if all questions answered
+      const submitBtn = document.getElementById('submitAnswer');
+      if (submitBtn) {
+        submitBtn.disabled = answered < quizState.totalQuestions;
+      }
+    }
+
+    // Add event listeners for quiz progress tracking
+    document.addEventListener('DOMContentLoaded', function() {
+      // Multiple choice questions
+      for (let i = 1; i <= 4; i++) {
+        const radios = document.querySelectorAll(`input[name="q${i}"]`);
+        radios.forEach(radio => {
+          radio.addEventListener('change', updateQuizProgress);
+        });
+      }
+      
+      // Open-ended questions
+      const answer5 = document.getElementById('answer5');
+      const answer6 = document.getElementById('answer6');
+      if (answer5) {
+        answer5.addEventListener('input', updateQuizProgress);
+      }
+      if (answer6) {
+        answer6.addEventListener('input', updateQuizProgress);
+      }
+    });
+
+    function submitAnswers() {
+      // Check if all questions are answered
+      if (quizState.answered < quizState.totalQuestions) {
+        alert('Silakan jawab semua pertanyaan terlebih dahulu!');
         return;
       }
       
-      console.log('Jawaban Q1:', q1.value);
-      console.log('Jawaban Q2:', q2);
+      // Calculate score for multiple choice questions
+      let score = 0;
+      let feedback = [];
       
-      // Hide popup
+      for (let i = 1; i <= 4; i++) {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && selected.value === correctAnswers[`q${i}`]) {
+          score++;
+          feedback.push(`Pertanyaan ${i}: ✓ Benar`);
+        } else {
+          feedback.push(`Pertanyaan ${i}: ✗ Salah (Jawaban benar: ${correctAnswers[`q${i}`].toUpperCase()})`);
+        }
+      }
+      
+      // Get open-ended answers
+      const answer5 = document.getElementById('answer5').value.trim();
+      const answer6 = document.getElementById('answer6').value.trim();
+      
+      // Hide quiz container and show results
+      document.getElementById('quiz-container').style.display = 'none';
+      document.getElementById('quiz-progress').style.display = 'none';
+      document.getElementById('quiz-buttons').style.display = 'none';
+      document.getElementById('quiz-results').style.display = 'block';
+      
+      // Display results
+      document.getElementById('quiz-score').textContent = score;
+      
+      // Check perfect score achievement
+      achievementSystem.checkQuizScore(score, 4);
+      
+      // Record quiz score in statistics
+      if (experimentState.startTime && experimentState.endTime) {
+        const start = new Date(experimentState.startTime);
+        const end = new Date(experimentState.endTime);
+        const duration = (end - start) / 1000; // seconds
+        statisticsSystem.recordExperiment(true, duration, score);
+      }
+      
+      document.getElementById('quiz-feedback').innerHTML = 
+        '<strong>Detail Jawaban:</strong><br>' + 
+        feedback.join('<br>') +
+        '<br><br><strong>Jawaban Essay:</strong><br>' +
+        '<strong>Pertanyaan 5:</strong> ' + (answer5 || '(Tidak dijawab)') + '<br>' +
+        '<strong>Pertanyaan 6:</strong> ' + (answer6 || '(Tidak dijawab)');
+      
+      // Log results
+      console.log('Quiz Results:', {
+        score: score,
+        total: 4,
+        answers: {
+          q1: document.querySelector('input[name="q1"]:checked')?.value,
+          q2: document.querySelector('input[name="q2"]:checked')?.value,
+          q3: document.querySelector('input[name="q3"]:checked')?.value,
+          q4: document.querySelector('input[name="q4"]:checked')?.value,
+          q5: answer5,
+          q6: answer6
+        }
+      });
+    }
+
+    function resetQuiz() {
+      // Reset all answers
+      for (let i = 1; i <= 4; i++) {
+        const radios = document.querySelectorAll(`input[name="q${i}"]`);
+        radios.forEach(radio => {
+          radio.checked = false;
+        });
+      }
+      
+      document.getElementById('answer5').value = '';
+      document.getElementById('answer6').value = '';
+      
+      // Reset UI
+      document.getElementById('quiz-container').style.display = 'block';
+      document.getElementById('quiz-progress').style.display = 'block';
+      document.getElementById('quiz-buttons').style.display = 'block';
+      document.getElementById('quiz-results').style.display = 'none';
+      
+      quizState.answered = 0;
+      updateQuizProgress();
+    }
+
+    function closeQuiz() {
       document.getElementById('finalQuestionPopup').style.display = 'none';
-      
-      // Show completion message
       showMessage('Terima kasih! Eksperimen selesai.', 3000);
     }
   </script>
