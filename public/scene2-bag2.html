@@ -1,0 +1,2137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Scene 2 - Bagian 2</title>
+    <meta name="description" content="Dunia dasar untuk Scene 2 Bagian 2">
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        font-family: 'Nunito', Arial, sans-serif;
+      }
+
+      /* ===== TOMBOL START ===== */
+      #start-button {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10000;
+        background: linear-gradient(135deg, #4CC3D9, #2a9db5);
+        color: white;
+        border: none;
+        padding: 20px 50px;
+        font-size: 24px;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
+        letter-spacing: 2px;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(76, 195, 217, 0.4);
+        transition: all 0.3s ease;
+      }
+      #start-button:hover {
+        transform: translate(-50%, -50%) scale(1.07);
+        box-shadow: 0 12px 35px rgba(76, 195, 217, 0.6);
+      }
+      #start-button:active { transform: translate(-50%, -50%) scale(0.96); }
+      #start-button.hidden { display: none; }
+
+      /* ===== TOMBOL TOGGLE TABEL ===== */
+      #toggle-table-button {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        z-index: 9999;
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+        border: none;
+        padding: 14px 24px;
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.35);
+        transition: all 0.3s ease;
+        display: none;
+        letter-spacing: 0.5px;
+      }
+      #toggle-table-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 28px rgba(40, 167, 69, 0.5);
+      }
+      #toggle-table-button:active { transform: scale(0.96); }
+      #toggle-table-button.active { display: block; }
+
+      /* ===== TOMBOL BACK TO HOME ===== */
+      #back-to-home-button {
+        position: fixed;
+        top: 30px;
+        left: 30px;
+        z-index: 10000;
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(108, 117, 125, 0.35);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #back-to-home-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 28px rgba(108, 117, 125, 0.5);
+        background: linear-gradient(135deg, #5a6268, #495057);
+      }
+      #back-to-home-button:active { transform: scale(0.96); }
+
+      /* ===== TOMBOL VIEW TOGGLE ===== */
+      .view-toggle-button {
+        background: linear-gradient(135deg, #4CC3D9, #2a9db5);
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        letter-spacing: 0.5px;
+        border-radius: 50px;
+        cursor: pointer;
+        margin: 22px auto 0;
+        display: block;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 195, 217, 0.35);
+      }
+      .view-toggle-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(76, 195, 217, 0.5);
+      }
+      .view-toggle-button:active { transform: scale(0.96); }
+
+      /* ===== CHART CONTAINER ===== */
+      #chart-container {
+        display: none;
+        margin: 10px 0 0;
+        position: relative;
+        height: 380px;
+        background: #f8fbfd;
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid #e2f0f5;
+      }
+      #chart-container.active { display: block; }
+      #data-table-container.hidden { display: none; }
+
+      /* ===== OVERLAY PANEL ===== */
+      .overlay-panel {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(10, 20, 30, 0.75);
+        backdrop-filter: blur(6px);
+        z-index: 10001;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .overlay-panel.active { display: flex; }
+
+      .panel-content {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 0;
+        max-width: 92%;
+        max-height: 90vh;
+        overflow: hidden;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ===== PANEL HEADER ===== */
+      .panel-header {
+        background: linear-gradient(135deg, #4CC3D9 0%, #2a9db5 100%);
+        padding: 24px 32px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .panel-header h2 {
+        color: white;
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      }
+      .panel-header .subtitle {
+        color: rgba(255,255,255,0.8);
+        font-size: 13px;
+        margin: 4px 0 0;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      /* ===== PANEL BODY ===== */
+      .panel-body {
+        padding: 28px 32px;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      /* ===== CLOSE BUTTON ===== */
+      .close-button {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.4);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.25s ease;
+        line-height: 1;
+      }
+      .close-button:hover {
+        background: rgba(255,255,255,0.35);
+        border-color: white;
+        transform: scale(1.1) rotate(90deg);
+      }
+
+      /* ===== RESEARCH QUESTION PANEL ===== */
+      .research-question-panel .panel-content {
+        max-width: 640px;
+        text-align: center;
+      }
+      .research-question-panel .panel-body {
+        text-align: center;
+      }
+      .research-question-panel .question-text {
+        font-size: 20px;
+        color: #2c3e50;
+        margin: 10px 0 0;
+        font-weight: 600;
+        line-height: 1.6;
+        background: linear-gradient(135deg, #f0fafc, #e8f6f9);
+        border-left: 4px solid #4CC3D9;
+        border-radius: 8px;
+        padding: 20px 24px;
+        font-style: italic;
+      }
+
+      /* ===== DATA TABLE PANEL ===== */
+      .data-table-panel .panel-content {
+        max-width: 820px;
+        width: 820px;
+      }
+
+      /* ===== STATISTIK SUMMARY CARDS ===== */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: linear-gradient(135deg, #f8fbfd, #edf6f9);
+        border: 1px solid #d5edf3;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .stat-card .stat-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #7a9aaa;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 6px;
+      }
+      .stat-card .stat-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: #2c3e50;
+        font-family: 'Space Mono', monospace;
+        line-height: 1;
+      }
+      .stat-card .stat-unit {
+        font-size: 11px;
+        color: #7a9aaa;
+        font-weight: 600;
+        margin-top: 4px;
+      }
+      .stat-card.green .stat-value { color: #28a745; }
+      .stat-card.red .stat-value { color: #e74c3c; }
+
+      /* ===== TABEL DATA ===== */
+      .table-wrapper {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #d5edf3;
+        box-shadow: 0 2px 12px rgba(76,195,217,0.08);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+      }
+      thead {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+      th {
+        background: linear-gradient(135deg, #4CC3D9, #3ab5cc);
+        color: white;
+        padding: 14px 16px;
+        text-align: left;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.4px;
+        border: none;
+        text-transform: uppercase;
+      }
+      th:first-child { width: 48px; text-align: center; border-radius: 0; }
+      td {
+        padding: 12px 16px;
+        border: none;
+        border-bottom: 1px solid #edf3f6;
+        color: #3a4f5c;
+        font-weight: 600;
+      }
+      td:first-child { text-align: center; font-weight: 700; color: #7a9aaa; font-family: 'Space Mono', monospace; font-size: 13px; }
+      tr:last-child td { border-bottom: none; }
+      tr:nth-child(even) td { background: #f8fbfd; }
+      tr:hover td { background: #e8f6f9; transition: background 0.15s ease; }
+
+      /* Badge koloni */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: 'Space Mono', monospace;
+      }
+      .badge-green {
+        background: rgba(40, 167, 69, 0.12);
+        color: #1e7e34;
+        border: 1px solid rgba(40, 167, 69, 0.25);
+      }
+      .badge-red {
+        background: rgba(231, 76, 60, 0.1);
+        color: #c0392b;
+        border: 1px solid rgba(231, 76, 60, 0.2);
+      }
+      .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .badge-green .badge-dot { background: #28a745; }
+      .badge-red .badge-dot { background: #e74c3c; }
+
+      /* Area badge */
+      .area-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        background: rgba(76, 195, 217, 0.12);
+        color: #2a9db5;
+        border: 1px solid rgba(76, 195, 217, 0.3);
+        letter-spacing: 0.3px;
+      }
+
+      /* Tab switcher */
+      .tab-switcher {
+        display: flex;
+        background: #f0f8fa;
+        border-radius: 12px;
+        padding: 5px;
+        gap: 4px;
+        margin-bottom: 20px;
+        border: 1px solid #d5edf3;
+      }
+      .tab-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        cursor: pointer;
+        color: #7a9aaa;
+        transition: all 0.25s ease;
+        letter-spacing: 0.3px;
+      }
+      .tab-btn.active {
+        background: white;
+        color: #2a9db5;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .tab-btn:hover:not(.active) { color: #4CC3D9; }
+
+      /* Section divider */
+      .section-divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, #d5edf3, transparent);
+        margin: 20px 0;
+      }
+
+      /* ===== TOMBOL NEXT ===== */
+      #next-button-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 22px;
+      }
+      #next-button {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+        border: none;
+        padding: 13px 32px;
+        font-size: 16px;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
+        letter-spacing: 1px;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(243,156,18,0.35);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #next-button:hover {
+        transform: scale(1.06);
+        box-shadow: 0 8px 28px rgba(243,156,18,0.55);
+      }
+      #next-button:active { transform: scale(0.96); }
+      #next-button .arrow {
+        display: inline-block;
+        transition: transform 0.3s ease;
+      }
+      #next-button:hover .arrow { transform: translateX(4px); }
+
+      /* ===== CER PANEL ===== */
+      .cer-panel .panel-content {
+        max-width: 700px;
+        width: 700px;
+      }
+
+      /* Header CER */
+      .cer-panel .panel-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+      }
+      .cer-panel .panel-header h2 {
+        font-size: 20px;
+      }
+
+      /* CER Card Container */
+      .cer-body {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      /* Setiap block CER */
+      .cer-block {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid;
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .cer-block.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* CLAIM */
+      .cer-block.claim {
+        border-color: #c0392b;
+      }
+      .cer-block.claim .cer-block-header {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+      }
+      .cer-block.claim .cer-block-body {
+        background: linear-gradient(135deg, #fff5f5, #ffeaea);
+      }
+
+      /* EVIDENCE */
+      .cer-block.evidence {
+        border-color: #2980b9;
+      }
+      .cer-block.evidence .cer-block-header {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+      }
+      .cer-block.evidence .cer-block-body {
+        background: linear-gradient(135deg, #f0f8ff, #e8f4fd);
+      }
+
+      /* REASONING */
+      .cer-block.reasoning {
+        border-color: #27ae60;
+      }
+      .cer-block.reasoning .cer-block-header {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+      }
+      .cer-block.reasoning .cer-block-body {
+        background: linear-gradient(135deg, #f0fff5, #e8fdf0);
+      }
+
+      .cer-block-header {
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .cer-block-header .cer-label {
+        color: white;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+      .cer-block-header .cer-icon {
+        font-size: 16px;
+      }
+      .cer-block-header .cer-title {
+        color: rgba(255,255,255,0.85);
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: auto;
+        letter-spacing: 0.3px;
+      }
+
+      .cer-block-body {
+        padding: 18px 20px;
+      }
+      .cer-block-body .cer-text {
+        font-size: 15px;
+        color: #2c3e50;
+        font-weight: 700;
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* Evidence list items */
+      .evidence-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .evidence-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: white;
+        border: 1px solid #bde0f5;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #2c3e50;
+        opacity: 0;
+        transform: translateX(-14px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+      .evidence-item.visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .evidence-check {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        font-size: 14px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .evidence-source {
+        font-size: 11px;
+        color: #7a9aaa;
+        font-weight: 600;
+        margin-left: auto;
+        background: rgba(52,152,219,0.1);
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+
+      /* Kesimpulan final badge */
+      .conclusion-badge {
+        background: linear-gradient(135deg, #2c3e50, #1a252f);
+        color: white;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+        margin-top: 4px;
+      }
+      .conclusion-badge.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .conclusion-badge .conclusion-icon { font-size: 28px; flex-shrink: 0; }
+      .conclusion-badge .conclusion-text { font-size: 13px; font-weight: 700; line-height: 1.5; color: rgba(255,255,255,0.9); }
+      .conclusion-badge .conclusion-text strong { color: #f1c40f; font-size: 14px; }
+      /* ===== BOX REFLEKSI ===== */
+      .refleksi-box {
+        border-radius: 14px;
+        border: 2px dashed #a78bfa;
+        background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .refleksi-box.visible { opacity: 1; transform: translateY(0); }
+      .refleksi-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+      }
+      .refleksi-icon { font-size: 24px; flex-shrink: 0; }
+      .refleksi-label {
+        color: rgba(255,255,255,0.75);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+      }
+      .refleksi-question { color: white; font-size: 15px; font-weight: 800; margin-top: 2px; }
+      .refleksi-body { padding: 18px 20px 16px; }
+      .refleksi-textarea {
+        width: 100%;
+        border: 2px solid #ddd6fe;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 14px;
+        font-family: 'Nunito', sans-serif;
+        font-weight: 600;
+        color: #3a3a5c;
+        background: white;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        box-sizing: border-box;
+        line-height: 1.6;
+      }
+      .refleksi-textarea:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+      .refleksi-textarea::placeholder { color: #b0a8d0; font-weight: 500; }
+      .refleksi-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; gap: 12px; }
+      .char-counter { font-size: 12px; color: #9ca3af; font-weight: 600; font-family: 'Space Mono', monospace; }
+      .char-counter.over { color: #e74c3c; }
+      .refleksi-save-btn {
+        background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+        transition: all 0.25s ease;
+        white-space: nowrap;
+      }
+      .refleksi-save-btn:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(124,58,237,0.45); }
+      .refleksi-save-btn:active { transform: scale(0.96); }
+      .refleksi-save-btn:disabled { background: #d1d5db; box-shadow: none; cursor: not-allowed; transform: none; }
+      .refleksi-saved {
+        display: none;
+        margin-top: 12px;
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        border: 1px solid #6ee7b7;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #065f46;
+        animation: fadeInUp 0.4s ease;
+      }
+      .refleksi-saved.show { display: block; }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ===== SUB DRIVING QUESTION ===== */
+      .sdq-panel .panel-content {
+        max-width: 640px;
+        text-align: center;
+        background: linear-gradient(135deg, #1a252f, #2c3e50);
+        border: 2px solid rgba(76,195,217,0.3);
+      }
+      .sdq-panel .panel-header {
+        background: transparent;
+        border-bottom: 1px solid rgba(76,195,217,0.2);
+      }
+      .sdq-panel .panel-header h2 { font-size: 13px; letter-spacing: 2px; color: #4CC3D9; }
+      .sdq-body { padding: 32px 36px 36px; }
+      .sdq-text {
+        font-size: 24px;
+        font-weight: 800;
+        color: white;
+        line-height: 1.4;
+        margin: 0;
+      }
+      .sdq-text .highlight { color: #4CC3D9; }
+      .sdq-timer {
+        margin-top: 24px;
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+      }
+      .sdq-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(76,195,217,0.3);
+        animation: dotPulse 3s ease forwards;
+      }
+      .sdq-dot:nth-child(1) { animation-delay: 0s; }
+      .sdq-dot:nth-child(2) { animation-delay: 1s; }
+      .sdq-dot:nth-child(3) { animation-delay: 2s; }
+      @keyframes dotPulse {
+        0%   { background: rgba(76,195,217,0.3); transform: scale(1); }
+        50%  { background: #4CC3D9; transform: scale(1.4); }
+        100% { background: rgba(76,195,217,0.3); transform: scale(1); }
+      }
+
+      /* ===== KALKULASI TABEL PANEL ===== */
+      .calc-panel .panel-content {
+        max-width: 900px;
+        width: 900px;
+      }
+      .calc-panel .panel-header {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+      }
+
+      /* Formula Card */
+      .formula-card {
+        background: linear-gradient(135deg, #fffbf0, #fff3cd);
+        border: 1px solid #ffc107;
+        border-radius: 14px;
+        padding: 18px 22px;
+        margin-bottom: 22px;
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .formula-item { flex: 1; min-width: 180px; }
+      .formula-label {
+        font-size: 11px;
+        font-weight: 800;
+        color: #856404;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
+      .formula-eq {
+        font-family: 'Space Mono', monospace;
+        font-size: 14px;
+        color: #2c3e50;
+        font-weight: 700;
+        line-height: 1.8;
+        background: white;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 8px 14px;
+        display: block;
+      }
+      .formula-eq .f-frac {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        vertical-align: middle;
+        margin: 0 4px;
+      }
+      .formula-eq .f-num { border-bottom: 1.5px solid currentColor; padding: 0 4px 2px; font-size: 13px; }
+      .formula-eq .f-den { padding: 2px 4px 0; font-size: 13px; }
+
+      /* Calc table */
+      .calc-table-wrapper {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #ffe0b2;
+        box-shadow: 0 2px 12px rgba(230,126,34,0.1);
+        margin-bottom: 20px;
+      }
+      .calc-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      .calc-table th {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        color: white;
+        padding: 12px 14px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+      }
+      .calc-table td {
+        padding: 11px 14px;
+        border: none;
+        border-bottom: 1px solid #fce8d0;
+        color: #3a4f5c;
+        font-weight: 600;
+        vertical-align: middle;
+      }
+      .calc-table tr:last-child td { border-bottom: none; }
+      .calc-table tr:nth-child(even) td { background: #fffaf5; }
+      .calc-table tr:hover td { background: #fff3e0; }
+
+      /* Result cell */
+      .result-cell {
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        font-size: 13px;
+        min-width: 90px;
+        text-align: center;
+      }
+      .result-empty {
+        color: #ccc;
+        font-style: italic;
+        font-family: 'Nunito', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .result-value {
+        display: none;
+        animation: countUp 0.6s ease;
+      }
+      .result-value.show { display: inline; }
+      .result-rasio { color: #e67e22; }
+      .result-penurunan { color: #8e44ad; }
+      @keyframes countUp {
+        from { opacity: 0; transform: scale(0.5); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+
+      /* Hitung button per row */
+      .hitung-btn {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        font-size: 12px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+      }
+      .hitung-btn:hover { transform: scale(1.06); box-shadow: 0 3px 10px rgba(230,126,34,0.4); }
+      .hitung-btn:disabled { background: #ddd; cursor: not-allowed; transform: none; box-shadow: none; }
+      .hitung-btn.done { background: linear-gradient(135deg, #27ae60, #1e8449); }
+
+      /* Hitung semua button */
+      .hitung-semua-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 6px;
+      }
+      .hitung-semua-btn {
+        background: linear-gradient(135deg, #8e44ad, #7d3c98);
+        color: white;
+        border: none;
+        padding: 11px 26px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Nunito', sans-serif;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 14px rgba(142,68,173,0.3);
+      }
+      .hitung-semua-btn:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(142,68,173,0.45); }
+      .hitung-semua-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+
+      /* Progress bar */
+      .calc-progress-bar-wrap {
+        flex: 1;
+        margin: 0 20px;
+        background: #f0e6fa;
+        border-radius: 10px;
+        height: 10px;
+        overflow: hidden;
+        border: 1px solid #ddd6fe;
+      }
+      .calc-progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(135deg, #8e44ad, #e67e22);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+      }
+      .calc-progress-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #8e44ad;
+        white-space: nowrap;
+        font-family: 'Space Mono', monospace;
+      }
+
+      /* Download button */
+      #download-section {
+        display: none;
+        margin-top: 22px;
+        background: linear-gradient(135deg, #1a252f, #2c3e50);
+        border-radius: 14px;
+        padding: 22px 24px;
+        text-align: center;
+        animation: fadeInUp 0.5s ease;
+      }
+      #download-section.show { display: block; }
+      #download-section h3 {
+        color: white;
+        font-size: 16px;
+        margin: 0 0 6px;
+        font-weight: 800;
+      }
+      #download-section p {
+        color: rgba(255,255,255,0.65);
+        font-size: 13px;
+        margin: 0 0 18px;
+        font-weight: 600;
+      }
+      .download-btn {
+        background: linear-gradient(135deg, #4CC3D9, #2a9db5);
+        color: white;
+        border: none;
+        padding: 14px 36px;
+        font-size: 16px;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
+        letter-spacing: 0.5px;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(76,195,217,0.4);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .download-btn:hover { transform: scale(1.05); box-shadow: 0 8px 28px rgba(76,195,217,0.55); }
+      .download-btn:active { transform: scale(0.97); }
+      .download-formats {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .format-chip {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.7);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+    </style>
+  </head>
+  <body>
+    <a-scene light="defaultLightsEnabled:false"
+             renderer="antialias: true; logarithmicDepthBuffer: true"
+             vr-mode-ui="enabled: false">
+
+      <a-assets>
+        <a-asset-item id="room-lab-model" src="assets/asset scene 2/RoomLab.glb"></a-asset-item>
+        <a-asset-item id="petri-dish-model" src="assets/asset scene 2/Petri+dish.glb"></a-asset-item>
+        <a-asset-item id="lanzo-therm-model" src="assets/asset scene 2/LanzoTherm+3000.glb"></a-asset-item>
+        <a-asset-item id="deodoran-model" src="assets/asset scene 2/deodoran.glb"></a-asset-item>
+      </a-assets>
+
+      <a-plane id="ground" class="collidable" position="0 0 0" rotation="-90 0 0" width="40" height="40" color="#222222"></a-plane>
+
+      <a-entity id="room-lab" gltf-model="#room-lab-model" position="0 0 0" rotation="0 0 0" scale="1 1 1"></a-entity>
+
+      <a-entity id="petri-dish"
+                gltf-model="#petri-dish-model"
+                position="0.2 0.9 1"
+                rotation="0 0 0"
+                scale="0.02 0.02 0.02"
+                bacterial-colonies="count: 10; colonyColor: #ff6b6b; growthDuration: 2000; plateRadius: 5; minColonySize: 0.5; maxColonySize: 0.7; positionHorizontalRadius: 0.4; positionHorizontalOffsetX: 15; positionHorizontalOffsetZ: -6; ositionHorizontalPattern: uniform; positionVerticalDefault: 0.1; positionVerticalOffset: 0.01; positionVerticalAutoDetect: true">
+        <a-text value="Plate Non-Deodorant (ND)" position="17 8 -15" align="center" color="#FFFFFF" width="200" scale="0.27 0.27 0.27"></a-text>
+      </a-entity>
+
+      <a-entity id="petri-dish1"
+                gltf-model="#petri-dish-model"
+                position="0.7 0.9 1"
+                rotation="0 0 0"
+                scale="0.02 0.02 0.02"
+                bacterial-colonies="count: 5; colonyColor: #4ecdc4; growthDuration: 2000; plateRadius: 5; minColonySize: 0.5; maxColonySize: 0.7; positionHorizontalRadius: 0.4; positionHorizontalOffsetX: 15; positionHorizontalOffsetZ: -6; positionHorizontalPattern: uniform; positionVerticalDefault: 0.1; positionVerticalOffset: 0.01; positionVerticalAutoDetect: true">
+        <a-text value="Plate Deodorant (D)" position="18 8 -15" align="center" color="#FFFFFF" width="200" scale="0.27 0.27 0.27"></a-text>
+      </a-entity>
+
+      <a-entity id="lanzo-therm" gltf-model="#lanzo-therm-model" position="1.23 0.8 -2.2" rotation="0 0 0" scale="0.019 0.019 0.019" frustum-culled="false"></a-entity>
+      <a-entity id="deodoran" gltf-model="#deodoran-model" position="0.11 0.9 0.58" rotation="0 0 0" scale="0.003 0.003 0.003"></a-entity>
+
+      <a-entity light="type:ambient; intensity:0.8; color:#ffffff"></a-entity>
+      <a-entity light="type:directional; intensity:0.8; position:5 10 5"></a-entity>
+
+      <a-entity id="rig" position="0 1.6 5" collider="distance: 0.8">
+        <a-entity id="player"
+                  camera="near: 0.001; far: 1000"
+                  position="0 0 0"
+                  look-controls
+                  pointer-lock
+                  wasd-controls="acceleration: 25">
+          <a-entity position="0 0 -1"
+                    geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
+                    material="shader: flat; opacity: 0.9; color: #FFFFFF"
+                    cursor="fuse: false"
+                    raycaster="objects: .clickable; far: 20;">
+          </a-entity>
+        </a-entity>
+      </a-entity>
+    </a-scene>
+
+    <!-- Tombol Back to Home -->
+    <button id="back-to-home-button" onclick="goToHome()">
+      🏠 Back to Home
+    </button>
+
+    <!-- Tombol START -->
+    <button id="start-button">▶ START</button>
+
+    <!-- Tombol Toggle Tabel -->
+    <button id="toggle-table-button">📊 Lihat Data</button>
+
+    <!-- Panel Pertanyaan Penelitian -->
+    <div id="research-question-panel" class="overlay-panel research-question-panel">
+      <div class="panel-content">
+        <div class="panel-header">
+          <button class="close-button" onclick="closeResearchQuestion()">×</button>
+          <h2>🔬 Pertanyaan Penelitian</h2>
+          <p class="subtitle">Hipotesis yang akan diuji dalam eksperimen ini</p>
+        </div>
+        <div class="panel-body">
+          <div class="question-text">
+            "Apakah deodorant mempengaruhi jumlah koloni bakteri?"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Tabel Data -->
+    <div id="data-table-panel" class="overlay-panel data-table-panel">
+      <div class="panel-content">
+        <div class="panel-header">
+          <button class="close-button" onclick="closeDataTable(); updateToggleButtonText();">×</button>
+          <h2>🧫 Data Jumlah Koloni Bakteri</h2>
+          <p class="subtitle">Perbandingan hasil pengamatan dengan & tanpa penggunaan deodorant</p>
+        </div>
+        <div class="panel-body">
+
+          <!-- Kartu Statistik -->
+          <div class="stats-row" id="stats-row"></div>
+
+          <div class="section-divider"></div>
+
+          <!-- Tab Switcher -->
+          <div class="tab-switcher">
+            <button class="tab-btn active" id="tab-table" onclick="switchToTable()">📋 Tabel Data</button>
+            <button class="tab-btn" id="tab-chart" onclick="switchToChart()">📈 Grafik</button>
+          </div>
+
+          <!-- Container Tabel -->
+          <div id="data-table-container">
+            <div class="table-wrapper">
+              <table id="data-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Siswa</th>
+                    <th>Area Tubuh</th>
+                    <th>🟢 Dengan Deodorant</th>
+                    <th>🔴 Tanpa Deodorant</th>
+                  </tr>
+                </thead>
+                <tbody id="data-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Container Grafik -->
+          <div id="chart-container">
+            <canvas id="data-chart"></canvas>
+          </div>
+
+          <!-- Tombol NEXT (muncul setelah grafik tampil) -->
+          <div id="next-button-row" style="display:none;">
+            <button id="next-button" onclick="showCERPanel()">
+              Analisis Kesimpulan <span class="arrow">→</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel CER – Penjelasan Ilmiah -->
+    <div id="cer-panel" class="overlay-panel cer-panel">
+      <div class="panel-content">
+        <div class="panel-header">
+          <button class="close-button" onclick="closeCERPanel()">×</button>
+          <h2>🧪 Panel CER – Penjelasan Ilmiah</h2>
+          <p class="subtitle">Claim · Evidence · Reasoning — Mengubah Informasi Menjadi Keputusan</p>
+        </div>
+        <div class="panel-body">
+          <div class="cer-body">
+
+            <!-- CLAIM -->
+            <div class="cer-block claim" id="cer-claim">
+              <div class="cer-block-header">
+                <span class="cer-icon">🎯</span>
+                <span class="cer-label">Claim</span>
+                <span class="cer-title">Pernyataan / Klaim</span>
+              </div>
+              <div class="cer-block-body">
+                <p class="cer-text">Deodorant menurunkan jumlah koloni bakteri secara signifikan.</p>
+              </div>
+            </div>
+
+            <!-- EVIDENCE -->
+            <div class="cer-block evidence" id="cer-evidence">
+              <div class="cer-block-header">
+                <span class="cer-icon">📊</span>
+                <span class="cer-label">Evidence</span>
+                <span class="cer-title">Bukti dari Data</span>
+              </div>
+              <div class="cer-block-body">
+                <ul class="evidence-list" id="evidence-list">
+                  <li class="evidence-item" id="ev-1">
+                    <span class="evidence-check">✓</span>
+                    <span>Data Aulia: penurunan <strong>70.6%</strong> koloni bakteri</span>
+                    <span class="evidence-source">Data Siswa</span>
+                  </li>
+                  <li class="evidence-item" id="ev-2">
+                    <span class="evidence-check">✓</span>
+                    <span>Rata-rata seluruh dataset menunjukkan penurunan <strong>70.1%</strong></span>
+                    <span class="evidence-source">Statistik</span>
+                  </li>
+                  <li class="evidence-item" id="ev-3">
+                    <span class="evidence-check">✓</span>
+                    <span>Grafik batang ND vs D membuktikan perbedaan nyata</span>
+                    <span class="evidence-source">Grafik</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- REASONING -->
+            <div class="cer-block reasoning" id="cer-reasoning">
+              <div class="cer-block-header">
+                <span class="cer-icon">💡</span>
+                <span class="cer-label">Reasoning</span>
+                <span class="cer-title">Penjelasan Ilmiah</span>
+              </div>
+              <div class="cer-block-body">
+                <p class="cer-text">Zat antibakteri dalam deodorant menghambat pertumbuhan bakteri pada kulit, sehingga jumlah koloni yang terbentuk jauh lebih sedikit dibandingkan tanpa perlindungan deodorant.</p>
+              </div>
+            </div>
+
+            <!-- Kesimpulan Final -->
+            <div class="conclusion-badge" id="cer-conclusion">
+              <span class="conclusion-icon">🏆</span>
+              <div class="conclusion-text">
+                <strong>Kesimpulan:</strong> Hipotesis terbukti benar.<br>
+                Penggunaan deodorant terbukti secara signifikan mengurangi pertumbuhan koloni bakteri pada kulit tubuh rata-rata sebesar <strong>70.1%</strong>.
+              </div>
+            </div>
+
+            <!-- Box Refleksi -->
+            <div class="refleksi-box" id="cer-refleksi">
+              <div class="refleksi-header">
+                <span class="refleksi-icon">📝</span>
+                <div>
+                  <div class="refleksi-label">Box Refleksi</div>
+                  <div class="refleksi-question">Apa perbaikan yang perlu dilakukan?</div>
+                </div>
+              </div>
+              <div class="refleksi-body">
+                <textarea
+                  id="refleksi-input"
+                  class="refleksi-textarea"
+                  placeholder="Tuliskan refleksimu di sini... Misalnya: menambah jumlah sampel, memperluas area tubuh yang diteliti, memperpanjang durasi pengamatan, dll."
+                  rows="4"
+                ></textarea>
+                <div class="refleksi-footer">
+                  <span class="char-counter" id="char-counter">0 / 300 karakter</span>
+                  <button class="refleksi-save-btn" id="refleksi-save-btn" onclick="saveRefleksi()">
+                    💾 Simpan Refleksi
+                  </button>
+                </div>
+                <div class="refleksi-saved" id="refleksi-saved">
+                  ✅ Refleksi berhasil disimpan!
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SUB DRIVING QUESTION PANEL ===== -->
+    <div id="sdq-panel" class="overlay-panel sdq-panel">
+      <div class="panel-content">
+        <div class="panel-header">
+          <button class="close-button" onclick="closeSDQ()">×</button>
+          <h2>SUB DRIVING QUESTION</h2>
+        </div>
+        <div class="sdq-body">
+          <p class="sdq-text">
+            <span class="highlight">Seberapa besar</span> perbedaan<br>jumlah bakteri?
+          </p>
+          <div class="sdq-timer">
+            <span class="sdq-dot"></span>
+            <span class="sdq-dot"></span>
+            <span class="sdq-dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL KALKULASI INTERAKTIF ===== -->
+    <div id="calc-panel" class="overlay-panel calc-panel">
+      <div class="panel-content">
+        <div class="panel-header">
+          <button class="close-button" onclick="closeCalcPanel()">×</button>
+          <h2>🔢 Hitung Rasio & Perbandingan Bakteri</h2>
+          <p class="subtitle">Lengkapi tabel di bawah menggunakan rumus yang tersedia</p>
+        </div>
+        <div class="panel-body">
+
+          <!-- Formula Card -->
+          <div class="formula-card">
+            <div class="formula-item">
+              <div class="formula-label">📐 Rumus Rasio</div>
+              <code class="formula-eq">Rasio = CFU<sub>ND</sub> ÷ CFU<sub>D</sub></code>
+            </div>
+            <div class="formula-item">
+              <div class="formula-label">📉 Rumus % Penurunan</div>
+              <code class="formula-eq">%Penurunan = ((CFU<sub>ND</sub> − CFU<sub>D</sub>) ÷ CFU<sub>ND</sub>) × 100%</code>
+            </div>
+          </div>
+
+          <!-- Tabel Kalkulasi -->
+          <div class="calc-table-wrapper">
+            <table class="calc-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Siswa</th>
+                  <th>Area</th>
+                  <th>CFU<sub style="font-size:10px">D</sub> (Dengan)</th>
+                  <th>CFU<sub style="font-size:10px">ND</sub> (Tanpa)</th>
+                  <th>Rasio</th>
+                  <th>% Penurunan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="calc-table-body"></tbody>
+            </table>
+          </div>
+
+          <!-- Hitung Semua + Progress -->
+          <div class="hitung-semua-row">
+            <button class="hitung-semua-btn" id="hitung-semua-btn" onclick="hitungSemua()">
+              ⚡ Hitung Semua Sekaligus
+            </button>
+            <div class="calc-progress-bar-wrap">
+              <div class="calc-progress-bar-fill" id="calc-progress-fill"></div>
+            </div>
+            <span class="calc-progress-label" id="calc-progress-label">0 / 8</span>
+          </div>
+
+          <!-- Download Section -->
+          <div id="download-section">
+            <h3>🎉 Semua data telah dihitung!</h3>
+            <p>Unduh laporan lengkap berisi tabel data, grafik, analisis CER, dan kalkulasi rasio dalam satu file.</p>
+            <button class="download-btn" onclick="downloadReport()">
+              ⬇️ Download Laporan Lengkap
+            </button>
+            <div class="download-formats">
+              <span class="format-chip">📄 HTML Report</span>
+              <span class="format-chip">🖨️ Bisa di-Print jadi PDF</span>
+              <span class="format-chip">📊 Data Lengkap</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const dataset = [
+        { no: 1, nama: "Aulia",   area: "Ketiak",   dengan: 30, tanpa: 102 },
+        { no: 2, nama: "Rafi",    area: "Ketiak",   dengan: 25, tanpa: 90  },
+        { no: 3, nama: "Nisa",    area: "Leher",    dengan: 20, tanpa: 58  },
+        { no: 4, nama: "Dika",    area: "Punggung", dengan: 15, tanpa: 52  },
+        { no: 5, nama: "Lestari", area: "Dada",     dengan: 28, tanpa: 98  },
+        { no: 6, nama: "Andi",    area: "Ketiak",   dengan: 22, tanpa: 74  },
+        { no: 7, nama: "Maya",    area: "Leher",    dengan: 18, tanpa: 60  },
+        { no: 8, nama: "Rara",    area: "Dada",     dengan: 26, tanpa: 87  }
+      ];
+
+      // Isi statistik summary
+      function populateStats() {
+        const avgDengan = Math.round(dataset.reduce((s, r) => s + r.dengan, 0) / dataset.length);
+        const avgTanpa  = Math.round(dataset.reduce((s, r) => s + r.tanpa,  0) / dataset.length);
+        const reduction = Math.round((1 - avgDengan / avgTanpa) * 100);
+
+        document.getElementById('stats-row').innerHTML = `
+          <div class="stat-card green">
+            <div class="stat-label">Rata-rata Dengan Deodorant</div>
+            <div class="stat-value">${avgDengan}</div>
+            <div class="stat-unit">koloni / petri dish</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-label">Rata-rata Tanpa Deodorant</div>
+            <div class="stat-value">${avgTanpa}</div>
+            <div class="stat-unit">koloni / petri dish</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Efektivitas Pengurangan</div>
+            <div class="stat-value" style="color:#4CC3D9">${reduction}%</div>
+            <div class="stat-unit">lebih sedikit bakteri</div>
+          </div>
+        `;
+      }
+
+      // Isi tabel data
+      function populateDataTable() {
+        const tbody = document.getElementById('data-table-body');
+        tbody.innerHTML = '';
+        dataset.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${row.no}</td>
+            <td style="font-weight:700;color:#2c3e50">${row.nama}</td>
+            <td><span class="area-badge">${row.area}</span></td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>${row.dengan} koloni</span></td>
+            <td><span class="badge badge-red"><span class="badge-dot"></span>${row.tanpa} koloni</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Fungsi untuk kembali ke Home
+      function goToHome() {
+        // Navigasi ke index.html atau halaman home
+        window.location.href = 'index.html';
+      }
+
+      // Tombol START
+      document.getElementById('start-button').addEventListener('click', function() {
+        this.classList.add('hidden');
+        showResearchQuestion();
+      });
+
+      function showResearchQuestion() {
+        document.getElementById('research-question-panel').classList.add('active');
+        setTimeout(() => {
+          closeResearchQuestion();
+          showDataTable();
+        }, 3000);
+      }
+
+      function closeResearchQuestion() {
+        document.getElementById('research-question-panel').classList.remove('active');
+      }
+
+      function showDataTable() {
+        document.getElementById('data-table-panel').classList.add('active');
+        document.getElementById('toggle-table-button').classList.add('active');
+        updateToggleButtonText();
+      }
+
+      function closeDataTable() {
+        document.getElementById('data-table-panel').classList.remove('active');
+      }
+
+      function updateToggleButtonText() {
+        const panel  = document.getElementById('data-table-panel');
+        const button = document.getElementById('toggle-table-button');
+        button.textContent = panel.classList.contains('active') ? '✕ Tutup Data' : '📊 Lihat Data';
+      }
+
+      function toggleDataTable() {
+        const panel = document.getElementById('data-table-panel');
+        panel.classList.contains('active') ? closeDataTable() : showDataTable();
+        updateToggleButtonText();
+      }
+
+      document.getElementById('toggle-table-button').addEventListener('click', toggleDataTable);
+
+      let dataChart = null;
+
+      function createChart() {
+        const ctx = document.getElementById('data-chart');
+        if (!ctx) return;
+        if (dataChart) dataChart.destroy();
+
+        dataChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: dataset.map(r => r.nama),
+            datasets: [
+              {
+                label: 'Menggunakan Deodorant',
+                data: dataset.map(r => r.dengan),
+                backgroundColor: 'rgba(40,167,69,0.75)',
+                borderColor: '#1e7e34',
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false
+              },
+              {
+                label: 'Tidak Menggunakan Deodorant',
+                data: dataset.map(r => r.tanpa),
+                backgroundColor: 'rgba(231,76,60,0.7)',
+                borderColor: '#c0392b',
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Perbandingan Jumlah Koloni Bakteri per Siswa',
+                font: { size: 15, weight: 'bold', family: 'Nunito' },
+                color: '#2c3e50',
+                padding: { top: 0, bottom: 16 }
+              },
+              legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                  font: { size: 13, family: 'Nunito', weight: '700' },
+                  padding: 18,
+                  usePointStyle: true,
+                  pointStyle: 'circle'
+                }
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                titleColor: '#2c3e50',
+                bodyColor: '#4a6070',
+                borderColor: '#d5edf3',
+                borderWidth: 1,
+                titleFont: { size: 13, weight: 'bold', family: 'Nunito' },
+                bodyFont: { size: 13, family: 'Nunito' },
+                padding: 12,
+                cornerRadius: 10,
+                callbacks: {
+                  label: ctx => `  ${ctx.dataset.label}: ${ctx.raw} koloni`
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Jumlah Koloni',
+                  font: { size: 13, weight: 'bold', family: 'Nunito' },
+                  color: '#7a9aaa'
+                },
+                grid: { color: 'rgba(0,0,0,0.05)' },
+                ticks: { font: { size: 12, family: 'Nunito' }, color: '#7a9aaa' }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Nama Siswa',
+                  font: { size: 13, weight: 'bold', family: 'Nunito' },
+                  color: '#7a9aaa'
+                },
+                grid: { display: false },
+                ticks: { font: { size: 12, family: 'Nunito' }, color: '#4a6070' }
+              }
+            }
+          }
+        });
+      }
+
+      function switchToChart() {
+        document.getElementById('data-table-container').classList.add('hidden');
+        document.getElementById('chart-container').classList.add('active');
+        document.getElementById('tab-table').classList.remove('active');
+        document.getElementById('tab-chart').classList.add('active');
+        if (!dataChart) createChart();
+        // Tampilkan tombol NEXT setelah grafik muncul
+        setTimeout(() => {
+          document.getElementById('next-button-row').style.display = 'flex';
+        }, 400);
+      }
+
+      function switchToTable() {
+        document.getElementById('data-table-container').classList.remove('hidden');
+        document.getElementById('chart-container').classList.remove('active');
+        document.getElementById('tab-chart').classList.remove('active');
+        document.getElementById('tab-table').classList.add('active');
+        // Sembunyikan tombol NEXT saat kembali ke tabel
+        document.getElementById('next-button-row').style.display = 'none';
+      }
+
+      // ===== CER PANEL =====
+      function showCERPanel() {
+        closeDataTable();
+        updateToggleButtonText();
+        document.getElementById('cer-panel').classList.add('active');
+        // Animasi staggered untuk setiap block CER
+        setTimeout(() => document.getElementById('cer-claim').classList.add('visible'), 100);
+        setTimeout(() => document.getElementById('cer-evidence').classList.add('visible'), 350);
+        setTimeout(() => document.getElementById('ev-1').classList.add('visible'), 550);
+        setTimeout(() => document.getElementById('ev-2').classList.add('visible'), 720);
+        setTimeout(() => document.getElementById('ev-3').classList.add('visible'), 890);
+        setTimeout(() => document.getElementById('cer-reasoning').classList.add('visible'), 1100);
+        setTimeout(() => document.getElementById('cer-conclusion').classList.add('visible'), 1400);
+        setTimeout(() => {
+          document.getElementById('cer-refleksi').classList.add('visible');
+          // Restore refleksi from localStorage if any
+          const saved = localStorage.getItem('refleksi_cer');
+          const input = document.getElementById('refleksi-input');
+          if (saved && input) {
+            input.value = saved;
+            const counter = document.getElementById('char-counter');
+            counter.textContent = saved.length + ' / 300 karakter';
+            document.getElementById('refleksi-save-btn').disabled = false;
+          }
+        }, 1700);
+      }
+
+      function closeCERPanel() {
+        const panel = document.getElementById('cer-panel');
+        panel.classList.remove('active');
+        // Reset animasi
+        ['cer-claim','cer-evidence','cer-reasoning','cer-conclusion','ev-1','ev-2','ev-3','cer-refleksi'].forEach(id => {
+          document.getElementById(id).classList.remove('visible');
+        });
+        document.getElementById('refleksi-saved').classList.remove('show');
+        // Tampilkan Sub Driving Question setelah CER ditutup
+        showSDQ();
+      }
+
+      // ===== REFLEKSI =====
+      const MAX_CHARS = 300;
+      const refleksiInput = document.getElementById('refleksi-input');
+      if (refleksiInput) {
+        refleksiInput.addEventListener('input', function() {
+          const len = this.value.length;
+          const counter = document.getElementById('char-counter');
+          counter.textContent = len + ' / ' + MAX_CHARS + ' karakter';
+          counter.classList.toggle('over', len > MAX_CHARS);
+          document.getElementById('refleksi-save-btn').disabled = len > MAX_CHARS || len === 0;
+          // Sembunyikan notif saat user mengetik lagi
+          document.getElementById('refleksi-saved').classList.remove('show');
+        });
+      }
+
+      function saveRefleksi() {
+        const text = document.getElementById('refleksi-input').value.trim();
+        if (!text) return;
+        // Simpan ke localStorage
+        localStorage.setItem('refleksi_cer', text);
+        // Tampilkan notif
+        document.getElementById('refleksi-saved').classList.add('show');
+        // Disable tombol sebentar
+        const btn = document.getElementById('refleksi-save-btn');
+        btn.disabled = true;
+        btn.textContent = '✅ Tersimpan!';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = '💾 Simpan Refleksi';
+        }, 2500);
+      }
+
+
+      // ============================================================
+      // SUB DRIVING QUESTION
+      // ============================================================
+      function showSDQ() {
+        const panel = document.getElementById('sdq-panel');
+        if (!panel) {
+          console.error('Panel SDQ tidak ditemukan!');
+          // Langsung buka calc panel jika SDQ tidak ada
+          setTimeout(showCalcPanel, 400);
+          return;
+        }
+        console.log('Menampilkan panel SDQ...');
+        panel.classList.add('active');
+        // Tutup otomatis setelah 3 detik lalu buka kalkulator
+        setTimeout(() => {
+          closeSDQ();
+          console.log('Menutup SDQ, membuka panel kalkulasi...');
+          setTimeout(showCalcPanel, 400);
+        }, 3000);
+      }
+
+      function closeSDQ() {
+        const panel = document.getElementById('sdq-panel');
+        if (panel) {
+          panel.classList.remove('active');
+        }
+      }
+
+      // ============================================================
+      // KALKULASI INTERAKTIF
+      // ============================================================
+      let calcDoneCount = 0;
+
+      function buildCalcTable() {
+        const tbody = document.getElementById('calc-table-body');
+        if (!tbody) {
+          console.error('Element calc-table-body tidak ditemukan!');
+          return;
+        }
+        tbody.innerHTML = '';
+        dataset.forEach((row, i) => {
+          const tr = document.createElement('tr');
+          tr.id = 'calc-row-' + i;
+          tr.innerHTML = `
+            <td style="text-align:center;font-family:'Space Mono',monospace;color:#7a9aaa;font-weight:700">${row.no}</td>
+            <td style="font-weight:700;color:#2c3e50">${row.nama}</td>
+            <td><span class="area-badge">${row.area}</span></td>
+            <td><span class="badge badge-green"><span class="badge-dot"></span>${row.dengan}</span></td>
+            <td><span class="badge badge-red"><span class="badge-dot"></span>${row.tanpa}</span></td>
+            <td class="result-cell" id="rasio-${i}">
+              <span class="result-empty">—</span>
+              <span class="result-value result-rasio" id="rasio-val-${i}"></span>
+            </td>
+            <td class="result-cell" id="penurunan-${i}">
+              <span class="result-empty">—</span>
+              <span class="result-value result-penurunan" id="penurunan-val-${i}"></span>
+            </td>
+            <td>
+              <button class="hitung-btn" id="hitung-btn-${i}" onclick="hitungRow(${i})">
+                Hitung
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+        calcDoneCount = 0;
+        updateCalcProgress();
+      }
+
+      function hitungRow(i, delay) {
+        const row = dataset[i];
+        const btn = document.getElementById('hitung-btn-' + i);
+        if (btn.disabled) return;
+        btn.disabled = true;
+
+        const d = delay || 0;
+        setTimeout(() => {
+          // Rasio
+          const rasio = (row.tanpa / row.dengan).toFixed(2);
+          const penurunan = (((row.tanpa - row.dengan) / row.tanpa) * 100).toFixed(1);
+
+          const rasioCell = document.getElementById('rasio-' + i);
+          const penurunanCell = document.getElementById('penurunan-' + i);
+
+          // Sembunyikan placeholder, tampilkan nilai
+          rasioCell.querySelector('.result-empty').style.display = 'none';
+          const rasioVal = document.getElementById('rasio-val-' + i);
+          rasioVal.textContent = rasio + 'x';
+          rasioVal.classList.add('show');
+
+          setTimeout(() => {
+            penurunanCell.querySelector('.result-empty').style.display = 'none';
+            const penurunanVal = document.getElementById('penurunan-val-' + i);
+            penurunanVal.textContent = penurunan + '%';
+            penurunanVal.classList.add('show');
+
+            btn.textContent = '✓ Selesai';
+            btn.classList.add('done');
+
+            calcDoneCount++;
+            updateCalcProgress();
+
+            if (calcDoneCount === dataset.length) {
+              setTimeout(() => {
+                document.getElementById('download-section').classList.add('show');
+              }, 500);
+            }
+          }, 300);
+        }, d);
+      }
+
+      function hitungSemua() {
+        const btn = document.getElementById('hitung-semua-btn');
+        btn.disabled = true;
+        btn.textContent = '⏳ Menghitung...';
+        dataset.forEach((_, i) => {
+          const rowBtn = document.getElementById('hitung-btn-' + i);
+          if (!rowBtn.disabled) {
+            hitungRow(i, i * 200);
+          }
+        });
+        setTimeout(() => {
+          btn.textContent = '✅ Semua Sudah Dihitung';
+        }, dataset.length * 200 + 600);
+      }
+
+      function updateCalcProgress() {
+        const total = dataset.length;
+        const pct = Math.round((calcDoneCount / total) * 100);
+        document.getElementById('calc-progress-fill').style.width = pct + '%';
+        document.getElementById('calc-progress-label').textContent = calcDoneCount + ' / ' + total;
+      }
+
+      function showCalcPanel() {
+        const panel = document.getElementById('calc-panel');
+        if (!panel) {
+          console.error('Panel Kalkulasi tidak ditemukan!');
+          return;
+        }
+        try {
+          console.log('Membangun tabel kalkulasi...');
+          buildCalcTable();
+          console.log('Menampilkan panel kalkulasi...');
+          panel.classList.add('active');
+        } catch (error) {
+          console.error('Error saat menampilkan panel kalkulasi:', error);
+        }
+      }
+
+      function closeCalcPanel() {
+        document.getElementById('calc-panel').classList.remove('active');
+        document.getElementById('download-section').classList.remove('show');
+        document.getElementById('hitung-semua-btn').disabled = false;
+        document.getElementById('hitung-semua-btn').textContent = '⚡ Hitung Semua Sekaligus';
+      }
+
+      // ============================================================
+      // DOWNLOAD LAPORAN LENGKAP
+      // ============================================================
+      function downloadReport() {
+        // Ambil data
+        const chartImg = (typeof dataChart !== 'undefined' && dataChart)
+          ? dataChart.toBase64Image() : '';
+
+        const refleksiText = localStorage.getItem('refleksi_cer') || '(Belum diisi)';
+
+        // Hitung rata-rata
+        const avgD = (dataset.reduce((s,r) => s+r.dengan, 0) / dataset.length).toFixed(1);
+        const avgND = (dataset.reduce((s,r) => s+r.tanpa, 0) / dataset.length).toFixed(1);
+        const avgReduction = (((avgND - avgD) / avgND) * 100).toFixed(1);
+
+        // Build tabel data HTML
+        const dataTableRows = dataset.map(r => `
+          <tr>
+            <td>${r.no}</td><td>${r.nama}</td><td>${r.area}</td>
+            <td>${r.dengan} koloni</td><td>${r.tanpa} koloni</td>
+          </tr>`).join('');
+
+        // Build tabel kalkulasi HTML
+        const calcRows = dataset.map(r => {
+          const rasio = (r.tanpa / r.dengan).toFixed(2);
+          const pen   = (((r.tanpa - r.dengan) / r.tanpa) * 100).toFixed(1);
+          return `<tr>
+            <td>${r.no}</td><td>${r.nama}</td><td>${r.area}</td>
+            <td>${r.dengan}</td><td>${r.tanpa}</td>
+            <td style="color:#e67e22;font-weight:700">${rasio}x</td>
+            <td style="color:#8e44ad;font-weight:700">${pen}%</td>
+          </tr>`;
+        }).join('');
+
+        const html = `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Penelitian – Pengaruh Deodorant terhadap Koloni Bakteri</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Space+Mono&display=swap');
+    *{box-sizing:border-box}
+    body{font-family:'Nunito',Arial,sans-serif;margin:0;padding:0;background:#f5f7fa;color:#2c3e50}
+    .page{max-width:900px;margin:0 auto;padding:40px 32px}
+    /* Cover */
+    .cover{background:linear-gradient(135deg,#1a252f,#2c3e50);border-radius:20px;padding:50px 48px;margin-bottom:40px;color:white}
+    .cover .tag{background:rgba(76,195,217,0.2);border:1px solid rgba(76,195,217,0.4);color:#4CC3D9;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;display:inline-block;margin-bottom:20px}
+    .cover h1{font-size:28px;font-weight:800;margin:0 0 12px;line-height:1.3}
+    .cover p{color:rgba(255,255,255,0.6);font-size:14px;margin:0}
+    /* Section */
+    .section{background:white;border-radius:16px;padding:30px;margin-bottom:28px;border:1px solid #e8eef2;box-shadow:0 2px 10px rgba(0,0,0,0.04)}
+    .section-title{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+    .section-title h2{font-size:18px;font-weight:800;margin:0;color:#2c3e50}
+    .section-tag{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+    .tag-blue{background:#e8f4fd;color:#2980b9}
+    .tag-green{background:#e8fdf0;color:#27ae60}
+    .tag-orange{background:#fff3e0;color:#e67e22}
+    .tag-purple{background:#f3e8ff;color:#7c3aed}
+    .tag-dark{background:#ecf0f1;color:#2c3e50}
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+    .stat{background:#f8fbfd;border:1px solid #d5edf3;border-radius:12px;padding:16px;text-align:center}
+    .stat-label{font-size:10px;font-weight:700;color:#7a9aaa;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+    .stat-value{font-size:24px;font-weight:800;font-family:'Space Mono',monospace}
+    .stat-unit{font-size:11px;color:#7a9aaa;margin-top:4px;font-weight:600}
+    /* Table */
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th{background:linear-gradient(135deg,#4CC3D9,#3ab5cc);color:white;padding:12px 14px;text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px}
+    td{padding:11px 14px;border-bottom:1px solid #edf3f6;color:#3a4f5c;font-weight:600}
+    tr:last-child td{border-bottom:none}
+    tr:nth-child(even) td{background:#f8fbfd}
+    /* Chart */
+    .chart-wrap{text-align:center;padding:10px 0}
+    .chart-wrap img{max-width:100%;border-radius:10px}
+    /* CER blocks */
+    .cer-blk{border-radius:12px;overflow:hidden;margin-bottom:14px;border:1px solid}
+    .cer-blk-head{padding:10px 18px;color:white;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+    .cer-blk-body{padding:16px 18px;font-size:15px;font-weight:700;color:#2c3e50;line-height:1.6}
+    .cer-claim{border-color:#c0392b}.cer-claim .cer-blk-head{background:linear-gradient(135deg,#e74c3c,#c0392b)}.cer-claim .cer-blk-body{background:#fff5f5}
+    .cer-evid{border-color:#2980b9}.cer-evid .cer-blk-head{background:linear-gradient(135deg,#3498db,#2980b9)}.cer-evid .cer-blk-body{background:#f0f8ff}
+    .cer-reas{border-color:#27ae60}.cer-reas .cer-blk-head{background:linear-gradient(135deg,#2ecc71,#27ae60)}.cer-reas .cer-blk-body{background:#f0fff5}
+    .ev-item{background:white;border:1px solid #bde0f5;border-radius:8px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:14px}
+    .ev-check{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#3498db,#2980b9);color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .conclusion{background:linear-gradient(135deg,#2c3e50,#1a252f);color:white;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;margin-top:14px}
+    .conclusion-icon{font-size:26px;flex-shrink:0}
+    .conclusion-text{font-size:14px;font-weight:700;color:rgba(255,255,255,0.9);line-height:1.5}
+    .conclusion-text strong{color:#f1c40f}
+    /* Refleksi */
+    .refleksi-box{background:linear-gradient(135deg,#faf5ff,#f3e8ff);border:2px dashed #a78bfa;border-radius:12px;overflow:hidden}
+    .refleksi-head{background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:14px 20px;color:white}
+    .refleksi-head .r-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.7)}
+    .refleksi-head .r-q{font-size:15px;font-weight:800;margin-top:4px}
+    .refleksi-content{padding:16px 20px;font-size:14px;font-weight:600;color:#3a3a5c;font-style:italic;white-space:pre-wrap;line-height:1.6}
+    /* Calc table */
+    .calc-th{background:linear-gradient(135deg,#e67e22,#d35400)}
+    .formula-box{background:#fffbf0;border:1px solid #ffc107;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#2c3e50;line-height:2}
+    /* Footer */
+    .footer{text-align:center;padding:24px;color:#7a9aaa;font-size:12px;font-weight:600}
+    @media print{body{background:white}.page{padding:20px 16px}.section{box-shadow:none;border:1px solid #ddd}}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Cover -->
+  <div class="cover">
+    <span class="tag">Laporan Penelitian</span>
+    <h1>Pengaruh Deodorant terhadap<br>Jumlah Koloni Bakteri pada Kulit</h1>
+    <p>Data observasi eksperimen — Sistem 3D Laboratorium Virtual</p>
+  </div>
+
+  <!-- Bagian 1: Data Observasi -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-tag tag-blue">01</span>
+      <h2>🧫 Data Observasi Koloni Bakteri</h2>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Rata-rata Dengan Deodorant</div><div class="stat-value" style="color:#28a745">${avgD}</div><div class="stat-unit">koloni / petri dish</div></div>
+      <div class="stat"><div class="stat-label">Rata-rata Tanpa Deodorant</div><div class="stat-value" style="color:#e74c3c">${avgND}</div><div class="stat-unit">koloni / petri dish</div></div>
+      <div class="stat"><div class="stat-label">Rata-rata Pengurangan</div><div class="stat-value" style="color:#4CC3D9">${avgReduction}%</div><div class="stat-unit">lebih sedikit bakteri</div></div>
+    </div>
+    <table>
+      <thead><tr>
+        <th>No</th><th>Nama Siswa</th><th>Area Tubuh</th>
+        <th>Dengan Deodorant</th><th>Tanpa Deodorant</th>
+      </tr></thead>
+      <tbody>${dataTableRows}</tbody>
+    </table>
+  </div>
+
+  <!-- Bagian 2: Grafik -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-tag tag-green">02</span>
+      <h2>📈 Grafik Perbandingan Koloni Bakteri</h2>
+    </div>
+    <div class="chart-wrap">
+      ${chartImg ? `<img src="${chartImg}" alt="Grafik Perbandingan">` : '<p style="color:#aaa;font-style:italic">Grafik tidak tersedia (buka panel grafik terlebih dahulu)</p>'}
+    </div>
+  </div>
+
+  <!-- Bagian 3: Kalkulasi Rasio -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-tag tag-orange">03</span>
+      <h2>🔢 Kalkulasi Rasio &amp; % Penurunan</h2>
+    </div>
+    <div class="formula-box">
+      Rasio = CFU_ND ÷ CFU_D &nbsp;&nbsp;|&nbsp;&nbsp;
+      %Penurunan = ((CFU_ND − CFU_D) ÷ CFU_ND) × 100%
+    </div>
+    <table>
+      <thead><tr>
+        <th>No</th><th>Nama</th><th>Area</th>
+        <th>CFU<sub>D</sub></th><th>CFU<sub>ND</sub></th>
+        <th class="calc-th">Rasio</th><th class="calc-th">% Penurunan</th>
+      </tr></thead>
+      <tbody>${calcRows}</tbody>
+    </table>
+  </div>
+
+  <!-- Bagian 4: Analisis CER -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-tag tag-dark">04</span>
+      <h2>🧪 Analisis CER – Penjelasan Ilmiah</h2>
+    </div>
+    <div class="cer-blk cer-claim">
+      <div class="cer-blk-head">🎯 Claim — Pernyataan</div>
+      <div class="cer-blk-body">Deodorant menurunkan jumlah koloni bakteri secara signifikan.</div>
+    </div>
+    <div class="cer-blk cer-evid">
+      <div class="cer-blk-head">📊 Evidence — Bukti dari Data</div>
+      <div class="cer-blk-body">
+        <div class="ev-item"><span class="ev-check">✓</span> Data Aulia: penurunan <strong>70.6%</strong> koloni bakteri</div>
+        <div class="ev-item"><span class="ev-check">✓</span> Rata-rata seluruh dataset menunjukkan penurunan <strong>70.1%</strong></div>
+        <div class="ev-item"><span class="ev-check">✓</span> Grafik batang ND vs D membuktikan perbedaan nyata</div>
+      </div>
+    </div>
+    <div class="cer-blk cer-reas">
+      <div class="cer-blk-head">💡 Reasoning — Penjelasan Ilmiah</div>
+      <div class="cer-blk-body">Zat antibakteri dalam deodorant menghambat pertumbuhan bakteri pada kulit, sehingga jumlah koloni yang terbentuk jauh lebih sedikit dibandingkan tanpa perlindungan deodorant.</div>
+    </div>
+    <div class="conclusion">
+      <span class="conclusion-icon">🏆</span>
+      <div class="conclusion-text"><strong>Kesimpulan:</strong> Hipotesis terbukti benar. Penggunaan deodorant terbukti secara signifikan mengurangi pertumbuhan koloni bakteri pada kulit tubuh rata-rata sebesar <strong>${avgReduction}%</strong>.</div>
+    </div>
+  </div>
+
+  <!-- Bagian 5: Box Refleksi -->
+  <div class="section">
+    <div class="section-title">
+      <span class="section-tag tag-purple">05</span>
+      <h2>📝 Refleksi – Perbaikan yang Diperlukan</h2>
+    </div>
+    <div class="refleksi-box">
+      <div class="refleksi-head">
+        <div class="r-label">Box Refleksi</div>
+        <div class="r-q">Apa perbaikan yang perlu dilakukan?</div>
+      </div>
+      <div class="refleksi-content">${refleksiText}</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Laporan dihasilkan otomatis dari Sistem Laboratorium Virtual 3D &nbsp;·&nbsp;
+    Scene 2 – Bagian 2 &nbsp;·&nbsp;
+    ${new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'})}
+  </div>
+
+</div>
+</body>
+</html>`;
+
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'Laporan_Penelitian_Bakteri.html';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        populateStats();
+        populateDataTable();
+      });
+    </script>
+
+    <script>
+      AFRAME.registerComponent('bacterial-colonies', {
+        schema: {
+          count: { type: 'int', default: 30 },
+          colonyColor: { type: 'color', default: '#FFD700' },
+          growthDuration: { type: 'int', default: 2000 },
+          plateRadius: { type: 'number', default: 25 },
+          minColonySize: { type: 'number', default: 0.5 },
+          maxColonySize: { type: 'number', default: 1.0 },
+          positionHorizontalRadius: { type: 'number', default: 0.4 },
+          positionHorizontalOffsetX: { type: 'number', default: 0 },
+          positionHorizontalOffsetZ: { type: 'number', default: 0 },
+          positionHorizontalPattern: { type: 'string', default: 'uniform' },
+          positionVerticalDefault: { type: 'number', default: 0.08 },
+          positionVerticalOffset: { type: 'number', default: 0.03 },
+          positionVerticalAutoDetect: { type: 'boolean', default: true }
+        },
+        init: function () {
+          this.colonies = [];
+          this.isModelLoaded = false;
+          this.el.addEventListener('model-loaded', () => {
+            this.isModelLoaded = true;
+            setTimeout(() => this.createColonies(), 100);
+          });
+          const checkModel = () => {
+            if (this.el.object3D && this.el.object3D.children.length > 0) {
+              let hasMesh = false;
+              this.el.object3D.traverse((node) => { if (node.isMesh) hasMesh = true; });
+              if (hasMesh && !this.isModelLoaded) {
+                this.isModelLoaded = true;
+                setTimeout(() => this.createColonies(), 100);
+              }
+            } else { setTimeout(checkModel, 200); }
+          };
+          setTimeout(checkModel, 300);
+        },
+        getNonOverlappingPosition: function (existingPositions, plateRadius, minDistance, radiusFactor, maxAttempts, pattern) {
+          let attempts = 0, x, z, distance;
+          do {
+            const angle = Math.random() * Math.PI * 2;
+            let randomRadiusFactor;
+            if (pattern === 'center') { randomRadiusFactor = Math.random() * Math.random(); }
+            else if (pattern === 'edge') { randomRadiusFactor = Math.sqrt(Math.random()); randomRadiusFactor = 0.3 + (randomRadiusFactor * 0.7); }
+            else { randomRadiusFactor = Math.sqrt(Math.random()); }
+            distance = randomRadiusFactor * plateRadius * radiusFactor;
+            x = Math.cos(angle) * distance;
+            z = Math.sin(angle) * distance;
+            attempts++;
+          } while (attempts < maxAttempts && existingPositions.some(pos => {
+            const dx = pos.x - x, dz = pos.z - z;
+            return Math.sqrt(dx * dx + dz * dz) < minDistance;
+          }));
+          return { x, z };
+        },
+        createColonies: function () {
+          if (this.colonies.length > 0) return;
+          const count = this.data.count;
+          const plateRadius = this.data.plateRadius;
+          const color = new THREE.Color(this.data.colonyColor);
+          const material = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.5, roughness: 0.6, metalness: 0.2 });
+          const existingPositions = [];
+          const minDistance = this.data.maxColonySize * 1.0;
+          let surfaceY = this.data.positionVerticalDefault;
+          if (this.data.positionVerticalAutoDetect && this.el.object3D) {
+            const box = new THREE.Box3();
+            let hasMesh = false;
+            this.el.object3D.traverse((node) => { if (node.isMesh) { hasMesh = true; box.expandByObject(node); } });
+            if (hasMesh && !box.isEmpty()) surfaceY = box.max.y + this.data.positionVerticalOffset;
+          }
+          for (let i = 0; i < count; i++) {
+            const pos = this.getNonOverlappingPosition(existingPositions, plateRadius, minDistance, this.data.positionHorizontalRadius, 50, this.data.positionHorizontalPattern);
+            existingPositions.push(pos);
+            const x = pos.x + this.data.positionHorizontalOffsetX;
+            const z = pos.z + this.data.positionHorizontalOffsetZ;
+            const finalSize = this.data.minColonySize + Math.random() * (this.data.maxColonySize - this.data.minColonySize);
+            const geometry = new THREE.SphereGeometry(finalSize, 12, 12);
+            const colony = new THREE.Mesh(geometry, material);
+            colony.frustumCulled = false;
+            colony.renderOrder = 999;
+            colony.position.set(x, surfaceY, z);
+            colony.scale.set(0, 0, 0);
+            colony.userData = { finalSize, baseScale: 1, startTime: Date.now() + (i * 50), duration: this.data.growthDuration, growing: false, grown: false, pulsePhase: Math.random() * Math.PI * 2, pulseSpeed: 0.5 + Math.random() * 0.5 };
+            this.el.object3D.add(colony);
+            this.colonies.push(colony);
+          }
+        },
+        tick: function (time) {
+          if (!this.isModelLoaded || this.colonies.length === 0) return;
+          const now = Date.now();
+          this.colonies.forEach(colony => {
+            const ud = colony.userData;
+            if (!ud.growing && !ud.grown && now >= ud.startTime) ud.growing = true;
+            if (ud.growing && !ud.grown) {
+              const progress = Math.min((now - ud.startTime) / ud.duration, 1);
+              ud.baseScale = 1 - Math.pow(1 - progress, 3);
+              if (progress >= 1) { ud.grown = true; ud.growing = false; }
+            }
+            if (ud.grown) ud.baseScale = Math.sin(time * 0.001 * ud.pulseSpeed + ud.pulsePhase) * 0.1 + 1;
+            colony.scale.setScalar(ud.baseScale);
+          });
+        },
+        remove: function () {
+          this.colonies.forEach(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); if (c.parent) c.parent.remove(c); });
+          this.colonies = [];
+        }
+      });
+
+      AFRAME.registerComponent('frustum-culled', {
+        schema: { type: 'boolean', default: true },
+        disableFrustumCulling: function () {
+          if (this.el.object3D) this.el.object3D.traverse(n => { if (n.isMesh) n.frustumCulled = this.data; });
+        },
+        init: function () {
+          if (this.el.object3D && this.el.object3D.children.length > 0) this.disableFrustumCulling();
+          this.el.addEventListener('model-loaded', () => this.disableFrustumCulling());
+        },
+        update: function () { this.disableFrustumCulling(); }
+      });
+
+      AFRAME.registerComponent('collider', {
+        schema: { distance: { default: 0.8 } },
+        init: function () {
+          this.raycaster = new THREE.Raycaster();
+          this.lastSafePosition = new THREE.Vector3();
+          this.directions = [new THREE.Vector3(0,0,-1), new THREE.Vector3(0,0,1), new THREE.Vector3(-1,0,0), new THREE.Vector3(1,0,0)];
+          this.el.addEventListener('loaded', () => this.el.object3D.getWorldPosition(this.lastSafePosition));
+        },
+        tick: function () {
+          const collidableEls = this.el.sceneEl.querySelectorAll('.collidable');
+          if (!collidableEls.length) return;
+          const collidables = [];
+          collidableEls.forEach(el => { if (el.object3D) collidables.push(el.object3D); });
+          const currentPosition = new THREE.Vector3();
+          this.el.object3D.getWorldPosition(currentPosition);
+          let collision = false;
+          for (const dir of this.directions) {
+            const worldDir = dir.clone().applyQuaternion(this.el.object3D.quaternion);
+            this.raycaster.set(currentPosition, worldDir);
+            this.raycaster.far = this.data.distance;
+            if (this.raycaster.intersectObjects(collidables, true).some(i => i.distance < this.data.distance)) { collision = true; break; }
+          }
+          if (collision) this.el.object3D.position.copy(this.lastSafePosition);
+          else this.el.object3D.getWorldPosition(this.lastSafePosition);
+        }
+      });
+    </script>
+  </body>
+</html>

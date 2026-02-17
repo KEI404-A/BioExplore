@@ -34,7 +34,7 @@
     }
 
     .ui-button:hover {
-      background: rgba(58, 123, 213, 0.9);
+      background: rgba(58, 123, 213, 0.9); 
     }
 
     .ui-button i {
@@ -784,29 +784,6 @@
           </a-text>
         </a-entity>
 
-        <!-- Cawan Petri - Posisi tengah-kiri meja -->
-        <a-entity
-          id="petri-dish"
-          gltf-model="#petri-model"
-          position="-0.7 1.05 -1.2"
-          rotation="0 0 0"
-          scale="0.015 0.015 0.015"
-          class="clickable lab-equipment"
-          data-action="apply-sample"
-          frustum-culled="true">
-          <!-- Label -->
-        <a-text
-            value="Petri Dish"
-            position="0 0.15 0"
-          align="center"
-            color="#fff"
-            width="1.5"
-            visible="false"
-            id="petri-label"
-            material="depthTest: false; transparent: true">
-        </a-text>
-        </a-entity>
-
         <!-- Pembakar Bunsen - Posisi tengah meja -->
         <a-entity
           id="bunsen-burner"
@@ -887,166 +864,102 @@
             material="depthTest: false; transparent: true">
         </a-text>
         </a-entity>
-
+        
         </a-entity>
 
-      <!-- Control Panel - Tombol kontrol mengambang di depan meja -->
-      <a-entity id="control-panel" position="-2 1.2 0.5" rotation="0 0 0">
-
-        <!-- Baris 1: Tombol Save dan Load -->
-        <a-box
-          id="btnSaveProgress"
-          class="clickable"
-          width="1.2"
-          height="0.3"
-          depth="0.05"
-          position="-1.5 0.15 0.05"
-          color="#4CC3D9"
-          material="metalness: 0.5; roughness: 0.5">
-        </a-box>
-        <a-text
-          value="SAVE"
-          position="-1.5 0.15 0.06"
-          align="center"
-          color="#ffffff"
-          width="1.5"
-          material="depthTest: false; transparent: true"
-          font="mono">
-        </a-text>
-
-        <a-box
-          id="btnLoadProgress"
-          class="clickable"
-          width="1.2"
-          height="0.3"
-          depth="0.05"
-          position="-0.3 0.15 0.05"
-          color="#7bdcff"
-          material="metalness: 0.5; roughness: 0.5">
-        </a-box>
-        <a-text
-          value="LOAD"
-          position="-0.3 0.15 0.06"
-          align="center"
-          color="#ffffff"
-          width="1.5"
-          material="depthTest: false; transparent: true"
-          font="mono">
-        </a-text>
-
-        <a-box
-          id="btnResetExperiment"
-          class="clickable"
-          width="1.2"
-          height="0.3"
-          depth="0.05"
-          position="0.9 0.15 0.05"
-          color="#ff4444"
-          material="metalness: 0.5; roughness: 0.5">
-        </a-box>
-        <a-text
-          value="RESET"
-          position="0.9 0.15 0.06"
-          align="center"
-          color="#ffffff"
-          width="1.8"
-          material="depthTest: false; transparent: true">
-        </a-text>
-
-        <!-- Baris 2: Tombol Settings, Achievements, Help -->
-        <a-box
-          id="btnSettings"
-          class="clickable"
-          width="0.9"
-          height="0.3"
-          depth="0.05"
-          position="-1.4 -0.2 0.05"
-          color="#27ae60"
-          material="metalness: 0.5; roughness: 0.5">
-        </a-box>
-        <a-text
-          value="⚙️"
-          position="-1.4 -0.2 0.06"
-          align="center"
-          color="#ffffff"
-          width="1.5"
-          material="depthTest: false; transparent: true">
-        </a-text>
-
-        <a-box
-          id="btnAchievements"
-          class="clickable"
-          width="0.9"
-          height="0.3"
-          depth="0.05"
-          position="-0.4 -0.2 0.05"
-          color="#ffd700"
-          material="metalness: 0.5; roughness: 0.5">
-        </a-box>
-        <a-text
-          value="🏆"
-          position="-0.4 -0.2 0.06"
-          align="center"
-          color="#ffffff"
-          width="1.5"
-          material="depthTest: false; transparent: true">
-        </a-text>
-
-        <a-box
-          id="btnHelp"
-          class="clickable"
-          width="1.1"
-          height="0.3"
-          depth="0.05"
-          position="0.7 -0.2 0.05"
-          color="#4CC3D9"
-          material="metalness: 0.5; roughness: 0.5">
-        </a-box>
-        <a-text
-          value="BANTUAN"
-          position="0.7 -0.2 0.06"
-          align="center"
-          color="#ffffff"
-          width="1.8"
-          material="depthTest: false; transparent: true">
-        </a-text>
-
-        <!-- Tombol Mulai Eksperimen - Lebih besar dan menonjol -->
-        <a-box
-          id="btnStartExperiment"
-          class="clickable"
-          width="2"
-          height="0.4"
-          depth="0.08"
-          position="0 -0.55 0.05"
-          color="#4CC3D9"
-          material="metalness: 0.8; roughness: 0.2"
-          event-set__mouseenter="scale:1.1 1.1 1.1; color:#7bdcff"
-          event-set__mouseleave="scale:1 1 1; color:#4CC3D9">
-        </a-box>
-        <a-text
-          value="MULAI EKSPERIMEN"
-          position="0 -0.55 0.09"
-          align="center"
-          color="#ffffff"
-          width="3"
-          material="depthTest: false; transparent: true">
-        </a-text>
+      <!-- Scene 2 - Bagian 1: Intro perbandingan dua Petri dish -->
+      <a-entity id="intro-part1" position="0 1.6 -3" rotation="0 0 0">
+        <!-- Background untuk text -->
+        <a-plane 
+          id="intro-question-bg"
+          position="0 1.2 0" 
+          width="4.5" 
+          height="1" 
+          color="#1a1a1a"
+          material="opacity: 0.8">
+        </a-plane>
         
-      </a-entity>
+        <!-- Pertanyaan awal (Sub Driving Question) -->
+        <a-text
+          id="intro-question-1"
+          value="Sub Driving Question:\nApa perbedaan pertumbuhan bakteri pada dua kondisi tersebut?"
+          position="0 1.2 0.01"
+          align="center"
+          color="#ffffff"
+          width="4"
+          material="depthTest: false; transparent: true">
+        </a-text>
+        <a-text
+        id="intro-question-2"
+        value="Pertanyaan penelitian:\nApakah deodorant mempengaruhi jumlah koloni bakteri?"
+        position="0 1.2 0"
+        align="center"
+        color="#ffffff"
+        width="4"
+        visible="false"
+        material="depthTest: false; transparent: true">
+      </a-text>
+</a-entity>
 
-      <!-- Portal Kembali ke Menu - Diposisikan di dalam ruangan lab -->
-      <a-link
-        position="0 1.6 5"
-        rotation="0 180 0"
-        link="on: click"
-        href="vr.html"
-        title="Kembali ke Menu"
-        image="#thumbScene1"
-        class="clickable"
-        event-set__mouseenter="material.opacity: 0.8"
-        event-set__mouseleave="material.opacity: 0.6">
-      </a-link>
+        <!-- Petri dish 1: Plate Non Deodoran (banyak koloni) -->
+        <a-entity id="intro-petri-nondeo" position="-1 0 0">
+          <a-entity
+            gltf-model="#petri-model"
+            position="-0.7 -0.5 1.7"
+            rotation="0 0 0"
+            scale="0.02 0.02 0.02">
+          </a-entity>
+          <!-- Label -->
+          <a-text
+            value="Plate Non Deodoran"
+            position="-0.4 -0.5 1"
+            align="center"
+            color="#ffffff"
+            width="2"
+            material="depthTest: false; transparent: true">
+          </a-text>
+          <!-- Koloni padat (banyak titik dengan animasi kecil) -->
+          <a-entity id="intro-colonies-nondeo" position="-0.4 -0.5 1.6">
+            <a-sphere radius="0.023" color="#aaff00" position="0 0.03 -0.02"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 800; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+            <a-sphere radius="0.023" color="#ccee33" position="0.03 0.03 0.02"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 900; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+            <a-sphere radius="0.023" color="#bbff55" position="-0.03 0.03 0.01"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 700; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+            <a-sphere radius="0.023" color="#ddff66" position="-0.03 0.03 -0.05"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 1000; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+            <a-sphere radius="0.023" color="#ccff44" position="0.02 0.03 -0.04"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 950; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+          </a-entity>
+        </a-entity>
+
+        <!-- Petri dish 2: Plate Deodoran (koloni sedikit) -->
+        <a-entity id="intro-petri-deo" position="1 0 0">
+          <a-entity
+            gltf-model="#petri-model"
+            position="-1.2 -0.5 1.7"
+            rotation="0 0 0"
+            scale="0.02 0.02 0.02">
+          </a-entity>
+          <!-- Label -->
+          <a-text
+            value="Plate Deodoran"
+            position="-0.9 -0.5 1"
+            align="center"
+            color="#ffffff"
+            width="2"
+            material="depthTest: false; transparent: true">
+          </a-text>
+          <!-- Koloni sedikit (beberapa titik saja) -->
+          <a-entity id="intro-colonies-deo" position="-1.2 -0.5 1.7">
+            <a-sphere radius="0.02" color="#aaff00" position="0.15 0.03 -0.10"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 900; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+            <a-sphere radius="0.02" color="#ccee33" position="0.10 0.03 -0.11"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 1100; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+            <a-sphere radius="0.02" color="#bbff55" position="0.14 0.03 -0.16"
+                      animation__pulse="property: scale; to: 1.1 1.1 1.1; dur: 1000; loop: true; dir: alternate; easing: easeInOutSine"></a-sphere>
+          </a-entity>
+        </a-entity>
 
       <!-- Sky - Disembunyikan karena ruangan indoor sudah memiliki ceiling -->
       <a-sky color="#1a1a2e" visible="false"></a-sky>
@@ -1057,45 +970,12 @@
                intensity="1.0"
                cast-shadow="false">
       </a-light>
-      <!-- Tambahan point light untuk ruangan indoor yang lebih terang -->
-      <a-light type="point" 
-               position="0 4 0" 
-               intensity="0.8"
-               distance="30">
-      </a-light>
-      <!-- Tambahan point light di area meja untuk pencahayaan yang lebih baik -->
-      <a-light type="point" 
-               position="3 3 -5" 
-               intensity="0.6"
-               distance="15">
-      </a-light>
-      
-      <!-- Loading Indicator -->
-      <a-entity id="loading-indicator" position="0 2 -2">
-        <a-box
-          width="3"
-          height="0.3"
-          depth="0.1"
-          color="#1a1a2e"
-          opacity="0.9">
-          </a-box>
-        <a-text
-          id="loading-text"
-          value="Loading assets..."
-          position="0 0 0.06"
-          align="center"
-          color="#4CC3D9"
-          width="4"
-          material="depthTest: false; transparent: true">
-        </a-text>
-      </a-entity>
 
       <!-- Kamera dengan movement controls - Spawn di dalam ruangan lab -->
       <a-entity
         id="rig"
-        position="0 1.6 3"
-        movement-controls="speed: 0.3; constrainToNavMesh: false; fly: false; acceleration: 65"
-        collider="distance: 1.5; enabled: true; debug: false">
+        position="0 1.7 3"
+        movement-controls="speed: 0.3; constrainToNavMesh: false; fly: false; acceleration: 65">
         <a-entity
           id="player"
           class="camera"
@@ -1109,275 +989,31 @@
             geometry="primitive: ring; radiusInner: 0.018; radiusOuter: 0.025"
             material="shader: flat; opacity: 1.0; color: #fff; depthTest: false; depthWrite: false; transparent: true; fog: false"
             cursor="fuse: true; fuseTimeout: 1200"
-            raycaster="objects: .clickable, #instruction-panel, #btnStartExperiment"
+            raycaster="objects: .clickable"
             animation__fuse="property: scale; startEvents: fusing; from: 1 1 1; to: 0.2 0.2 0.2; dur: 1200; easing: linear"
             animation__reset="property: scale; startEvents: mouseleave; to: 1 1 1; dur: 120">
           </a-entity>
         </a-entity>
       </a-entity>
-      
-      <!-- Instruction Panel - Diposisikan di dalam ruangan lab -->
-      <!-- Instruction Panel - Diposisikan di tengah ruangan, di belakang meja -->
-      <a-entity id="instruction-panel" position="0 2.5 -4" rotation="0 0 0">
-        <!-- Background Panel -->
-          <a-box 
-          width="5"
-          height="3.5"
-          depth="0.1"
-          color="#1a1a2e"
-          opacity="0.95"
-          material="metalness: 0.7; roughness: 0.3; depthTest: true; depthWrite: true"
-          class="collidable">
-        </a-box>
-        
-        <!-- Border -->
-        <a-box
-          width="5.1"
-          height="3.6"
-          depth="0.05"
-          position="0 0 -0.03"
-          color="#4CC3D9"
-            opacity="0.3"
-          material="metalness: 0.8; roughness: 0.2">
-            </a-box>
-        
-        <!-- Title -->
-            <a-text
-          value="KEGIATAN 2: EKSPERIMEN BIOLOGI"
-          position="0 1.3 0.06"
-              align="center"
-          color="#4CC3D9"
-          width="6"
-            material="depthTest: false; transparent: true">
-          </a-text>
-
-        <!-- Instructions -->
-          <a-text
-          id="instruction-text"
-          value="1. Ambil sampel menggunakan cotton swab\n2. Oleskan ke cawan petri\n3. Tambahkan deodoran\n4. Amati pertumbuhan bakteri"
-          position="0 0.2 0.06"
-            align="center"
-              color="#ffffff"
-                width="4.5"
-          line-height="50"
-          material="depthTest: false; transparent: true">
-              </a-text>
-
-        <!-- Progress Tracking - Detailed checklist -->
-        <a-entity id="progress-tracker" position="0 -0.8 0.06" visible="false">
-          <!-- Progress Title -->
-          <a-text
-            value="PROGRESS"
-            position="0 0.3 0"
-            align="center"
-            color="#4CC3D9"
-            width="3"
-            material="depthTest: false; transparent: true">
-          </a-text>
-          
-          <!-- Progress Steps -->
-          <a-text
-            id="progress-step-1"
-            value="☐ Ambil Sampel"
-            position="-1.5 0.1 0"
-            align="left"
-            color="#888888"
-            width="3"
-            material="depthTest: false; transparent: true">
-          </a-text>
-          
-          <a-text
-            id="progress-step-2"
-            value="☐ Oleskan Sampel"
-            position="-1.5 -0.1 0"
-            align="left"
-            color="#888888"
-            width="3"
-            material="depthTest: false; transparent: true">
-          </a-text>
-          
-          <a-text
-            id="progress-step-3"
-            value="☐ Tambahkan Deodoran"
-            position="-1.5 -0.3 0"
-            align="left"
-            color="#888888"
-            width="3"
-            material="depthTest: false; transparent: true">
-          </a-text>
-          
-          <a-text
-            id="progress-step-4"
-            value="☐ Ukur Suhu"
-            position="-1.5 -0.5 0"
-            align="left"
-            color="#888888"
-            width="3"
-            material="depthTest: false; transparent: true">
-          </a-text>
-          
-          <!-- Progress Bar -->
-          <a-box
-            id="progress-bar-bg"
-            width="3"
-            height="0.1"
-            depth="0.02"
-            position="0 -0.7 0"
-            color="#333333"
-            material="opacity: 0.7">
-          </a-box>
-          
-          <a-box
-            id="progress-bar-fill"
-            width="0"
-            height="0.08"
-            depth="0.03"
-            position="-1.5 -0.7 0.01"
-            color="#4CC3D9"
-            material="opacity: 0.9">
-          </a-box>
-          
-          <a-text
-            id="progress-percentage"
-            value="0%"
-            position="1.7 -0.7 0.01"
-            align="center"
-            color="#4CC3D9"
-            width="1"
-            material="depthTest: false; transparent: true">
-          </a-text>
-        </a-entity>
-
-            </a-entity>
-
-      <!-- Observation Results (Initially Hidden) -->
-      <a-entity id="observation-results" class="observation-content" visible="false">
-        
-        <!-- Result Panel Background -->
-              <a-box
-          width="6"
-          height="4"
-          depth="0.1"
-          position="0 1.5 -5"
-          color="#1a1a2e"
-                opacity="0.95"
-          material="metalness: 0.7; roughness: 0.3">
-              </a-box>
-        
-        <!-- Title -->
-              <a-text
-          value="HASIL OBSERVASI"
-          position="0 3  -4.95"
-                align="center"
-          color="#4CC3D9"
-          width="5"
-          material="depthTest: false; transparent: true">
-              </a-text>
-        
-        <!-- Data Panel -->
-          <a-box
-          width="5"
-          height="1.5"
-            depth="0.05"
-          position="0 0.5 -4.95"
-          color="#0d1520"
-          opacity="0.9">
-          </a-box>
-          <a-text
-          id="experiment-data"
-          value="Suhu: 37°C\nWaktu Observasi: 24 jam\nHasil: Pertumbuhan bakteri berkurang setelah treatment"
-          position="0 0.5 -4.9"
-            align="center"
-          color="#fff"
-          width="4.5"
-          line-height="50"
-          material="depthTest: false; transparent: true">
-              </a-text>
-              
-        <!-- Data Visualization Container (HTML overlay) -->
-        <div id="data-viz-container" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; max-width: 90%; background: rgba(26, 26, 46, 0.95); border: 2px solid #4CC3D9; border-radius: 10px; padding: 20px; z-index: 9999; display: none; color: white;">
-          <h3 style="color: #4CC3D9; text-align: center; margin-bottom: 15px;">Visualisasi Data Eksperimen</h3>
-          
-          <!-- Temperature Chart -->
-          <div class="data-visualization">
-            <h4 style="color: #4CC3D9; margin-bottom: 10px;">Suhu (°C)</h4>
-            <div class="chart-container" id="temperature-chart">
-              <div id="temp-bars"></div>
-            </div>
-          </div>
-          
-          <!-- Growth Comparison Chart -->
-          <div class="data-visualization">
-            <h4 style="color: #4CC3D9; margin-bottom: 10px;">Perbandingan Pertumbuhan Bakteri</h4>
-            <div class="chart-container" id="growth-chart">
-              <div id="growth-bars"></div>
-            </div>
-            <div class="chart-legend">
-              <div class="legend-item">
-                <div class="legend-color" style="background: #ff4444;"></div>
-                <span>Sebelum Treatment</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-color" style="background: #4CC3D9;"></div>
-                <span>Sesudah Treatment</span>
-              </div>
-            </div>
-          </div>
-          
-          <button onclick="closeDataViz()" style="background: #4CC3D9; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold;">
-            Tutup
-          </button>
-        </div>
-        
-        <!-- Export Button -->
-        <a-box
-          id="btnExportData"
-          class="clickable"
-          width="1.8"
-          height="0.4"
-          depth="0.05"
-          position="0 -1.5 -4.95"
-          color="#4CC3D9"
-          material="metalness: 0.5; roughness: 0.5"
-          visible="false">
-        </a-box>
-        <a-text
-          value="EXPORT DATA"
-          position="0 -1.5 -4.9"
-          align="center"
-          color="#ffffff"
-          width="2"
-          material="depthTest: false; transparent: true"
-          id="btnExportData-text"
-          visible="false">
-        </a-text>
-        
-        <!-- View Chart Button -->
-        <a-box
-          id="btnViewChart"
-          class="clickable"
-          width="1.8"
-          height="0.4"
-          depth="0.05"
-          position="0 -2 -4.95"
-          color="#7bdcff"
-          material="metalness: 0.5; roughness: 0.5"
-          visible="false">
-        </a-box>
-        <a-text
-          value="LIHAT GRAFIK"
-          position="0 -2 -4.9"
-          align="center"
-          color="#ffffff"
-          width="2"
-          material="depthTest: false; transparent: true"
-          id="btnViewChart-text"
-          visible="false">
-              </a-text>
-            </a-entity>
-
   </a-scene>
 
+  <!-- Tombol NEXT (HTML biasa) untuk lanjut ke scene2-bag2 -->
+  <div id="intro-next-container" style="
+       position: fixed;
+       bottom: 70px;
+       right: 900px;
+       left: 900px;
+       z-index: 9999;
+       display: none;
+       align-items: center;
+       justify-content: center;">
+    <button id="intro-next-button"
+            style="padding: 12px 28px;      font-size: 16px; font-weight: bold;
+                   background: #20bd20; color: #ffffff; border: none;
+                   border-radius: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+      NEXT
+    </button>
+  </div>
     <script>
     // Experiment State Management
     const experimentState = {
@@ -2401,6 +2037,57 @@
           }
         });
       });
+    }
+
+    // Intro Flow Management - Scene 2 Bagian 1
+    function initIntroFlow() {
+      const intro = document.getElementById('intro-part1');
+      if (!intro) return;
+
+      const question1 = document.getElementById('intro-question-1');
+      const question2 = document.getElementById('intro-question-2');
+      const bg = document.getElementById('intro-question-bg');
+      const nextContainer = document.getElementById('intro-next-container');
+      const nextButton = document.getElementById('intro-next-button');
+
+      // Pastikan state awal
+      if (question1) question1.setAttribute('visible', 'true');
+      if (question2) question2.setAttribute('visible', 'false');
+      if (bg) bg.setAttribute('visible', 'true');
+      if (nextContainer) nextContainer.style.display = 'none';
+
+      // Pertanyaan 1 tampil 5 detik
+      setTimeout(() => {
+        if (question1) {
+          question1.setAttribute('visible', 'false');
+        }
+
+        // Setelah jeda singkat, tampilkan pertanyaan penelitian
+        setTimeout(() => {
+          if (question2) {
+            question2.setAttribute('visible', 'true');
+          }
+          if (bg) bg.setAttribute('visible', 'true');
+
+          // Pertanyaan penelitian tampil 5 detik lalu hilang dan munculkan tombol NEXT (HTML)
+          setTimeout(() => {
+            if (question2) {
+              question2.setAttribute('visible', 'false');
+            }
+            if (bg) bg.setAttribute('visible', 'false');
+            if (nextContainer) {
+              nextContainer.style.display = 'block';
+            }
+          }, 5000);
+        }, 1000);
+      }, 5000);
+
+      // Klik tombol NEXT: pindah ke file scene2-bag2
+      if (nextButton) {
+        nextButton.addEventListener('click', function () {
+          window.location.href = 'scene2-bag2.html';
+        });
+      }
     }
 
     function startExperiment() {
@@ -3430,11 +3117,7 @@
       
       html += `
         </div>
-        <div style="text-align: center; margin-top: 20px;">
-          <button onclick="closeAchievements()" style="background: #ffd700; color: #1a1a2e; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;">
-            Tutup
-          </button>
-        </div>
+        <!-- Tombol Tutup achievements dihilangkan (tidak ada button HTML) -->
       `;
       
       popup.innerHTML = html;
@@ -3649,22 +3332,7 @@
           const label = equipment.getAttribute('data-label') || 'Equipment';
           this.announceToScreenReader(`${label} focused. Press Enter to interact.`);
           
-          // Visual focus indicator
-          const focusRing = document.createElement('a-ring');
-          focusRing.setAttribute('id', 'keyboard-focus-ring');
-          focusRing.setAttribute('geometry', 'primitive: ring; radiusInner: 0.5; radiusOuter: 0.6');
-          focusRing.setAttribute('material', 'color: #ffff00; emissive: #ffff00; emissiveIntensity: 1; transparent: true; opacity: 0.6; side: double');
-          focusRing.setAttribute('rotation', '-90 0 0');
-          focusRing.setAttribute('position', '0 0.1 0');
-          focusRing.setAttribute('animation__pulse', 'property: scale; to: 1.2 1.2 1.2; dur: 1000; loop: true; dir: alternate; easing: easeInOutSine');
-          
-          // Remove existing focus ring
-          const existingRing = equipment.querySelector('#keyboard-focus-ring');
-          if (existingRing) {
-            existingRing.remove();
-          }
-          
-          equipment.appendChild(focusRing);
+          // Visual focus indicator dinonaktifkan agar lingkaran kuning tidak muncul
         }
       },
       
@@ -4383,9 +4051,10 @@
         });
       }
       
-      // Initialize experiment flow
-          setTimeout(() => {
+      // Initialize experiment flow dan intro (Scene 2 Bagian 1)
+      setTimeout(() => {
         initExperimentFlow();
+        initIntroFlow();
       }, 1000);
       
       // Ensure reticle is always visible on top of all objects
@@ -4641,15 +4310,14 @@
     </div>
     
     <div id="quiz-buttons">
-      <button id="submitAnswer" onclick="submitAnswers()" disabled>Submit Jawaban</button>
-      <button id="resetQuiz" onclick="resetQuiz()">Reset</button>
+      <!-- Tombol submit/reset kuis dihilangkan (tidak ada button HTML) -->
     </div>
     
     <div id="quiz-results" style="display: none;">
       <h4>Hasil Kuis</h4>
       <p>Skor: <span id="quiz-score">0</span>/4 (Pertanyaan pilihan ganda)</p>
       <p id="quiz-feedback"></p>
-      <button onclick="closeQuiz()">Tutup</button>
+      <!-- Tombol Tutup hasil kuis dihilangkan (tidak ada button HTML) -->
     </div>
   </div>
 
